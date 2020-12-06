@@ -37,6 +37,7 @@ local _MODULES = {
     Entity = "sdk/entity",
     Input = "sdk/input",
     ModMain = "sdk/modmain",
+    Player = "sdk/player",
     RPC = "sdk/rpc",
     Thread = "sdk/thread",
 }
