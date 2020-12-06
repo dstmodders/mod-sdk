@@ -40,6 +40,7 @@ local _MODULES = {
     Player = "sdk/player",
     RPC = "sdk/rpc",
     Thread = "sdk/thread",
+    World = "sdk/world",
 }
 
 local _ON_ENTER_CHARACTER_SELECT = {}
