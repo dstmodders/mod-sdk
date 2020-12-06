@@ -38,6 +38,7 @@ local _MODULES = {
     Input = "sdk/input",
     ModMain = "sdk/modmain",
     RPC = "sdk/rpc",
+    Thread = "sdk/thread",
 }
 
 local _ON_ENTER_CHARACTER_SELECT = {}
