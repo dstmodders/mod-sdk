@@ -28,6 +28,7 @@ local SDK = {
 }
 
 local _MODULES = {
+    Config = "sdk/config",
     Constant = "sdk/constant",
     DebugUpvalue = "sdk/debugupvalue",
     Dump = "sdk/dump",
