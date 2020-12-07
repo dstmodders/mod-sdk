@@ -15,7 +15,6 @@ luacov.*
 
 ### Project ###
 # general
-.github/slack*.json
 busted.out
 coverage/
 description.txt
