@@ -1,7 +1,7 @@
 require "busted.runner"()
 require "class"
 
-describe("SDK.Utils.Table", function()
+describe("#sdk SDK.Utils.Table", function()
     -- before_each initialization
     local Table
 

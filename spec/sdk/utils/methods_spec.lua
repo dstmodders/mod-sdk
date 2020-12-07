@@ -1,7 +1,7 @@
 require "busted.runner"()
 require "class"
 
-describe("SDK.Utils.Methods", function()
+describe("#sdk SDK.Utils.Methods", function()
     -- before_each initialization
     local Methods
 

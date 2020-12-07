@@ -1,7 +1,7 @@
 require "busted.runner"()
 require "class"
 
-describe("SDK.Entity", function()
+describe("#sdk SDK.Entity", function()
     -- setup
     local test_debug_string
 

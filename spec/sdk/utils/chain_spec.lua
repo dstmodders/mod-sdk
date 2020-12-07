@@ -1,7 +1,7 @@
 require "busted.runner"()
 require "class"
 
-describe("SDK.Utils.Chain", function()
+describe("#sdk SDK.Utils.Chain", function()
     -- setup
     local match
 
