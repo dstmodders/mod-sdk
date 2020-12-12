@@ -221,20 +221,8 @@ function SDK.Load(env, path, modules)
     return false
 end
 
---- Post Constructors
--- @section post-constructors
-
---- Triggered after class constructor.
---
--- Just wraps `AddClassPostConstruct`.
---
--- @tparam string src Class source
--- @tparam function fn Function
-function SDK.OnClassPostConstruct(src, fn)
-    SDK.env.AddClassPostConstruct(src, function(...)
-        fn(...)
-    end)
-end
+--- Post Initializers
+-- @section post-initializers
 
 --- Triggered when entering character select.
 -- @tparam function fn Function
@@ -258,6 +246,18 @@ function SDK.OnPlayerDeactivated(fn)
     if type(fn) == "function" then
         table.insert(_ON_PLAYER_DEACTIVATED, fn)
     end
+end
+
+--- Triggered after class initialization.
+--
+-- Just wraps `AddClassPostConstruct`.
+--
+-- @tparam string src Class
+-- @tparam function fn Function
+function SDK.OnLoadClass(src, fn)
+    SDK.env.AddClassPostConstruct(src, function(...)
+        fn(...)
+    end)
 end
 
 --- Triggered when worlds is loaded.
