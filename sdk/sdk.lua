@@ -260,6 +260,18 @@ function SDK.OnLoadClass(src, fn)
     end)
 end
 
+--- Triggered after a component initialization.
+--
+-- Just wraps `AddComponentPostInit`.
+--
+-- @tparam string src Component
+-- @tparam function fn Function
+function SDK.OnLoadComponent(src, fn)
+    SDK.env.AddComponentPostInit(src, function(...)
+        fn(...)
+    end)
+end
+
 --- Triggered when worlds is loaded.
 -- @tparam function fn Function
 function SDK.OnLoadWorld(fn)
