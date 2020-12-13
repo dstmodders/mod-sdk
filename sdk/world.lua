@@ -66,7 +66,10 @@ end
 -- @treturn[2] string State value, when the name is passed
 function World.GetState(name)
     local state = TheWorld.state
-    return state and name ~= nil and state[name] or state
+    if state and name ~= nil and type(state[name]) ~= nil then
+        return state[name]
+    end
+    return state
 end
 
 --- Gets weather component.
