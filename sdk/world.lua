@@ -13,7 +13,9 @@
 -- @license MIT
 -- @release 0.1
 ----
+local Chain = require "sdk/utils/chain"
 local DebugUpvalue = require "sdk/debugupvalue"
+local Table = require "sdk/utils/table"
 
 local World = {}
 
@@ -36,24 +38,6 @@ function World.GetMeta(name)
     return meta and name ~= nil and meta[name] or meta
 end
 
---- Gets moisture floor.
--- @treturn number
-function World.GetMoistureFloor()
-    return _MOISTURE_FLOOR
-end
-
---- Gets moisture rate.
--- @treturn number
-function World.GetMoistureRate()
-    return _MOISTURE_RATE
-end
-
---- Gets peak precipitation rate.
--- @treturn number
-function World.GetPeakPrecipitationRate()
-    return _PEAK_PRECIPITATION_RATE
-end
-
 --- Gets seed.
 -- @treturn string
 function World.GetSeed()
@@ -72,6 +56,76 @@ function World.GetState(name)
     return state
 end
 
+--- Checks if it's a cave world.
+-- @treturn boolean
+function World.IsCave()
+    return TheWorld:HasTag("cave")
+end
+
+--- Checks if a master simulated world.
+-- @treturn boolean
+function World.IsMasterSim()
+    return TheWorld.ismastersim
+end
+
+--- Phase
+-- @section phase
+
+--- Gets day phase.
+-- @tparam string phase Phase
+-- @treturn number
+function World.GetPhase()
+    return World.IsCave() and World.GetState("cavephase") or World.GetState("phase")
+end
+
+--- Gets next day phase.
+--
+-- Returns the value based on the following logic:
+--
+--   - day => dusk
+--   - dusk => night
+--   - night => day
+--
+-- @tparam string phase Current phase
+-- @treturn string Next phase
+function World.GetPhaseNext(phase)
+    return Table.NextValue({ "day", "dusk", "night" }, phase)
+end
+
+--- Gets the time until the phase.
+--
+-- This is a convenience method returning:
+--
+--    TheWorld.net.components.clock:GetTimeUntilPhase(phase)
+--
+-- @tparam string phase
+-- @treturn number
+function World.GetTimeUntilPhase(phase)
+    local clock = Chain.Get(TheWorld, "net", "components", "clock")
+    return clock and clock:GetTimeUntilPhase(phase)
+end
+
+--- Weather
+-- @section weather
+
+--- Gets moisture floor.
+-- @treturn number
+function World.GetMoistureFloor()
+    return _MOISTURE_FLOOR
+end
+
+--- Gets moisture rate.
+-- @treturn number
+function World.GetMoistureRate()
+    return _MOISTURE_RATE
+end
+
+--- Gets peak precipitation rate.
+-- @treturn number
+function World.GetPeakPrecipitationRate()
+    return _PEAK_PRECIPITATION_RATE
+end
+
 --- Gets weather component.
 --
 -- Returns the component based on the world type: cave or forest.
@@ -88,18 +142,6 @@ end
 -- @treturn number
 function World.GetWetnessRate()
     return _WETNESS_RATE
-end
-
---- Checks if it's a cave world.
--- @treturn boolean
-function World.IsCave()
-    return TheWorld:HasTag("cave")
-end
-
---- Checks if a master simulated world.
--- @treturn boolean
-function World.IsMasterSim()
-    return TheWorld.ismastersim
 end
 
 --- Checks if there is precipitation.
