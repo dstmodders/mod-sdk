@@ -133,9 +133,11 @@ end
 -- @treturn[1] Weather
 -- @treturn[2] CaveWeather
 function World.GetWeatherComponent()
-    return World.IsCave()
-        and TheWorld.net.components.caveweather
-        or TheWorld.net.components.weather
+    local components = Chain.Get(TheWorld, "net", "components")
+    if components then
+        return World.IsCave() and components.caveweather or components.weather
+    end
+    return nil
 end
 
 --- Gets wetness rate.
