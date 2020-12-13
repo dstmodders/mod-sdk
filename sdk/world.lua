@@ -99,6 +99,13 @@ function World.IsMasterSim()
     return TheWorld.ismastersim
 end
 
+--- Checks if there is precipitation.
+-- @treturn boolean
+function World.IsPrecipitation()
+    return World.GetState("precipitation") ~= "none"
+        or World.GetState("moisture") >= World.GetState("moistureceil")
+end
+
 --- Overrides `Weather:OnUpdate()`.
 -- @tparam Weather|CaveWeather self
 function World.WeatherOnUpdate(self)
