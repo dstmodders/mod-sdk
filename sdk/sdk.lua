@@ -73,6 +73,13 @@ local function AddWorldPostInit()
             end
         end
 
+        if SDK.World then
+            SDK.OnLoadComponent(
+                SDK.World.IsCave() and "caveweather" or "weather",
+                SDK.World.WeatherOnUpdate
+            )
+        end
+
         self:ListenForEvent("entercharacterselect", function(...)
             if #_ON_ENTER_CHARACTER_SELECT > 0 then
                 for _, fn in pairs(_ON_ENTER_CHARACTER_SELECT) do
