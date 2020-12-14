@@ -22,6 +22,14 @@ local SDK
 --- General
 -- @section general
 
+--- Checks if movement prediction is enabled.
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn boolean
+function Player.HasMovementPrediction(player)
+    player = player ~= nil and player or ThePlayer
+    return Chain.Get(player, "components", "locomotor") ~= nil
+end
+
 --- Checks if the player is an admin.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean
@@ -68,14 +76,6 @@ end
 function Player.IsInvincible(player)
     player = player ~= nil and player or ThePlayer
     return Chain.Get(player, "components", "health", "invincible")
-end
-
---- Checks the movement prediction state.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
--- @treturn boolean
-function Player.IsMovementPrediction(player)
-    player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "components", "locomotor") ~= nil
 end
 
 --- Checks if the player is over water.
