@@ -94,6 +94,11 @@ describe("#sdk SDK.Player", function()
                 end,
             },
             GetCurrentPlatform = ReturnValueFn(nil),
+            LightWatcher = {
+                GetTimeInDark = ReturnValueFn(3),
+                GetTimeInLight = ReturnValueFn(0),
+                IsInLight = ReturnValueFn(false),
+            },
             Transform = {
                 GetWorldPosition = function()
                     return unpack(position)
@@ -364,16 +369,6 @@ describe("#sdk SDK.Player", function()
                             assert.is_nil(Player.IsIdle(player))
                         end, player, "AnimState", "IsCurrentAnimation")
                     end)
-                end)
-            end)
-        end)
-
-        describe("IsInLight", function()
-            describe("when some chain fields are missing", function()
-                it("should return nil", function()
-                    AssertChainNil(function()
-                        assert.is_nil(Player.IsInLight())
-                    end, _G.ThePlayer, "LightWatcher", "IsInLight")
                 end)
             end)
         end)
@@ -701,6 +696,38 @@ describe("#sdk SDK.Player", function()
                             assert.is_false(Player.IsRunning(player))
                         end, { player_running })
                     end)
+                end)
+            end)
+        end)
+    end)
+
+    describe("light watcher", function()
+        describe("IsInLight", function()
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.IsInLight())
+                    end, _G.ThePlayer, "LightWatcher", "IsInLight")
+                end)
+            end)
+        end)
+
+        describe("GetTimeInDark", function()
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.GetTimeInDark())
+                    end, _G.ThePlayer, "LightWatcher", "GetTimeInDark")
+                end)
+            end)
+        end)
+
+        describe("GetTimeInLight", function()
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.GetTimeInLight())
+                    end, _G.ThePlayer, "LightWatcher", "GetTimeInLight")
                 end)
             end)
         end)

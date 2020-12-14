@@ -62,14 +62,6 @@ function Player.IsIdle(player)
     end
 end
 
---- Checks if the owner is in the light.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
--- @treturn boolean
-function Player.IsInLight(player)
-    player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "LightWatcher", "IsInLight", true)
-end
-
 --- Checks if a player is invincible.
 -- @tparam[opt] EntityScript player Player instance (the selected one by default)
 -- @treturn boolean
@@ -133,6 +125,31 @@ function Player.IsRunning(player)
             or player.AnimState:IsCurrentAnimation("run_loop")
             or player.AnimState:IsCurrentAnimation("run_pst")
     end
+end
+
+--- Light Watcher
+-- @section light-watcher
+
+--- Gets the owner time in the dark.
+-- @treturn number
+function Player.GetTimeInDark(player)
+    player = player ~= nil and player or ThePlayer
+    return Chain.Get(player, "LightWatcher", "GetTimeInDark", true)
+end
+
+--- Gets the owner time in the light.
+-- @treturn number
+function Player.GetTimeInLight(player)
+    player = player ~= nil and player or ThePlayer
+    return Chain.Get(player, "LightWatcher", "GetTimeInLight", true)
+end
+
+--- Checks if the owner is in the light.
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn boolean
+function Player.IsInLight(player)
+    player = player ~= nil and player or ThePlayer
+    return Chain.Get(player, "LightWatcher", "IsInLight", true)
 end
 
 --- Lifecycle
