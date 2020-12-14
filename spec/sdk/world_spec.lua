@@ -16,6 +16,10 @@ describe("#sdk SDK.World", function()
     before_each(function()
         -- globals
         _G.TheWorld = {
+            meta = {
+                saveversion = "5.031",
+                seed = "1574459949",
+            },
             net = {
                 components = {},
             },
@@ -24,6 +28,44 @@ describe("#sdk SDK.World", function()
 
         -- initialization
         World = require "sdk/world"
+    end)
+
+    describe("general", function()
+        describe("GetMeta", function()
+            describe("when no name is passed", function()
+                it("should return TheWorld.meta", function()
+                    assert.is_equal(_G.TheWorld.meta, World.GetMeta())
+                end)
+            end)
+
+            describe("when the name is passed", function()
+                it("should return TheWorld.meta field value", function()
+                    assert.is_equal(_G.TheWorld.meta.saveversion, World.GetMeta("saveversion"))
+                end)
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(World.GetMeta("saveversion"))
+                    end, _G.TheWorld, "meta", "saveversion")
+                end)
+            end)
+        end)
+
+        describe("GetSeed", function()
+            it("should return TheWorld.meta.seed", function()
+                assert.is_equal(_G.TheWorld.meta.seed, World.GetSeed())
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(World.GetSeed())
+                    end, _G.TheWorld, "meta", "seed")
+                end)
+            end)
+        end)
     end)
 
     describe("phase", function()
