@@ -75,7 +75,7 @@ end
 -- @treturn boolean
 function Player.IsInvincible(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "components", "health", "invincible") or false
+    return Chain.Get(player, "components", "health", "invincible")
 end
 
 --- Checks the movement prediction state.
