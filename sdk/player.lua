@@ -121,8 +121,8 @@ end
 function Player.IsRunning(player)
     player = player ~= nil and player or ThePlayer
     if player and (player.sg or player.AnimState) then
-        if player.sg and player.sg.HasStateTag and player.sg:HasStateTag("run") then
-            return true
+        if player.sg and player.sg.HasStateTag then
+            return player.sg:HasStateTag("run")
         end
 
         if player.AnimState and not player.AnimState.IsCurrentAnimation then
