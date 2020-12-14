@@ -35,7 +35,10 @@ local _WETNESS_RATE
 -- @treturn[2] string Meta value, when the name is passed
 function World.GetMeta(name)
     local meta = TheWorld.meta
-    return meta and name ~= nil and meta[name] or meta
+    if meta and name ~= nil and type(meta[name]) ~= nil then
+        return meta[name]
+    end
+    return meta
 end
 
 --- Gets seed.
