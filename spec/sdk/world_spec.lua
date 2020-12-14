@@ -9,7 +9,6 @@ describe("#sdk SDK.World", function()
     local World
 
     setup(function()
-        -- match
         match = require "luassert.match"
     end)
 
@@ -123,7 +122,7 @@ describe("#sdk SDK.World", function()
                 GetTimeUntilPhase = clock.GetTimeUntilPhase
             end)
 
-            it("should call the Clock:GetTimeUntilPhase()", function()
+            it("should call Clock:GetTimeUntilPhase()", function()
                 assert.spy(GetTimeUntilPhase).was_not_called()
                 World.GetTimeUntilPhase("day")
                 assert.spy(GetTimeUntilPhase).was_called(1)
