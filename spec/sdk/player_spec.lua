@@ -85,6 +85,11 @@ describe("#sdk SDK.Player", function()
                 },
             },
             name = name,
+            replica = {
+                health = {
+                    GetPercent = ReturnValueFn(1),
+                },
+            },
             sg = {
                 HasStateTag = function(_, tag)
                     return TableHasValue(state_tags, tag)
@@ -689,6 +694,41 @@ describe("#sdk SDK.Player", function()
                         EachPlayer(function(player)
                             assert.is_false(Player.IsRunning(player))
                         end, { player_running })
+                    end)
+                end)
+            end)
+        end)
+    end)
+
+    describe("attributes", function()
+        describe("GetHealthPercent", function()
+            describe("when the player is passed", function()
+                describe("and the Health replica component is available", function()
+                    it("should call the [player].replica.health:GetPercent()", function()
+                        EachPlayer(function(player)
+                            assert.spy(player.replica.health.GetPercent).was_not_called()
+                            Player.GetHealthPercent(player)
+                            assert.spy(player.replica.health.GetPercent).was_called(1)
+                            assert.spy(player.replica.health.GetPercent).was_called_with(
+                                match.is_ref(player.replica.health)
+                            )
+                        end)
+                    end)
+
+                    it("should return the health percent", function()
+                        EachPlayer(function(player)
+                            assert.is_equal(100, Player.GetHealthPercent(player))
+                        end)
+                    end)
+                end)
+
+                describe("when some chain fields are missing", function()
+                    it("should return nil", function()
+                        EachPlayer(function(player)
+                            AssertChainNil(function()
+                                assert.is_nil(Player.GetHealthPercent(player))
+                            end, player, "replica", "health")
+                        end)
                     end)
                 end)
             end)

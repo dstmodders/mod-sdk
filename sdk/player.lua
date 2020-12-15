@@ -120,6 +120,18 @@ function Player.IsRunning(player)
     end
 end
 
+--- Attributes
+-- @section attributes
+
+--- Gets the Health value.
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn number
+function Player.GetHealthPercent(player)
+    player = player ~= nil and player or ThePlayer
+    local health = Chain.Get(player, "replica", "health", "GetPercent", true)
+    return health and health * 100
+end
+
 --- Light Watcher
 -- @section light-watcher
 
