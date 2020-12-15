@@ -27,7 +27,10 @@ local SDK
 -- @treturn boolean
 function Player.HasMovementPrediction(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "components", "locomotor") ~= nil
+    if type(player.components) == "table" then
+        return Chain.Get(player, "components", "locomotor") ~= nil
+    end
+    return false
 end
 
 --- Checks if the player is an admin.
