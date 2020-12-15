@@ -185,6 +185,14 @@ function Player.SetMovementPrediction(is_enabled, player)
     return is_enabled
 end
 
+--- Toggles the movement prediction.
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn boolean
+function Player.ToggleMovementPrediction(player)
+    player = player ~= nil and player or ThePlayer
+    return Player.SetMovementPrediction(not Player.HasMovementPrediction(), player)
+end
+
 --- Lifecycle
 -- @section lifecycle
 
