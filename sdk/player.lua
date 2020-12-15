@@ -14,6 +14,7 @@
 -- @release 0.1
 ----
 local Chain = require "sdk/utils/chain"
+local Debug = require "sdk/debug"
 
 local Player = {}
 
@@ -21,17 +22,6 @@ local SDK
 
 --- General
 -- @section general
-
---- Checks if movement prediction is enabled.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
--- @treturn boolean
-function Player.HasMovementPrediction(player)
-    player = player ~= nil and player or ThePlayer
-    if type(player.components) == "table" then
-        return Chain.Get(player, "components", "locomotor") ~= nil
-    end
-    return false
-end
 
 --- Checks if the player is an admin.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
@@ -153,6 +143,46 @@ end
 function Player.IsInLight(player)
     player = player ~= nil and player or ThePlayer
     return Chain.Get(player, "LightWatcher", "IsInLight", true)
+end
+
+--- Movement Prediction
+-- @section movement-prediction
+
+--- Checks if movement prediction is enabled.
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn boolean
+function Player.HasMovementPrediction(player)
+    player = player ~= nil and player or ThePlayer
+    if type(player.components) == "table" then
+        return Chain.Get(player, "components", "locomotor") ~= nil
+    end
+    return false
+end
+
+--- Enables/Disables the movement prediction.
+-- @tparam boolean is_enabled
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn boolean
+function Player.SetMovementPrediction(is_enabled, player)
+    is_enabled = is_enabled and true or false
+    player = player ~= nil and player or ThePlayer
+
+    if TheWorld.ismastersim then
+        Debug.Error("SDK.Player.SetMovementPrediction: Can't be toggled on the master simulation")
+        return false
+    end
+
+    if is_enabled then
+        player:EnableMovementPrediction(true)
+    elseif player.components and player.components.locomotor then
+        player.components.locomotor:Stop()
+        player:EnableMovementPrediction(false)
+    end
+
+    Debug.String("Movement prediction:", is_enabled and "enabled" or "disabled")
+    TheSim:SetSetting("misc", "movementprediction", tostring(is_enabled))
+
+    return is_enabled
 end
 
 --- Lifecycle

@@ -80,6 +80,9 @@ describe("#sdk SDK.Player", function()
                 health = {
                     invincible = TableHasValue(states, "godmode"),
                 },
+                locomotor = {
+                    Stop = Empty,
+                },
             },
             name = name,
             sg = {
@@ -93,7 +96,8 @@ describe("#sdk SDK.Player", function()
                     return anim == animation
                 end,
             },
-            GetCurrentPlatform = ReturnValueFn(nil),
+            EnableMovementPrediction = Empty,
+            GetCurrentPlatform = Empty,
             LightWatcher = {
                 GetTimeInDark = ReturnValueFn(3),
                 GetTimeInLight = ReturnValueFn(0),
@@ -163,16 +167,6 @@ describe("#sdk SDK.Player", function()
     end)
 
     describe("general", function()
-        describe("HasMovementPrediction", function()
-            describe("when some chain fields are missing", function()
-                it("should return false", function()
-                    AssertChainNil(function()
-                        assert.is_false(Player.HasMovementPrediction())
-                    end, _G.ThePlayer, "components", "locomotor")
-                end)
-            end)
-        end)
-
         describe("IsAdmin", function()
             local GetClientTable
 
@@ -728,6 +722,173 @@ describe("#sdk SDK.Player", function()
                     AssertChainNil(function()
                         assert.is_nil(Player.GetTimeInLight())
                     end, _G.ThePlayer, "LightWatcher", "GetTimeInLight")
+                end)
+            end)
+        end)
+    end)
+
+    describe("movement prediction", function()
+        describe("HasMovementPrediction", function()
+            describe("when locomotor component is available", function()
+                before_each(function()
+                    inst.components = {
+                        locomotor = {},
+                    }
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.HasMovementPrediction(inst))
+                end)
+            end)
+
+            describe("when locomotor component is not available", function()
+                before_each(function()
+                    inst.components = {
+                        locomotor = nil,
+                    }
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player.HasMovementPrediction(inst))
+                end)
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return false", function()
+                    AssertChainNil(function()
+                        assert.is_false(Player.HasMovementPrediction())
+                    end, _G.ThePlayer, "components", "locomotor")
+                end)
+            end)
+        end)
+
+        describe("SetMovementPrediction", function()
+            before_each(function()
+                _G.TheSim = {
+                    SetSetting = spy.new(Empty)
+                }
+            end)
+
+            describe("when master simulation", function()
+                before_each(function()
+                    _G.TheWorld = {
+                        ismastersim = true,
+                    }
+                end)
+
+                describe("and enabling", function()
+                    it("shouldn't call [player].EnableMovementPrediction()", function()
+                        assert.spy(inst.EnableMovementPrediction).was_not_called()
+                        Player.SetMovementPrediction(true, inst)
+                        assert.spy(inst.EnableMovementPrediction).was_not_called()
+                    end)
+
+                    it("shouldn't call TheSim:SetSetting()", function()
+                        assert.spy(_G.TheSim.SetSetting).was_not_called()
+                        Player.SetMovementPrediction(false, inst)
+                        assert.spy(_G.TheSim.SetSetting).was_not_called()
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.SetMovementPrediction(true, inst))
+                    end)
+                end)
+
+                describe("and disabling", function()
+                    it("shouldn't call [player].EnableMovementPrediction()", function()
+                        assert.spy(inst.EnableMovementPrediction).was_not_called()
+                        Player.SetMovementPrediction(false, inst)
+                        assert.spy(inst.EnableMovementPrediction).was_not_called()
+                    end)
+
+                    it("shouldn't call TheSim:SetSetting()", function()
+                        assert.spy(_G.TheSim.SetSetting).was_not_called()
+                        Player.SetMovementPrediction(false, inst)
+                        assert.spy(_G.TheSim.SetSetting).was_not_called()
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.SetMovementPrediction(false, inst))
+                    end)
+                end)
+            end)
+
+            describe("when non-master simulation", function()
+                before_each(function()
+                    _G.TheWorld = {
+                        ismastersim = false,
+                    }
+                end)
+
+                describe("and enabling", function()
+                    it("shouldn't call [player].components.locomotor:Stop()", function()
+                        assert.spy(inst.components.locomotor.Stop).was_not_called()
+                        Player.SetMovementPrediction(true, inst)
+                        assert.spy(inst.components.locomotor.Stop).was_not_called()
+                    end)
+
+                    it("should call [player].EnableMovementPrediction()", function()
+                        assert.spy(inst.EnableMovementPrediction).was_not_called()
+                        Player.SetMovementPrediction(true, inst)
+                        assert.spy(inst.EnableMovementPrediction).was_called(1)
+                        assert.spy(inst.EnableMovementPrediction).was_called_with(
+                            match.is_ref(inst),
+                            true
+                        )
+                    end)
+
+                    it("should call TheSim:SetSetting()", function()
+                        assert.spy(_G.TheSim.SetSetting).was_not_called()
+                        Player.SetMovementPrediction(false, inst)
+                        assert.spy(_G.TheSim.SetSetting).was_called(1)
+                        assert.spy(_G.TheSim.SetSetting).was_called_with(
+                            match.is_ref(_G.TheSim),
+                            "misc",
+                            "movementprediction",
+                            "false"
+                        )
+                    end)
+
+                    it("should return true", function()
+                        assert.is_true(Player.SetMovementPrediction(true, inst))
+                    end)
+                end)
+
+                describe("and disabling", function()
+                    it("should call [player].components.locomotor:Stop()", function()
+                        assert.spy(inst.components.locomotor.Stop).was_not_called()
+                        Player.SetMovementPrediction(false, inst)
+                        assert.spy(inst.components.locomotor.Stop).was_called(1)
+                        assert.spy(inst.components.locomotor.Stop).was_called_with(
+                            match.is_ref(inst.components.locomotor)
+                        )
+                    end)
+
+                    it("should call [player].EnableMovementPrediction()", function()
+                        assert.spy(inst.EnableMovementPrediction).was_not_called()
+                        Player.SetMovementPrediction(false, inst)
+                        assert.spy(inst.EnableMovementPrediction).was_called(1)
+                        assert.spy(inst.EnableMovementPrediction).was_called_with(
+                            match.is_ref(inst),
+                            false
+                        )
+                    end)
+
+                    it("should call TheSim:SetSetting()", function()
+                        assert.spy(_G.TheSim.SetSetting).was_not_called()
+                        Player.SetMovementPrediction(false, inst)
+                        assert.spy(_G.TheSim.SetSetting).was_called(1)
+                        assert.spy(_G.TheSim.SetSetting).was_called_with(
+                            match.is_ref(_G.TheSim),
+                            "misc",
+                            "movementprediction",
+                            "false"
+                        )
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.SetMovementPrediction(false, inst))
+                    end)
                 end)
             end)
         end)
