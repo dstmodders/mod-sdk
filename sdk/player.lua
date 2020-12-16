@@ -132,6 +132,18 @@ function Player.GetHealthPercent(player)
     return health and health * 100
 end
 
+--- Gets health limit value.
+--
+-- Maximum health when the penalty has been applied.
+--
+-- @tparam[opt] EntityScript player Player instance (the selected one by default)
+-- @treturn number
+function Player.GetHealthLimitPercent(player)
+    player = player ~= nil and player or ThePlayer
+    local penalty = Chain.Get(player, "replica", "health", "GetPenaltyPercent", true)
+    return penalty and (1 - penalty) * 100
+end
+
 --- Gets health penalty value.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn number
