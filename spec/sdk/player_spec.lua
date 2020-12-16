@@ -88,6 +88,7 @@ describe("#sdk SDK.Player", function()
             replica = {
                 health = {
                     GetPercent = ReturnValueFn(1),
+                    GetPenaltyPercent = ReturnValueFn(.4),
                 },
                 hunger = {
                     GetPercent = ReturnValueFn(1),
@@ -707,14 +708,14 @@ describe("#sdk SDK.Player", function()
     end)
 
     describe("attributes", function()
-        local function TestReplicaAttribute(name, fn_name, value)
+        local function TestReplicaAttribute(name, fn_name, component_fn_name, value)
             describe("when [player].replica.health is available", function()
                 it("should call the [player].replica.health:GetPercent()", function()
                     EachPlayer(function(player)
-                        assert.spy(player.replica[name].GetPercent).was_not_called()
+                        assert.spy(player.replica[name][component_fn_name]).was_not_called()
                         Player[fn_name](player)
-                        assert.spy(player.replica[name].GetPercent).was_called(1)
-                        assert.spy(player.replica[name].GetPercent).was_called_with(
+                        assert.spy(player.replica[name][component_fn_name]).was_called(1)
+                        assert.spy(player.replica[name][component_fn_name]).was_called_with(
                             match.is_ref(player.replica[name])
                         )
                     end)
@@ -739,15 +740,19 @@ describe("#sdk SDK.Player", function()
         end
 
         describe("GetHealthPercent", function()
-            TestReplicaAttribute("health", "GetHealthPercent", 100)
+            TestReplicaAttribute("health", "GetHealthPercent", "GetPercent", 100)
+        end)
+
+        describe("GetHealthPenaltyPercent", function()
+            TestReplicaAttribute("health", "GetHealthPenaltyPercent", "GetPenaltyPercent", 40)
         end)
 
         describe("GetHungerPercent", function()
-            TestReplicaAttribute("hunger", "GetHungerPercent", 100)
+            TestReplicaAttribute("hunger", "GetHungerPercent", "GetPercent", 100)
         end)
 
         describe("GetSanityPercent", function()
-            TestReplicaAttribute("sanity", "GetSanityPercent", 100)
+            TestReplicaAttribute("sanity", "GetSanityPercent", "GetPercent", 100)
         end)
     end)
 

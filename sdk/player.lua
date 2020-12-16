@@ -123,7 +123,7 @@ end
 --- Attributes
 -- @section attributes
 
---- Gets the Health value.
+--- Gets health value.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn number
 function Player.GetHealthPercent(player)
@@ -132,7 +132,16 @@ function Player.GetHealthPercent(player)
     return health and health * 100
 end
 
---- Gets the Hunger value.
+--- Gets health penalty value.
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn number
+function Player.GetHealthPenaltyPercent(player)
+    player = player ~= nil and player or ThePlayer
+    local penalty = Chain.Get(player, "replica", "health", "GetPenaltyPercent", true)
+    return penalty and penalty * 100
+end
+
+--- Gets hunger value.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn number
 function Player.GetHungerPercent(player)
@@ -141,7 +150,7 @@ function Player.GetHungerPercent(player)
     return hunger and hunger * 100
 end
 
---- Gets the Sanity value.
+--- Gets sanity value.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn number
 function Player.GetSanityPercent(player)
