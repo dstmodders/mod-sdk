@@ -89,6 +89,9 @@ describe("#sdk SDK.Player", function()
                 health = {
                     GetPercent = ReturnValueFn(1),
                 },
+                hunger = {
+                    GetPercent = ReturnValueFn(1),
+                },
             },
             sg = {
                 HasStateTag = function(_, tag)
@@ -728,6 +731,39 @@ describe("#sdk SDK.Player", function()
                             AssertChainNil(function()
                                 assert.is_nil(Player.GetHealthPercent(player))
                             end, player, "replica", "health")
+                        end)
+                    end)
+                end)
+            end)
+        end)
+
+        describe("GetHungerPercent", function()
+            describe("when the player is passed", function()
+                describe("and the Hunger replica component is available", function()
+                    it("should call the [player].replica.hunger:GetPercent()", function()
+                        EachPlayer(function(player)
+                            assert.spy(player.replica.hunger.GetPercent).was_not_called()
+                            Player.GetHungerPercent(player)
+                            assert.spy(player.replica.hunger.GetPercent).was_called(1)
+                            assert.spy(player.replica.hunger.GetPercent).was_called_with(
+                                match.is_ref(player.replica.hunger)
+                            )
+                        end)
+                    end)
+
+                    it("should return the hunger percent", function()
+                        EachPlayer(function(player)
+                            assert.is_equal(100, Player.GetHungerPercent(player))
+                        end)
+                    end)
+                end)
+
+                describe("when some chain fields are missing", function()
+                    it("should return nil", function()
+                        EachPlayer(function(player)
+                            AssertChainNil(function()
+                                assert.is_nil(Player.GetHungerPercent(player))
+                            end, player, "replica", "hunger")
                         end)
                     end)
                 end)
