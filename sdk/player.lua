@@ -141,6 +141,15 @@ function Player.GetHungerPercent(player)
     return hunger and hunger * 100
 end
 
+--- Gets the Sanity value.
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn number
+function Player.GetSanityPercent(player)
+    player = player ~= nil and player or ThePlayer
+    local sanity = Chain.Get(player, "replica", "sanity", "GetPercent", true)
+    return sanity and sanity * 100
+end
+
 --- Light Watcher
 -- @section light-watcher
 
