@@ -71,6 +71,20 @@ function Player.IsInvincible(player)
     return Chain.Get(player, "components", "health", "invincible")
 end
 
+--- Checks if a player is on a platform.
+-- @tparam[opt] EntityScript player Player instance (the selected one by default)
+-- @treturn boolean
+function Player.IsOnPlatform(player)
+    player = player ~= nil and player or ThePlayer
+    if Chain.Validate(TheWorld, "Map", "GetPlatformAtPoint")
+        and Chain.Validate(player, "GetPosition")
+    then
+        return TheWorld.Map:GetPlatformAtPoint(Chain.Get(player:GetPosition(), "Get", true))
+            and true
+            or false
+    end
+end
+
 --- Checks if the player is over water.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean

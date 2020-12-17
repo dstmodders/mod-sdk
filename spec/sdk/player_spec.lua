@@ -110,6 +110,9 @@ describe("#sdk SDK.Player", function()
             },
             EnableMovementPrediction = Empty,
             GetCurrentPlatform = Empty,
+            GetPosition = ReturnValueFn({
+                Get = ReturnValuesFn(1, 0, -1),
+            }),
             LightWatcher = {
                 GetTimeInDark = ReturnValueFn(3),
                 GetTimeInLight = ReturnValueFn(0),
@@ -395,6 +398,57 @@ describe("#sdk SDK.Player", function()
                     AssertChainNil(function()
                         assert.is_nil(Player.IsInvincible())
                     end, _G.ThePlayer, "components", "health", "invincible")
+                end)
+            end)
+        end)
+
+        describe("IsOnPlatform", function()
+            before_each(function()
+                _G.TheWorld = {
+                    Map = {
+                        GetPlatformAtPoint = spy.new(ReturnValueFn({})),
+                    },
+                }
+            end)
+
+            describe("when some of the world chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        Player.IsOnPlatform()
+                    end, _G.TheWorld, "Map", "GetPlatformAtPoint")
+                end)
+            end)
+
+            describe("when some of inst chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        Player.IsOnPlatform()
+                    end, _G.ThePlayer, "GetPosition", "Get")
+                end)
+            end)
+
+            describe("when both world and inst are set", function()
+                it("should call self.inst:GetPosition()", function()
+                    assert.spy(_G.ThePlayer.GetPosition).was_called(0)
+                    Player.IsOnPlatform()
+                    assert.spy(_G.ThePlayer.GetPosition).was_called(1)
+                    assert.spy(_G.ThePlayer.GetPosition).was_called_with(match.is_ref(_G.ThePlayer))
+                end)
+
+                it("should call self.world.Map:GetPlatformAtPoint()", function()
+                    assert.spy(_G.TheWorld.Map.GetPlatformAtPoint).was_called(0)
+                    Player.IsOnPlatform()
+                    assert.spy(_G.TheWorld.Map.GetPlatformAtPoint).was_called(1)
+                    assert.spy(_G.TheWorld.Map.GetPlatformAtPoint).was_called_with(
+                        match.is_ref(_G.TheWorld.Map),
+                        1,
+                        0,
+                        -1
+                    )
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.IsOnPlatform())
                 end)
             end)
         end)
