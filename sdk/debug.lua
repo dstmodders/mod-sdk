@@ -92,7 +92,7 @@ end
 function Debug.String(...) -- luacheck: only
     if _IS_ENABLED then
         local task = scheduler:GetCurrentTask()
-        local msg = string.format("[SDK] [%s]", SDK.modname)
+        local msg = string.format("[sdk] [%s]", SDK.modname)
 
         if task then
             msg = msg .. " [" .. task.id .. "]"
