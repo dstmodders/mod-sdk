@@ -65,6 +65,61 @@ describe("#sdk SDK.World", function()
                 end)
             end)
         end)
+
+        describe("IsPassable", function()
+            local pt
+
+            before_each(function()
+                _G.TheWorld = {
+                    Map = {
+                        IsPassableAtPoint = spy.new(ReturnValueFn(true)),
+                    },
+                }
+
+                pt = {
+                    Get = spy.new(ReturnValuesFn(1, 0, -1)),
+                }
+            end)
+
+            describe("when some passed world fields are missing", function()
+                it("should return false", function()
+                    AssertChainNil(function()
+                        assert.is_false(World.IsPointPassable(pt))
+                    end, _G.TheWorld, "Map", "IsPassableAtPoint")
+                end)
+            end)
+
+            describe("when some passed pos fields are missing", function()
+                it("should return false", function()
+                    AssertChainNil(function()
+                        assert.is_false(World.IsPointPassable(pt))
+                    end, pt, "Get")
+                end)
+            end)
+
+            it("should call pos:Get()", function()
+                assert.spy(pt.Get).was_called(0)
+                World.IsPointPassable(pt)
+                assert.spy(pt.Get).was_called(1)
+                assert.spy(pt.Get).was_called_with(match.is_ref(pt))
+            end)
+
+            it("should call world.Map:IsPassableAtPoint()", function()
+                assert.spy(_G.TheWorld.Map.IsPassableAtPoint).was_called(0)
+                World.IsPointPassable(pt)
+                assert.spy(_G.TheWorld.Map.IsPassableAtPoint).was_called(1)
+                assert.spy(_G.TheWorld.Map.IsPassableAtPoint).was_called_with(
+                    match.is_ref(_G.TheWorld.Map),
+                    1,
+                    0,
+                    -1
+                )
+            end)
+
+            it("should return true", function()
+                assert.is_true(World.IsPointPassable(pt))
+            end)
+        end)
     end)
 
     describe("phase", function()

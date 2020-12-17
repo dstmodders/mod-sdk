@@ -65,10 +65,20 @@ function World.IsCave()
     return TheWorld:HasTag("cave")
 end
 
---- Checks if a master simulated world.
+--- Checks if it's a master simulated world.
 -- @treturn boolean
 function World.IsMasterSim()
     return TheWorld.ismastersim
+end
+
+--- Checks if a certain point is passable.
+-- @tparam Vector3 pt Point to check
+-- @treturn boolean
+function World.IsPointPassable(pt)
+    return Chain.Validate(TheWorld, "Map", "IsPassableAtPoint")
+        and Chain.Validate(pt, "Get")
+        and TheWorld.Map:IsPassableAtPoint(pt:Get())
+        or false
 end
 
 --- Phase
