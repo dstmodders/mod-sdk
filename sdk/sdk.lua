@@ -36,6 +36,7 @@ local _MODULES = {
     Dump = "sdk/dump",
     Entity = "sdk/entity",
     Input = "sdk/input",
+    Inventory = "sdk/inventory",
     ModMain = "sdk/modmain",
     Player = "sdk/player",
     RPC = "sdk/rpc",
