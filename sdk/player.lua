@@ -134,6 +134,17 @@ function Player.IsRunning(player)
     end
 end
 
+--- Checks if a player is sinking.
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn boolean
+function Player.IsSinking(player)
+    player = player ~= nil and player or ThePlayer
+    if player and player.AnimState and player.AnimState.IsCurrentAnimation then
+        return player.AnimState:IsCurrentAnimation("sink")
+            or player.AnimState:IsCurrentAnimation("plank_hop")
+    end
+end
+
 --- Attributes
 -- @section attributes
 

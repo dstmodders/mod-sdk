@@ -759,6 +759,66 @@ describe("#sdk SDK.Player", function()
                 end)
             end)
         end)
+
+        describe("IsSinking", function()
+            describe("when the player is sinking", function()
+                local player
+
+                setup(function()
+                    player = player_sinking
+                end)
+
+                it("should call [player].AnimState.IsCurrentAnimation", function()
+                    assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
+                    Player.IsSinking(player)
+                    assert.spy(player.AnimState.IsCurrentAnimation).was_called(1)
+                    assert.spy(player.AnimState.IsCurrentAnimation).was_called_with(
+                        match.is_ref(player.AnimState),
+                        "sink"
+                    )
+                    assert.spy(player.AnimState.IsCurrentAnimation).was_not_called_with(
+                        match.is_ref(player.AnimState),
+                        "plank_hop"
+                    )
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.IsSinking(player))
+                end)
+            end)
+
+            describe("when the player is not sinking", function()
+                it("should call [player].AnimState.IsCurrentAnimation", function()
+                    EachPlayer(function(player)
+                        assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
+                        Player.IsSinking(player)
+                        assert.spy(player.AnimState.IsCurrentAnimation).was_called(2)
+                        assert.spy(player.AnimState.IsCurrentAnimation).was_called_with(
+                            match.is_ref(player.AnimState),
+                            "sink"
+                        )
+                        assert.spy(player.AnimState.IsCurrentAnimation).was_called_with(
+                            match.is_ref(player.AnimState),
+                            "plank_hop"
+                        )
+                    end, { player_sinking })
+                end)
+
+                it("should return false", function()
+                    EachPlayer(function(player)
+                        assert.is_false(Player.IsSinking(player))
+                    end, { player_sinking })
+                end)
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.IsSinking())
+                    end, _G.ThePlayer, "AnimState", "IsCurrentAnimation")
+                end)
+            end)
+        end)
     end)
 
     describe("attributes", function()
