@@ -78,6 +78,7 @@ files["**/*.lua"] = {
         "TableHasValue",
     },
     read_globals = {
+        "AllPlayers",
         "CONTROL_MOVE_DOWN",
         "CONTROL_MOVE_LEFT",
         "CONTROL_MOVE_RIGHT",

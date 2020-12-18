@@ -20,7 +20,80 @@ describe("#sdk SDK.Entity", function()
         Entity = require "sdk/entity"
     end)
 
-    describe("AnimState", function()
+    describe("general", function()
+        describe("GetTags", function()
+            local entity
+
+            setup(function()
+                entity = {
+                    GetDebugString = ReturnValueFn(test_debug_string),
+                }
+            end)
+
+            it("should return tags", function()
+                assert.is_equal(8, #Entity.GetTags(entity))
+            end)
+        end)
+
+        describe("FindClosestInvisiblePlayerInRange", function()
+            local pt
+
+            setup(function()
+                _G.AllPlayers = mock({
+                    {
+                        GUID = 100000,
+                        entity = { IsVisible = ReturnValueFn(false) },
+                        GetDisplayName = ReturnValueFn("Willow"),
+                        GetDistanceSqToPoint = ReturnValueFn(27),
+                        HasTag = ReturnValueFn(false),
+                    },
+                    {
+                        GUID = 100001,
+                        entity = { IsVisible = ReturnValueFn(false) },
+                        GetDisplayName = ReturnValueFn("Wilson"),
+                        GetDistanceSqToPoint = ReturnValueFn(9),
+                        HasTag = function(_, tag)
+                            return tag == "sleeping"
+                        end,
+                    },
+                    {
+                        GUID = 100002,
+                        entity = { IsVisible = ReturnValueFn(true) },
+                        GetDisplayName = ReturnValueFn("Wendy"),
+                        GetDistanceSqToPoint = ReturnValueFn(9),
+                        HasTag = ReturnValueFn(false),
+                    },
+                })
+
+                pt = {
+                    Get = ReturnValuesFn(1, 0, -1),
+                }
+            end)
+
+            teardown(function()
+                _G.AllPlayers = nil
+            end)
+
+            describe("when there is an invisible player in the range", function()
+                it("should return the player and the squared range", function()
+                    local closest, range_sq = Entity.GetInvisiblePlayerInRange(pt, 27)
+                    assert.is_equal(100001, closest.GUID)
+                    assert.is_equal(9, range_sq)
+                    assert.is_false(closest.entity:IsVisible())
+                end)
+            end)
+
+            describe("when there is no invisible player in the range", function()
+                it("should return nil values", function()
+                    local closest, range_sq = Entity.GetInvisiblePlayerInRange(pt, 3)
+                    assert.is_nil(closest)
+                    assert.is_nil(range_sq)
+                end)
+            end)
+        end)
+    end)
+
+    describe("animation state", function()
         local entity
 
         setup(function()
@@ -55,7 +128,7 @@ describe("#sdk SDK.Entity", function()
         end)
     end)
 
-    describe("StateGraph", function()
+    describe("state graph", function()
         local entity
 
         setup(function()
@@ -74,20 +147,6 @@ describe("#sdk SDK.Entity", function()
             it("should return the state graph state", function()
                 assert.is_equal("idle", Entity.GetStateGraphState(entity))
             end)
-        end)
-    end)
-
-    describe("GetTags", function()
-        local entity
-
-        setup(function()
-            entity = {
-                GetDebugString = ReturnValueFn(test_debug_string),
-            }
-        end)
-
-        it("should return tags", function()
-            assert.is_equal(8, #Entity.GetTags(entity))
         end)
     end)
 end)

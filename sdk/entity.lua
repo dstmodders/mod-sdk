@@ -22,6 +22,65 @@ local SDK
 --- General
 -- @section general
 
+--- Gets invisible player around a certain point.
+-- @tparam Vector3 entity
+-- @tparam number range
+-- @treturn EntityScript Closest player
+-- @treturn number Range squared
+function Entity.GetInvisiblePlayerInRange(pt, range)
+    local player, dist_sq
+    local range_sq = range * range
+    for _, v in ipairs(AllPlayers) do
+        if not v.entity:IsVisible() then
+            dist_sq = v:GetDistanceSqToPoint(pt:Get())
+            if dist_sq < range_sq then
+                range_sq = dist_sq
+                player = v
+            end
+        end
+    end
+    return player, player ~= nil and range_sq or nil
+end
+
+--- Returns an entity tags.
+-- @tparam EntityScript entity
+-- @tparam boolean is_all
+-- @treturn table
+function Entity.GetTags(entity, is_all)
+    is_all = is_all == true
+
+    if not entity or not entity.GetDebugString then
+        return
+    end
+
+    -- TODO: Find a better way of getting the entity tag instead of using RegEx...
+    local debug = entity:GetDebugString()
+    local tags = string.match(debug, "Tags: (.-)\n")
+
+    if tags and string.len(tags) > 0 then
+        local result = {}
+
+        if is_all then
+            for tag in tags:gmatch("%S+") do
+                table.insert(result, tag)
+            end
+        else
+            for tag in tags:gmatch("%S+") do
+                if not Table.HasValue(result, tag) then
+                    table.insert(result, tag)
+                end
+            end
+        end
+
+        if #result > 0 then
+            return Table.SortAlphabetically(result)
+        end
+    end
+end
+
+--- Animation State
+-- @section animation-state
+
 --- Returns an entity animation state animation.
 -- @see GetAnimStateBank
 -- @see GetAnimStateBuild
@@ -65,6 +124,9 @@ function Entity.GetAnimStateBuild(entity)
     end
 end
 
+--- State Graph
+-- @section state-graph
+
 --- Returns an entity state graph name.
 -- @see GetStateGraphState
 -- @tparam EntityScript entity
@@ -91,42 +153,6 @@ function Entity.GetStateGraphState(entity)
         local state = string.match(debug, 'state="(%S+)",')
         if state and string.len(state) > 0 then
             return state
-        end
-    end
-end
-
---- Returns an entity tags.
--- @tparam EntityScript entity
--- @tparam boolean is_all
--- @treturn table
-function Entity.GetTags(entity, is_all)
-    is_all = is_all == true
-
-    if not entity or not entity.GetDebugString then
-        return
-    end
-
-    -- TODO: Find a better way of getting the entity tag instead of using RegEx...
-    local debug = entity:GetDebugString()
-    local tags = string.match(debug, "Tags: (.-)\n")
-
-    if tags and string.len(tags) > 0 then
-        local result = {}
-
-        if is_all then
-            for tag in tags:gmatch("%S+") do
-                table.insert(result, tag)
-            end
-        else
-            for tag in tags:gmatch("%S+") do
-                if not Table.HasValue(result, tag) then
-                    table.insert(result, tag)
-                end
-            end
-        end
-
-        if #result > 0 then
-            return Table.SortAlphabetically(result)
         end
     end
 end
