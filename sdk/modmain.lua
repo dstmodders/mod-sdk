@@ -22,7 +22,7 @@ local _GetModInfo
 --- General
 -- @section general
 
---- Hide the modinfo changelog.
+--- Hide a modinfo changelog.
 --
 -- Overrides the global `KnownModIndex.GetModInfo` to hide the changelog if it's included in the
 -- description.

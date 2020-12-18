@@ -13,7 +13,7 @@
 ----
 local Chain = {}
 
---- Gets chained field.
+--- Gets a chained field.
 --
 -- Simplifies the last chained field retrieval like:
 --

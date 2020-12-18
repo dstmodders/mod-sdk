@@ -58,7 +58,7 @@ function Table.Compare(a, b)
     return true
 end
 
---- Counts the number of elements inside the table.
+--- Counts the number of elements inside a table.
 -- @tparam table t Table
 -- @treturn number
 function Table.Count(t)
@@ -108,7 +108,7 @@ function Table.Keys(t)
     return result
 end
 
---- Gets the table key based on the value.
+--- Gets a table key based on the value.
 -- @tparam table t Table
 -- @param value Value to look for
 -- @treturn number
@@ -161,7 +161,7 @@ function Table.Merge(a, b, is_merge_nested)
     return a
 end
 
---- Gets the next table value.
+--- Gets a next table value.
 --
 -- When the next value doesn't exist it returns the first one.
 --
@@ -182,7 +182,7 @@ function Table.NextValue(t, value)
     end
 end
 
---- Gets the previous table value.
+--- Gets a previous table value.
 --
 -- When the next value doesn't exist it returns the last one.
 --
@@ -203,7 +203,7 @@ function Table.PrevValue(t, value)
     end
 end
 
---- Sorts the table elements alphabetically.
+--- Sorts table elements alphabetically.
 -- @tparam table t Table
 -- @treturn table
 function Table.SortAlphabetically(t)

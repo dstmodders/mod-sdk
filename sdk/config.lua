@@ -20,14 +20,14 @@ local SDK
 --- Helpers
 -- @section helpers
 
---- Gets mod config data.
+--- Gets a mod config data.
 -- @tparam string config
 -- @treturn any
 function Config.GetModConfigData(config)
     return GetModConfigData(config, SDK.modname)
 end
 
---- Gets mod key config data.
+--- Gets a mod key config data.
 -- @tparam string config
 -- @treturn any
 function Config.GetModKeyConfigData(config)
@@ -38,7 +38,7 @@ end
 --- Lifecycle
 -- @section lifecycle
 
---- Initializes config.
+--- Initializes.
 -- @tparam SDK sdk
 -- @treturn SDK.Config
 function Config._DoInit(sdk)

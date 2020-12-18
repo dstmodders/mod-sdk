@@ -34,7 +34,7 @@ function Console.AddWordPredictionDictionaries(dictionaries)
     end)
 end
 
---- Executes the console command remotely.
+--- Executes a console command remotely.
 -- @tparam string cmd Command to execute
 -- @tparam[opt] table data Data that will be unpacked and used alongside with string
 -- @treturn table
@@ -47,7 +47,7 @@ end
 --- Lifecycle
 -- @section lifecycle
 
---- Initializes console.
+--- Initializes.
 -- @tparam SDK sdk
 -- @treturn SDK.Console
 function Console._DoInit(sdk)

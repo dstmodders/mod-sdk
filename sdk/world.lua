@@ -29,7 +29,7 @@ local _WETNESS_RATE
 --- General
 -- @section general
 
---- Gets meta.
+--- Gets a meta.
 -- @tparam[opt] string name Meta name
 -- @treturn[1] table Meta table, when no name passed
 -- @treturn[2] string Meta value, when the name is passed
@@ -41,13 +41,13 @@ function World.GetMeta(name)
     return meta
 end
 
---- Gets seed.
+--- Gets a seed.
 -- @treturn string
 function World.GetSeed()
     return World.GetMeta("seed")
 end
 
---- Gets state.
+--- Gets a state.
 -- @tparam[opt] string name State name
 -- @treturn[1] table State table, when no name passed
 -- @treturn[2] string State value, when the name is passed
@@ -84,14 +84,14 @@ end
 --- Phase
 -- @section phase
 
---- Gets day phase.
+--- Gets a day phase.
 -- @tparam string phase Phase
 -- @treturn number
 function World.GetPhase()
     return World.IsCave() and World.GetState("cavephase") or World.GetState("phase")
 end
 
---- Gets next day phase.
+--- Gets a next day phase.
 --
 -- Returns the value based on the following logic:
 --
@@ -105,7 +105,7 @@ function World.GetPhaseNext(phase)
     return Table.NextValue({ "day", "dusk", "night" }, phase)
 end
 
---- Gets the time until the phase.
+--- Gets the time until a certain phase.
 --
 -- This is a convenience method returning:
 --
@@ -121,25 +121,25 @@ end
 --- Weather
 -- @section weather
 
---- Gets moisture floor.
+--- Gets a moisture floor value.
 -- @treturn number
 function World.GetMoistureFloor()
     return _MOISTURE_FLOOR
 end
 
---- Gets moisture rate.
+--- Gets a moisture rate value.
 -- @treturn number
 function World.GetMoistureRate()
     return _MOISTURE_RATE
 end
 
---- Gets peak precipitation rate.
+--- Gets a peak precipitation rate.
 -- @treturn number
 function World.GetPeakPrecipitationRate()
     return _PEAK_PRECIPITATION_RATE
 end
 
---- Gets weather component.
+--- Gets the `weather` component.
 --
 -- Returns the component based on the world type: cave or forest.
 --
@@ -153,7 +153,7 @@ function World.GetWeatherComponent()
     return nil
 end
 
---- Gets wetness rate.
+--- Gets a wetness rate value.
 -- @treturn number
 function World.GetWetnessRate()
     return _WETNESS_RATE
@@ -210,7 +210,7 @@ end
 --- Lifecycle
 -- @section lifecycle
 
---- Initializes world.
+--- Initializes.
 -- @tparam SDK sdk
 -- @treturn SDK.World
 function World._DoInit(sdk)

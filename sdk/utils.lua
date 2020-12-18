@@ -23,7 +23,7 @@ Utils.Methods = require "sdk/utils/methods"
 Utils.String = require "sdk/utils/string"
 Utils.Table = require "sdk/utils/table"
 
---- Asserts if the required field is not missing.
+--- Asserts if a field is not missing.
 -- @tparam string name
 -- @tparam any field
 function Utils.AssertRequiredField(name, field)

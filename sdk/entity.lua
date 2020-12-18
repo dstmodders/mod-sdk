@@ -23,7 +23,7 @@ local SDK
 --- General
 -- @section general
 
---- Gets invisible player around a certain point.
+--- Gets an invisible player around a certain point.
 -- @tparam Vector3 pt Point, to look around from
 -- @tparam number range Range
 -- @treturn EntityScript Closest player
@@ -43,7 +43,7 @@ function Entity.GetInvisiblePlayerInRange(pt, range)
     return player, player ~= nil and range_sq or nil
 end
 
---- Returns an entity tags.
+--- Gets an entity tags.
 -- @tparam EntityScript entity
 -- @tparam boolean is_all
 -- @treturn table
@@ -109,7 +109,7 @@ end
 --- Animation State
 -- @section animation-state
 
---- Returns an entity animation state animation.
+--- Gets an entity animation state animation.
 -- @see GetAnimStateBank
 -- @see GetAnimStateBuild
 -- @tparam EntityScript entity
@@ -125,7 +125,7 @@ function Entity.GetAnimStateAnim(entity)
     end
 end
 
---- Returns an entity animation state bank.
+--- Gets an entity animation state bank.
 -- @see GetAnimStateBuild
 -- @see GetAnimStateAnim
 -- @tparam EntityScript entity
@@ -141,7 +141,7 @@ function Entity.GetAnimStateBank(entity)
     end
 end
 
---- Returns an entity animation state build.
+--- Gets an entity animation state build.
 -- @see GetAnimStateBank
 -- @see GetAnimStateAnim
 -- @tparam EntityScript entity
@@ -155,7 +155,7 @@ end
 --- State Graph
 -- @section state-graph
 
---- Returns an entity state graph name.
+--- Gets an entity state graph name.
 -- @see GetStateGraphState
 -- @tparam EntityScript entity
 -- @treturn string
@@ -170,7 +170,7 @@ function Entity.GetStateGraphName(entity)
     end
 end
 
---- Returns an entity state graph state.
+--- Gets an entity state graph state.
 -- @see GetStateGraphName
 -- @tparam EntityScript entity
 -- @treturn string
@@ -188,7 +188,7 @@ end
 --- Lifecycle
 -- @section lifecycle
 
---- Initializes entity.
+--- Initializes.
 -- @tparam SDK sdk
 -- @treturn SDK.Entity
 function Entity._DoInit(sdk)

@@ -34,7 +34,7 @@ end
 --- General
 -- @section general
 
---- Gets function upvalue.
+--- Gets a function upvalue.
 -- @tparam function fn
 -- @tparam string ... Strings
 function DebugUpvalue.GetUpvalue(fn, ...)
@@ -46,7 +46,7 @@ function DebugUpvalue.GetUpvalue(fn, ...)
     return fn, i, previous
 end
 
---- Sets function upvalue.
+--- Sets a function upvalue.
 -- @tparam function start_fn
 -- @tparam function new_fn
 -- @tparam string ... Strings

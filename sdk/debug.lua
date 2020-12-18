@@ -31,7 +31,7 @@ function Debug.IsEnabled()
     return _IS_ENABLED
 end
 
---- Sets debugging state.
+--- Sets a debugging state.
 -- @tparam boolean enable
 function Debug.SetIsEnabled(enable)
     _IS_ENABLED = enable
@@ -47,14 +47,14 @@ function Debug.Disable()
     _IS_ENABLED = false
 end
 
---- Checks if named debugging is enabled.
+--- Checks if a named debugging is enabled.
 -- @tparam string name
 -- @treturn boolean
 function Debug.IsDebug(name)
     return _IS_DEBUG[name] and true or false
 end
 
---- Adds named debugging state.
+--- Adds a named debugging state.
 -- @tparam string name
 -- @tparam boolean enable
 function Debug.SetIsDebug(name, enable)
@@ -142,7 +142,7 @@ function Debug.Init(name)
     Debug.String("[life_cycle]", "Initialized", name)
 end
 
---- Prints an initialized method name.
+--- Prints a terminated method name.
 -- @tparam string name Method name
 function Debug.Term(name)
     Debug.String("[life_cycle]", "Terminated", name)
@@ -180,7 +180,7 @@ end
 --- Lifecycle
 -- @section lifecycle
 
---- Initializes debug.
+--- Initializes.
 -- @tparam SDK sdk
 -- @treturn SDK.Debug
 function Debug._DoInit(sdk)

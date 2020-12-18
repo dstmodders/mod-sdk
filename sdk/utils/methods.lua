@@ -29,7 +29,7 @@ function Methods.AddToAnotherClass(src, dest, methods)
     end
 end
 
---- Adds methods from one class to another.
+--- Removes methods from a class.
 -- @tparam table src Source class from where we remove methods
 -- @tparam table methods Methods to remove
 function Methods.RemoveFromAnotherClass(src, methods)

@@ -28,7 +28,7 @@ end
 --- General
 -- @section general
 
---- Checks if move control.
+--- Checks if it's a move control.
 -- @tparam number control
 -- @treturn number
 function Input.IsControlMove(control)
@@ -38,7 +38,7 @@ function Input.IsControlMove(control)
         or control == CONTROL_MOVE_RIGHT
 end
 
---- Adds config key handler.
+--- Adds a config key handler.
 -- @tparam string config
 -- @tparam function fn
 function Input.AddConfigKeyHandler(config, fn)
@@ -52,7 +52,7 @@ function Input.AddConfigKeyHandler(config, fn)
     end
 end
 
---- Adds config key down handler.
+--- Adds a config key down handler.
 -- @tparam string config
 -- @tparam function fn
 function Input.AddConfigKeyDownHandler(config, fn)
@@ -62,7 +62,7 @@ function Input.AddConfigKeyDownHandler(config, fn)
     end
 end
 
---- Adds config key up handler.
+--- Adds a config key up handler.
 -- @tparam string config
 -- @tparam function fn
 function Input.AddConfigKeyUpHandler(config, fn)
@@ -77,7 +77,7 @@ end
 --- Lifecycle
 -- @section lifecycle
 
---- Initializes input.
+--- Initializes.
 -- @tparam SDK sdk
 -- @treturn SDK.Input
 function Input._DoInit(sdk)

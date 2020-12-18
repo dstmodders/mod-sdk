@@ -23,7 +23,7 @@ local SDK
 --- General
 -- @section general
 
---- Checks if the player is an admin.
+--- Checks if a player is an admin.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean
 function Player.IsAdmin(player)
@@ -45,7 +45,7 @@ function Player.IsAdmin(player)
     end
 end
 
---- Checks if the player is in idle.
+--- Checks if a player is in idle.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean
 function Player.IsIdle(player)
@@ -85,7 +85,7 @@ function Player.IsOnPlatform(player)
     end
 end
 
---- Checks if the player is over water.
+--- Checks if a player is over water.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean
 function Player.IsOverWater(player)
@@ -98,7 +98,7 @@ function Player.IsOverWater(player)
     end
 end
 
---- Checks if the player is the mod owner.
+--- Checks if a player is an owner.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean
 function Player.IsOwner(player)
@@ -106,7 +106,7 @@ function Player.IsOwner(player)
     return player and ThePlayer and (player.userid == ThePlayer.userid)
 end
 
---- Checks if the player is a real user.
+--- Checks if a player is a real user.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean
 function Player.IsReal(player)
@@ -114,7 +114,7 @@ function Player.IsReal(player)
     return player and player.userid and string.len(player.userid) > 0 and true or false
 end
 
---- Checks if the player is running.
+--- Checks if a player is running.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean
 function Player.IsRunning(player)
@@ -137,7 +137,7 @@ end
 --- Attributes
 -- @section attributes
 
---- Gets health value.
+--- Gets a health value.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn number
 function Player.GetHealthPercent(player)
@@ -146,7 +146,7 @@ function Player.GetHealthPercent(player)
     return health and health * 100
 end
 
---- Gets health limit value.
+--- Gets a health limit value.
 --
 -- Maximum health when the penalty has been applied.
 --
@@ -158,7 +158,7 @@ function Player.GetHealthLimitPercent(player)
     return penalty and (1 - penalty) * 100
 end
 
---- Gets health penalty value.
+--- Gets a health penalty value.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn number
 function Player.GetHealthPenaltyPercent(player)
@@ -167,7 +167,7 @@ function Player.GetHealthPenaltyPercent(player)
     return penalty and penalty * 100
 end
 
---- Gets hunger value.
+--- Gets a hunger value.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn number
 function Player.GetHungerPercent(player)
@@ -176,7 +176,7 @@ function Player.GetHungerPercent(player)
     return hunger and hunger * 100
 end
 
---- Gets sanity value.
+--- Gets a sanity value.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn number
 function Player.GetSanityPercent(player)
@@ -188,21 +188,21 @@ end
 --- Light Watcher
 -- @section light-watcher
 
---- Gets the owner time in the dark.
+--- Gets a time in the dark.
 -- @treturn number
 function Player.GetTimeInDark(player)
     player = player ~= nil and player or ThePlayer
     return Chain.Get(player, "LightWatcher", "GetTimeInDark", true)
 end
 
---- Gets the owner time in the light.
+--- Gets a time in the light.
 -- @treturn number
 function Player.GetTimeInLight(player)
     player = player ~= nil and player or ThePlayer
     return Chain.Get(player, "LightWatcher", "GetTimeInLight", true)
 end
 
---- Checks if the owner is in the light.
+--- Checks if a player is in the light.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean
 function Player.IsInLight(player)
@@ -213,7 +213,7 @@ end
 --- Movement Prediction
 -- @section movement-prediction
 
---- Checks if movement prediction is enabled.
+--- Checks if the movement prediction is enabled.
 -- @tparam[opt] EntityScript player Player instance (the owner by default)
 -- @treturn boolean
 function Player.HasMovementPrediction(player)
@@ -261,7 +261,7 @@ end
 --- Lifecycle
 -- @section lifecycle
 
---- Initializes player.
+--- Initializes.
 -- @tparam SDK sdk
 -- @treturn SDK.Player
 function Player._DoInit(sdk)

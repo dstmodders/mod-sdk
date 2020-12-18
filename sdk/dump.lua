@@ -33,7 +33,7 @@ local function PrintDumpValues(table, title, name, prepend)
     end
 end
 
---- Returns a table on all entity components.
+--- Gets a table on all entity components.
 -- @usage dumptable(GetComponents(ThePlayer))
 -- @see GetEventListeners
 -- @see GetFields
@@ -54,7 +54,7 @@ function Dump.GetComponents(entity, is_sorted)
     return is_sorted and Table.SortAlphabetically(result) or result
 end
 
---- Returns a table on all entity event listeners.
+--- Gets a table on all entity event listeners.
 -- @usage dumptable(GetEventListeners(ThePlayer))
 -- @see GetComponents
 -- @see GetFields
@@ -75,7 +75,7 @@ function Dump.GetEventListeners(entity, is_sorted)
     return is_sorted and Table.SortAlphabetically(result) or result
 end
 
---- Returns a table on all entity fields.
+--- Gets a table on all entity fields.
 -- @usage dumptable(GetFields(ThePlayer))
 -- @see GetComponents
 -- @see GetEventListeners
@@ -96,7 +96,7 @@ function Dump.GetFields(entity, is_sorted)
     return is_sorted and Table.SortAlphabetically(result) or result
 end
 
---- Returns a table on all entity functions.
+--- Gets a table on all entity functions.
 -- @usage dumptable(GetFunctions(ThePlayer))
 -- @see GetComponents
 -- @see GetEventListeners
@@ -126,7 +126,7 @@ function Dump.GetFunctions(entity, is_sorted)
     return is_sorted and Table.SortAlphabetically(result) or result
 end
 
---- Returns a table on all entity replicas.
+--- Gets a table on all entity replicas.
 -- @usage dumptable(GetReplicas(ThePlayer))
 -- @see GetComponents
 -- @see GetEventListeners

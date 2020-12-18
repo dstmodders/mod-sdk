@@ -15,7 +15,7 @@
 ----
 local Constant = {}
 
---- Returns a skin index.
+--- Gets a skin index.
 -- @see GetStringSkinName
 -- @see GetStringName
 -- @tparam string prefab
@@ -25,7 +25,7 @@ function Constant.GetSkinIndex(prefab, skin)
     return PREFAB_SKINS_IDS[prefab] and PREFAB_SKINS_IDS[prefab][skin]
 end
 
---- Returns a string skin name.
+--- Gets a string skin name.
 -- @see GetSkinIndex
 -- @see GetStringName
 -- @tparam number skin
@@ -34,7 +34,7 @@ function Constant.GetStringSkinName(skin)
     return STRINGS.SKIN_NAMES[skin]
 end
 
---- Returns a string name.
+--- Gets a string name.
 -- @see GetSkinIndex
 -- @see GetStringSkinName
 -- @tparam string name

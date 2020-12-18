@@ -161,25 +161,25 @@ end
 --- General
 -- @section general
 
---- Gets environment.
+--- Gets an nvironment.
 -- @treturn table
 function SDK.GetEnv()
     return SDK.env
 end
 
---- Gets mod name.
+--- Gets a mod name.
 -- @treturn string
 function SDK.GetModName()
     return SDK.modname
 end
 
---- Gets SDK path.
+--- Gets an SDK path.
 -- @treturn string
 function SDK.GetPath()
     return SDK.path
 end
 
---- Loads single module.
+--- Loads a single module.
 -- @tparam string name
 -- @tparam[opt] string path
 function SDK.LoadModule(name, path)
@@ -190,7 +190,7 @@ function SDK.LoadModule(name, path)
     end
 end
 
---- Loads SDK.
+--- Loads an SDK.
 -- @tparam table env Environment
 -- @tparam string path Path
 -- @tparam table modules Modules to load
@@ -231,7 +231,7 @@ end
 --- Post Initializers
 -- @section post-initializers
 
---- Triggered when entering character select.
+--- Triggered when entering the character select screen.
 -- @tparam function fn Function
 function SDK.OnEnterCharacterSelect(fn)
     if type(fn) == "function" then
@@ -239,7 +239,7 @@ function SDK.OnEnterCharacterSelect(fn)
     end
 end
 
---- Triggered when player is activated.
+--- Triggered when the player is activated.
 -- @tparam function fn Function
 function SDK.OnPlayerActivated(fn)
     if type(fn) == "function" then
@@ -247,7 +247,7 @@ function SDK.OnPlayerActivated(fn)
     end
 end
 
---- Triggered when player is deactivated.
+--- Triggered when the player is deactivated.
 -- @tparam function fn Function
 function SDK.OnPlayerDeactivated(fn)
     if type(fn) == "function" then
@@ -255,7 +255,7 @@ function SDK.OnPlayerDeactivated(fn)
     end
 end
 
---- Triggered after class initialization.
+--- Triggered after a class initialization.
 --
 -- Just wraps `AddClassPostConstruct`.
 --
@@ -279,7 +279,7 @@ function SDK.OnLoadComponent(src, fn)
     end)
 end
 
---- Triggered when worlds is loaded.
+--- Triggered when the world is loaded.
 -- @tparam function fn Function
 function SDK.OnLoadWorld(fn)
     if type(fn) == "function" then
@@ -290,7 +290,7 @@ end
 --- Overrides
 -- @section overrides
 
---- Overrides method.
+--- Overrides a method.
 -- @tparam string src Source
 -- @tparam string method Method to override
 -- @tparam function fn New function
@@ -311,7 +311,7 @@ function SDK.OverrideMethod(src, method, fn, override)
     end
 end
 
---- Overrides component method.
+--- Overrides a component method.
 -- @tparam string component Component
 -- @tparam string method Method to override
 -- @tparam function fn New function
