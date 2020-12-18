@@ -2,6 +2,8 @@
 -- Packages
 --
 
+require "spec/vector3"
+
 local preloads = {
     class = "spec/class",
 }

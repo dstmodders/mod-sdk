@@ -76,6 +76,8 @@ files["**/*.lua"] = {
         "TableCount",
         "TableCountFunctions",
         "TableHasValue",
+        "ToVector3",
+        "Vector3",
     },
     read_globals = {
         "AllPlayers",
