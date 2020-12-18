@@ -87,6 +87,7 @@ files["**/*.lua"] = {
         "CONTROL_MOVE_UP",
         "DebugErrorNoCallWithoutGlobal",
         "DebugErrorNoFunction",
+        "EQUIPSLOTS",
         "GetModConfigData",
         "GROUND",
         "KillThreadsWithID",

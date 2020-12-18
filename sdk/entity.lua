@@ -13,6 +13,7 @@
 -- @license MIT
 -- @release 0.1
 ----
+local Chain = require "sdk/utils/chain"
 local Table = require "sdk/utils/table"
 
 local Entity = {}
@@ -23,8 +24,8 @@ local SDK
 -- @section general
 
 --- Gets invisible player around a certain point.
--- @tparam Vector3 entity
--- @tparam number range
+-- @tparam Vector3 pt Point, to look around from
+-- @tparam number range Range
 -- @treturn EntityScript Closest player
 -- @treturn number Range squared
 function Entity.GetInvisiblePlayerInRange(pt, range)
@@ -75,6 +76,33 @@ function Entity.GetTags(entity, is_all)
         if #result > 0 then
             return Table.SortAlphabetically(result)
         end
+    end
+end
+
+--- Gets a tent sleeper within a certain range.
+--
+-- When `sleepingbag` component is available, the `range` parameter is ignored. Otherwise,
+-- `Entity.GetInvisiblePlayerInRange` will be used to find the nearest player around a Tent within
+-- that range.
+--
+-- @tparam EntityScript tent A tent, Siesta Lean-to, etc.
+-- @tparam[opt] number range Range
+-- @treturn EntityScript A sleeper (a player)
+function Entity.GetTentSleeper(tent, range)
+    range = range ~= nil and range or 100
+
+    local player
+    local sleepingbag = Chain.Get(tent, "components", "sleepingbag")
+    if sleepingbag then
+        player = sleepingbag.sleeper
+    end
+
+    if not player and tent:HasTag("tent") and tent:HasTag("hassleeper") then
+        player = Entity.GetInvisiblePlayerInRange(Vector3(tent.Transform:GetWorldPosition()), range)
+    end
+
+    if player and player:HasTag("sleeping") then
+        return player
     end
 end
 
