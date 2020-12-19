@@ -45,6 +45,14 @@ function Player.IsAdmin(player)
     end
 end
 
+--- Checks if a player is a ghost.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.IsGhost(player)
+    player = player ~= nil and player or ThePlayer
+    return player and player.HasTag and player:HasTag("playerghost")
+end
+
 --- Checks if a player is in idle.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean

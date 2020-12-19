@@ -113,6 +113,9 @@ describe("#sdk SDK.Player", function()
             GetPosition = ReturnValueFn({
                 Get = ReturnValuesFn(1, 0, -1),
             }),
+            HasTag = function(_, tag)
+                return TableHasValue(tags, tag)
+            end,
             LightWatcher = {
                 GetTimeInDark = ReturnValueFn(3),
                 GetTimeInLight = ReturnValueFn(0),
@@ -247,6 +250,52 @@ describe("#sdk SDK.Player", function()
                     AssertChainNil(function()
                         assert.is_nil(Player.IsAdmin(player))
                     end, _G.TheNet, "GetClientTable")
+                end)
+            end)
+        end)
+
+        describe("IsGhost", function()
+            describe("when the player is dead", function()
+                local player
+
+                setup(function()
+                    player = player_dead
+                end)
+
+                it("should call [player]:HasTag()", function()
+                    assert.spy(player.HasTag).was_not_called()
+                    Player.IsGhost(player)
+                    assert.spy(player.HasTag).was_called(1)
+                    assert.spy(player.HasTag).was_called_with(match.is_ref(player), "playerghost")
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.IsGhost(player))
+                end)
+            end)
+
+            describe("when the player is not dead", function()
+                it("should call [player]:HasTag()", function()
+                    EachPlayer(function(player)
+                        assert.spy(player.HasTag).was_not_called()
+                        Player.IsGhost(player)
+                        assert.spy(player.HasTag).was_called(1)
+                        assert.spy(player.HasTag).was_called_with(match.is_ref(player), "playerghost")
+                    end, { player_dead })
+                end)
+
+                it("should return false", function()
+                    EachPlayer(function(player)
+                        assert.is_false(Player.IsGhost(player))
+                    end, { player_dead })
+                end)
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.IsGhost())
+                    end, _G.ThePlayer, "HasTag")
                 end)
             end)
         end)
