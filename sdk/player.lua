@@ -24,7 +24,7 @@ local SDK
 -- @section general
 
 --- Checks if a player is an admin.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsAdmin(player)
     player = player ~= nil and player or ThePlayer
@@ -46,7 +46,7 @@ function Player.IsAdmin(player)
 end
 
 --- Checks if a player is in idle.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsIdle(player)
     player = player ~= nil and player or ThePlayer
@@ -86,7 +86,7 @@ function Player.IsOnPlatform(player)
 end
 
 --- Checks if a player is over water.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsOverWater(player)
     player = player ~= nil and player or ThePlayer
@@ -99,7 +99,7 @@ function Player.IsOverWater(player)
 end
 
 --- Checks if a player is an owner.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsOwner(player)
     player = player ~= nil and player or ThePlayer
@@ -107,7 +107,7 @@ function Player.IsOwner(player)
 end
 
 --- Checks if a player is a real user.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsReal(player)
     player = player ~= nil and player or ThePlayer
@@ -115,7 +115,7 @@ function Player.IsReal(player)
 end
 
 --- Checks if a player is running.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsRunning(player)
     player = player ~= nil and player or ThePlayer
@@ -135,7 +135,7 @@ function Player.IsRunning(player)
 end
 
 --- Checks if a player is sinking.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsSinking(player)
     player = player ~= nil and player or ThePlayer
@@ -149,7 +149,7 @@ end
 -- @section attributes
 
 --- Gets a health value.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetHealthPercent(player)
     player = player ~= nil and player or ThePlayer
@@ -170,7 +170,7 @@ function Player.GetHealthLimitPercent(player)
 end
 
 --- Gets a health penalty value.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetHealthPenaltyPercent(player)
     player = player ~= nil and player or ThePlayer
@@ -179,7 +179,7 @@ function Player.GetHealthPenaltyPercent(player)
 end
 
 --- Gets a hunger value.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetHungerPercent(player)
     player = player ~= nil and player or ThePlayer
@@ -188,7 +188,7 @@ function Player.GetHungerPercent(player)
 end
 
 --- Gets a sanity value.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetSanityPercent(player)
     player = player ~= nil and player or ThePlayer
@@ -214,7 +214,7 @@ function Player.GetTimeInLight(player)
 end
 
 --- Checks if a player is in the light.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsInLight(player)
     player = player ~= nil and player or ThePlayer
@@ -225,7 +225,7 @@ end
 -- @section movement-prediction
 
 --- Checks if the movement prediction is enabled.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.HasMovementPrediction(player)
     player = player ~= nil and player or ThePlayer
@@ -237,7 +237,7 @@ end
 
 --- Enables/Disables the movement prediction.
 -- @tparam boolean is_enabled
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetMovementPrediction(is_enabled, player)
     is_enabled = is_enabled and true or false
@@ -262,7 +262,7 @@ function Player.SetMovementPrediction(is_enabled, player)
 end
 
 --- Toggles the movement prediction.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.ToggleMovementPrediction(player)
     player = player ~= nil and player or ThePlayer

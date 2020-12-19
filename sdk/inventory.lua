@@ -23,7 +23,7 @@ local SDK
 -- @section general
 
 --- Gets an inventory.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.Get(player)
     player = player ~= nil and player or ThePlayer
@@ -31,7 +31,7 @@ function Inventory.Get(player)
 end
 
 --- Gets an active item.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetActiveItem(player)
     player = player ~= nil and player or ThePlayer
@@ -40,7 +40,7 @@ function Inventory.GetActiveItem(player)
 end
 
 --- Gets inventory items.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetItems(player)
     player = player ~= nil and player or ThePlayer
@@ -50,7 +50,7 @@ end
 
 --- Gets an equipped item by slot.
 -- @tparam string slot `EQUIPSLOTS`
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedItem(slot, player)
     player = player ~= nil and player or ThePlayer
@@ -59,7 +59,7 @@ function Inventory.GetEquippedItem(slot, player)
 end
 
 --- Gets a backpack.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedBackpack(player)
     player = player ~= nil and player or ThePlayer
@@ -68,7 +68,7 @@ function Inventory.GetEquippedBackpack(player)
 end
 
 --- Gets an equipped body item.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedBodyItem(player)
     player = player ~= nil and player or ThePlayer
@@ -76,7 +76,7 @@ function Inventory.GetEquippedBodyItem(player)
 end
 
 --- Gets an equipped head item.
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedHeadItem(player)
     player = player ~= nil and player or ThePlayer
