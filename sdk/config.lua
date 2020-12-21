@@ -17,8 +17,8 @@ local Config = {}
 
 local SDK
 
---- Helpers
--- @section helpers
+--- General
+-- @section general
 
 --- Gets a mod config data.
 -- @tparam string config

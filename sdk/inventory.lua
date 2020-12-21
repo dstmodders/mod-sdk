@@ -25,7 +25,7 @@ local SDK
 --- Gets an inventory.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
-function Inventory.Get(player)
+function Inventory.GetInventory(player)
     player = player ~= nil and player or ThePlayer
     return Chain.Get(player, "replica", "inventory")
 end
@@ -58,7 +58,7 @@ function Inventory.GetEquippedItem(slot, player)
     return inventory and inventory:GetEquippedItem(slot)
 end
 
---- Gets a backpack.
+--- Gets an equipped backpack.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedBackpack(player)
