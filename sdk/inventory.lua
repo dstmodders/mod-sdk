@@ -72,7 +72,7 @@ end
 -- @treturn table
 function Inventory.GetEquippedBodyItem(player)
     player = player ~= nil and player or ThePlayer
-    return Inventory.GetEquippedHeadItem(EQUIPSLOTS.BODY, player)
+    return Inventory.GetEquippedItem(EQUIPSLOTS.BODY, player)
 end
 
 --- Gets an equipped head item.
@@ -80,7 +80,7 @@ end
 -- @treturn table
 function Inventory.GetEquippedHeadItem(player)
     player = player ~= nil and player or ThePlayer
-    return Inventory.GetEquippedHeadItem(EQUIPSLOTS.HEAD, player)
+    return Inventory.GetEquippedItem(EQUIPSLOTS.HEAD, player)
 end
 
 --- Lifecycle
