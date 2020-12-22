@@ -90,15 +90,6 @@ function Inventory.GetEquippedItem(slot, player)
     return inventory and inventory:GetEquippedItem(slot)
 end
 
---- Gets an equipped backpack.
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn table
-function Inventory.GetEquippedBackpack(player)
-    player = player ~= nil and player or ThePlayer
-    local item = Inventory.GetEquippedBodyItem(player)
-    return item and item:HasTag("backpack") and item
-end
-
 --- Gets an equipped body item.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
@@ -132,6 +123,30 @@ function Inventory.HasEquippedItemWithTag(slot, tag, player)
     player = player ~= nil and player or ThePlayer
     local item = Inventory.GetEquippedItem(slot)
     return item and item.HasTag and item:HasTag(tag)
+end
+
+--- Backpack
+-- @section backpack
+
+--- Gets an equipped backpack.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn table
+function Inventory.GetEquippedBackpack(player)
+    player = player ~= nil and player or ThePlayer
+    local item = Inventory.GetEquippedBodyItem(player)
+    return item and item:HasTag("backpack") and item
+end
+
+--- Gets an equipped backpack container.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn table
+function Inventory.GetEquippedBackpackContainer(player)
+    local backpack = Inventory.GetEquippedBackpack(player)
+    if backpack then
+        return SDK.World.IsMasterSim()
+            and Chain.Get(backpack, "components", "container")
+            or Chain.Get(backpack, "replica", "container", "classified")
+    end
 end
 
 --- Lifecycle
