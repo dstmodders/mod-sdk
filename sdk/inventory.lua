@@ -14,8 +14,8 @@
 -- @release 0.1
 ----
 local Chain = require "sdk/utils/chain"
-local Constant = require "sdk/utils/constant"
-local Debug = require "sdk/utils/debug"
+local Constant = require "sdk/constant"
+local Debug = require "sdk/debug"
 
 local Inventory = {}
 
