@@ -149,6 +149,14 @@ function Inventory.GetEquippedBackpackContainer(player)
     end
 end
 
+--- Gets an equipped backpack items.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn table
+function Inventory.GetEquippedBackpackItems(player)
+    local container = Inventory.GetEquippedBackpackContainer(player)
+    return container and SDK.World.IsMasterSim() and container.slots or container:GetItems()
+end
+
 --- Lifecycle
 -- @section lifecycle
 
