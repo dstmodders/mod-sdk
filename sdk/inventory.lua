@@ -54,14 +54,6 @@ function Inventory.EquipActiveItem(is_using_the_net)
     return false
 end
 
---- Gets an inventory.
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn table
-function Inventory.GetInventory(player)
-    player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "replica", "inventory")
-end
-
 --- Gets an active item.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
@@ -69,6 +61,14 @@ function Inventory.GetActiveItem(player)
     player = player ~= nil and player or ThePlayer
     local inventory = Inventory.GetInventory(player)
     return inventory and inventory:GetActiveItem()
+end
+
+--- Gets an inventory.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn table
+function Inventory.GetInventory(player)
+    player = player ~= nil and player or ThePlayer
+    return Chain.Get(player, "replica", "inventory")
 end
 
 --- Gets inventory items.
@@ -121,6 +121,17 @@ end
 function Inventory.GetEquippedHeadItem(player)
     player = player ~= nil and player or ThePlayer
     return Inventory.GetEquippedItem(EQUIPSLOTS.HEAD, player)
+end
+
+--- Checks if having an equipped item with a certain tag.
+-- @tparam string slot `EQUIPSLOTS`
+-- @tparam string tag Tag
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Inventory.HasEquippedItemWithTag(slot, tag, player)
+    player = player ~= nil and player or ThePlayer
+    local item = Inventory.GetEquippedItem(slot)
+    return item and item.HasTag and item:HasTag(tag)
 end
 
 --- Lifecycle
