@@ -74,7 +74,7 @@ end
 --- Gets inventory items.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
-function Inventory.GetItems(player)
+function Inventory.GetInventoryItems(player)
     player = player ~= nil and player or ThePlayer
     local inventory = Inventory.GetInventory(player)
     return inventory and inventory:GetItems()
