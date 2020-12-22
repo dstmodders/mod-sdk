@@ -35,7 +35,7 @@ end
 -- @treturn table
 function Inventory.GetActiveItem(player)
     player = player ~= nil and player or ThePlayer
-    local inventory = Inventory.Get(player)
+    local inventory = Inventory.GetInventory(player)
     return inventory and inventory:GetActiveItem()
 end
 
@@ -44,7 +44,7 @@ end
 -- @treturn table
 function Inventory.GetItems(player)
     player = player ~= nil and player or ThePlayer
-    local inventory = Inventory.Get(player)
+    local inventory = Inventory.GetInventory(player)
     return inventory and inventory:GetItems()
 end
 
@@ -54,7 +54,7 @@ end
 -- @treturn table
 function Inventory.GetEquippedItem(slot, player)
     player = player ~= nil and player or ThePlayer
-    local inventory = Inventory.Get(player)
+    local inventory = Inventory.GetInventory(player)
     return inventory and inventory:GetEquippedItem(slot)
 end
 
