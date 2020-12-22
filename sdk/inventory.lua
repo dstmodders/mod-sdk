@@ -14,6 +14,8 @@
 -- @release 0.1
 ----
 local Chain = require "sdk/utils/chain"
+local Constant = require "sdk/utils/constant"
+local Debug = require "sdk/utils/debug"
 
 local Inventory = {}
 
@@ -21,6 +23,36 @@ local SDK
 
 --- General
 -- @section general
+
+--- Equips an active item.
+-- @tparam boolean is_using_the_net Use `TheNet:SendRPCToServer()` instead of the `SendRPCToServer()`
+-- @treturn boolean
+function Inventory.EquipActiveItem(is_using_the_net)
+    local item = Inventory.GetActiveItem()
+    if not item then
+        return false
+    end
+
+    local _SendRPCToServer = is_using_the_net and function(...)
+        return TheNet:SendRPCToServer(...)
+    end or SendRPCToServer
+
+    if item:HasTag("_equippable") then
+        if Chain.Get(item, "replica", "equippable", "EquipSlot", true) then
+            _SendRPCToServer(RPC.SwapEquipWithActiveItem)
+        end
+        _SendRPCToServer(RPC.EquipActiveItem)
+        return true
+    else
+        Debug.Error(
+            "SDK.Inventory.EquipActiveItem():",
+            "not equippable",
+            "(" ..  Constant.GetStringName(item.prefab) .. ")"
+        )
+    end
+
+    return false
+end
 
 --- Gets an inventory.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
