@@ -14,6 +14,7 @@
 -- @release 0.1
 ----
 local Chain = require "sdk/utils/chain"
+local Debug = require "sdk/debug"
 local Table = require "sdk/utils/table"
 
 local Entity = {}
@@ -104,6 +105,16 @@ function Entity.GetTentSleeper(tent, range)
     if player and player:HasTag("sleeping") then
         return player
     end
+end
+
+--- Sets debug entity.
+function Entity.SetDebugEntity(entity)
+    if entity then
+        SetDebugEntity(entity)
+        Debug.String("New debug entity:", entity:GetDisplayName())
+        return true
+    end
+    return false
 end
 
 --- Animation State

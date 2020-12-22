@@ -95,6 +95,7 @@ files["**/*.lua"] = {
         "PREFAB_SKINS_IDS",
         "RPC",
         "scheduler",
+        "SetDebugEntity",
         "softresolvefilepath",
         "StartThread",
         "STRINGS",
