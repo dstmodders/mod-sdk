@@ -122,7 +122,7 @@ end
 function Inventory.HasEquippedItemWithTag(slot, tag, player)
     player = player ~= nil and player or ThePlayer
     local item = Inventory.GetEquippedItem(slot)
-    return item and item.HasTag and item:HasTag(tag)
+    return item and item:HasTag(tag)
 end
 
 --- Backpack
@@ -155,6 +155,14 @@ end
 function Inventory.GetEquippedBackpackItems(player)
     local container = Inventory.GetEquippedBackpackContainer(player)
     return container and SDK.World.IsMasterSim() and container.slots or container:GetItems()
+end
+
+--- Checks if an equipped backpack is full.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn table
+function Inventory.IsEquippedBackpackFull(player)
+    local container = Inventory.GetEquippedBackpackContainer(player)
+    return container and container:IsFull()
 end
 
 --- Lifecycle
