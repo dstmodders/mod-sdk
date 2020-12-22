@@ -75,6 +75,14 @@ function Inventory.GetEquippedBodyItem(player)
     return Inventory.GetEquippedItem(EQUIPSLOTS.BODY, player)
 end
 
+--- Gets an equipped hands item.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn table
+function Inventory.GetEquippedHandsItem(player)
+    player = player ~= nil and player or ThePlayer
+    return Inventory.GetEquippedItem(EQUIPSLOTS.HANDS, player)
+end
+
 --- Gets an equipped head item.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
