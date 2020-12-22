@@ -93,6 +93,7 @@ files["**/*.lua"] = {
         "KillThreadsWithID",
         "MODS_ROOT",
         "PREFAB_SKINS_IDS",
+        "RPC",
         "scheduler",
         "softresolvefilepath",
         "StartThread",

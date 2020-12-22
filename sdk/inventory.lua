@@ -121,7 +121,7 @@ end
 -- @treturn boolean
 function Inventory.HasEquippedItemWithTag(slot, tag, player)
     player = player ~= nil and player or ThePlayer
-    local item = Inventory.GetEquippedItem(slot)
+    local item = Inventory.GetEquippedItem(slot, player)
     return item and item:HasTag(tag)
 end
 
