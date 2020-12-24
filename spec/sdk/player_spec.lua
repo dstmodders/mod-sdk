@@ -84,6 +84,7 @@ describe("#sdk SDK.Player", function()
                     Stop = Empty,
                 },
             },
+            HUD = {},
             name = name,
             replica = {
                 health = {
@@ -190,6 +191,16 @@ describe("#sdk SDK.Player", function()
     end)
 
     describe("general", function()
+        describe("GetHUD", function()
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.GetHUD())
+                    end, _G.ThePlayer, "HUD")
+                end)
+            end)
+        end)
+
         describe("IsAdmin", function()
             local GetClientTable
 

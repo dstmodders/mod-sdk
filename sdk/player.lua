@@ -23,6 +23,14 @@ local SDK
 --- General
 -- @section general
 
+--- Gets a HUD.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn table
+function Player.GetHUD(player)
+    player = player ~= nil and player or ThePlayer
+    return player and player.HUD
+end
+
 --- Checks if a player is an admin.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
