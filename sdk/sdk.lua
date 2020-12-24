@@ -144,7 +144,7 @@ function SDK._DoInitModule(module, name, global)
                 local fn = rawget(module, k)
                 if fn and not string.match(k, "^_") then
                     return fn
-                elseif string.match(k, "^_") then
+                elseif fn and string.match(k, "^_") then
                     SDK._DebugErrorNoDirectUse(name, k)
                 else
                     SDK._DebugErrorNoFunction(name, k)
@@ -154,6 +154,9 @@ function SDK._DoInitModule(module, name, global)
             return function()
                 return nil
             end
+        end,
+        __tostring = function()
+            return "SDK." .. name
         end,
     })
     return t
