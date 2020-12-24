@@ -6,7 +6,7 @@ describe("#sdk SDK.Player", function()
     local match
 
     -- before_each test data
-    local inst
+    local active_screen, inst
     local player_dead, player_hopping, player_over_water, player_running, player_sinking, players
 
     -- before_each initialization
@@ -138,12 +138,14 @@ describe("#sdk SDK.Player", function()
     end)
 
     teardown(function()
+        _G.TheFrontEnd = nil
         _G.ThePlayer = nil
         _G.TheNet = nil
     end)
 
     before_each(function()
         -- test data
+        active_screen = {}
         inst = MockPlayerInst("PlayerInst", nil, { "godmode", "idle" }, { "wereness" })
         player_dead = MockPlayerInst("PlayerDead", "KU_one", { "dead", "idle" })
         player_hopping = MockPlayerInst("PlayerHopping", "KU_two", { "hopping" })
@@ -162,6 +164,11 @@ describe("#sdk SDK.Player", function()
 
         -- globals
         _G.ThePlayer = inst
+
+        _G.TheFrontEnd = mock({
+            GetActiveScreen = ReturnValueFn(active_screen),
+        })
+
         _G.TheNet = MockTheNet({
             {
                 userid = inst.userid,
@@ -374,6 +381,45 @@ describe("#sdk SDK.Player", function()
                     AssertChainNil(function()
                         assert.is_nil(Player.IsHUDConsoleScreenOpen())
                     end, _G.ThePlayer, "HUD", "IsConsoleScreenOpen")
+                end)
+            end)
+        end)
+
+        describe("IsHUDWriteableScreenActive", function()
+            describe("when [player].HUD.writeablescreen is an active one", function()
+                before_each(function()
+                    _G.ThePlayer.HUD.writeablescreen = active_screen
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.IsHUDWriteableScreenActive())
+                end)
+            end)
+
+            describe("when [player].HUD.writeablescreen is not an active one", function()
+                before_each(function()
+                    _G.ThePlayer.HUD.writeablescreen = nil
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player.IsHUDWriteableScreenActive())
+                end)
+            end)
+
+            it("should call TheFrontEnd.GetActiveScreen()", function()
+                assert.spy(_G.TheFrontEnd.GetActiveScreen).was_not_called()
+                Player.IsHUDWriteableScreenActive()
+                assert.spy(_G.TheFrontEnd.GetActiveScreen).was_called(1)
+                assert.spy(_G.TheFrontEnd.GetActiveScreen).was_called_with(
+                    match.is_ref(_G.TheFrontEnd)
+                )
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return false", function()
+                    AssertChainNil(function()
+                        assert.is_false(Player.IsHUDWriteableScreenActive())
+                    end, _G.TheFrontEnd, "GetActiveScreen")
                 end)
             end)
         end)

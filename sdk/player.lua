@@ -77,6 +77,21 @@ function Player.IsHUDConsoleScreenOpen(player)
     return Chain.Get(player, "HUD", "IsConsoleScreenOpen", true)
 end
 
+--- Checks if the HUD writable screen is active.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.IsHUDWriteableScreenActive(player)
+    player = player ~= nil and player or ThePlayer
+    local screen = Chain.Get(TheFrontEnd, "GetActiveScreen", true)
+    if screen then
+        local hud = Player.GetHUD(player)
+        if hud and screen == hud.writeablescreen then
+            return true
+        end
+    end
+    return false
+end
+
 --- Checks if a player is in idle.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
