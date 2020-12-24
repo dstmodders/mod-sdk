@@ -234,6 +234,14 @@ function Player.GetHungerPercent(player)
     return hunger and hunger * 100
 end
 
+--- Gets a moisture value.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.GetMoisturePercent(player)
+    player = player ~= nil and player or ThePlayer
+    return Chain.Get(player, "GetMoisture", true)
+end
+
 --- Gets a sanity value.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number

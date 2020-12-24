@@ -114,6 +114,7 @@ describe("#sdk SDK.Player", function()
             },
             EnableMovementPrediction = Empty,
             GetCurrentPlatform = Empty,
+            GetMoisture = ReturnValueFn(20),
             GetPosition = ReturnValueFn({
                 Get = ReturnValuesFn(1, 0, -1),
             }),
@@ -1067,6 +1068,29 @@ describe("#sdk SDK.Player", function()
 
         describe("GetHungerPercent", function()
             TestReplicaAttributePercent("hunger", "GetHungerPercent", "GetPercent", 100)
+        end)
+
+        describe("GetMoisturePercent", function()
+            it("should return [player].GetMoisture() value", function()
+                assert.is_equal(_G.ThePlayer.GetMoisture(), Player.GetMoisturePercent())
+            end)
+
+            it("should call [player].GetMoisture()", function()
+                assert.spy(_G.ThePlayer.GetMoisture).was_not_called()
+                Player.GetMoisturePercent()
+                assert.spy(_G.ThePlayer.GetMoisture).was_called(1)
+                assert.spy(_G.ThePlayer.GetMoisture).was_called_with(
+                    match.is_ref(_G.ThePlayer)
+                )
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.GetMoisturePercent())
+                    end, _G.ThePlayer, "GetMoisture")
+                end)
+            end)
         end)
 
         describe("GetSanityPercent", function()
