@@ -1,7 +1,7 @@
 ----
--- Player.
+-- Different player functionality.
 --
--- Includes player functionality.
+-- Only available when `ThePlayer` global is available.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
@@ -237,10 +237,7 @@ end
 -- @treturn boolean
 function Player.HasMovementPrediction(player)
     player = player ~= nil and player or ThePlayer
-    if type(player.components) == "table" then
-        return Chain.Get(player, "components", "locomotor") ~= nil
-    end
-    return false
+    return Chain.Get(player, "components", "locomotor") ~= nil
 end
 
 --- Enables/Disables the movement prediction.
@@ -248,18 +245,19 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetMovementPrediction(is_enabled, player)
-    is_enabled = is_enabled and true or false
-    player = player ~= nil and player or ThePlayer
-
     if TheWorld.ismastersim then
         Debug.Error("SDK.Player.SetMovementPrediction: Can't be toggled on the master simulation")
         return false
     end
 
+    is_enabled = is_enabled and true or false
+    player = player ~= nil and player or ThePlayer
+
+    local locomotor = Chain.Get(player, "components", "locomotor")
     if is_enabled then
         player:EnableMovementPrediction(true)
-    elseif player.components and player.components.locomotor then
-        player.components.locomotor:Stop()
+    elseif locomotor then
+        locomotor:Stop()
         player:EnableMovementPrediction(false)
     end
 
@@ -274,7 +272,7 @@ end
 -- @treturn boolean
 function Player.ToggleMovementPrediction(player)
     player = player ~= nil and player or ThePlayer
-    return Player.SetMovementPrediction(not Player.HasMovementPrediction(), player)
+    return Player.SetMovementPrediction(not Player.HasMovementPrediction(player), player)
 end
 
 --- Lifecycle
