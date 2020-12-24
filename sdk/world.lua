@@ -1,7 +1,7 @@
 ----
--- World.
+-- Different world functionality.
 --
--- Includes world functionality.
+-- Only available when `TheWorld` global is available.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

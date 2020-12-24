@@ -1,7 +1,5 @@
 ----
--- Dump.
---
--- Includes dump functionality.
+-- Different dump functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
@@ -16,6 +14,9 @@
 local Table = require "sdk/utils/table"
 
 local Dump = {}
+
+--- Helpers
+-- @section helpers
 
 local function PrintDumpValues(table, title, name, prepend)
     prepend = prepend ~= nil and prepend .. " " or ""
@@ -32,6 +33,9 @@ local function PrintDumpValues(table, title, name, prepend)
         print(prepend .. "No " .. title)
     end
 end
+
+--- General
+-- @section general
 
 --- Gets a table on all entity components.
 -- @usage dumptable(GetComponents(ThePlayer))

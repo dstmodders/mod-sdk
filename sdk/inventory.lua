@@ -1,7 +1,5 @@
 ----
--- Inventory.
---
--- Includes inventory functionality.
+-- Different inventory functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

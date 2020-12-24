@@ -1,7 +1,5 @@
 ----
--- Thread.
---
--- Includes thread functionality.
+-- Different thread functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
@@ -23,25 +21,25 @@ local Thread = {}
 --
 -- @tparam string id Thread ID
 -- @tparam function fn Thread function
--- @tparam[opt] function whl While function
--- @tparam[opt] function init Initialization function
--- @tparam[opt] function term Termination function
+-- @tparam[opt] function whl_fn While function
+-- @tparam[opt] function init_fn Initialization function
+-- @tparam[opt] function term_fn Termination function
 -- @treturn table
-function Thread.Start(id, fn, whl, init, term)
-    whl = whl ~= nil and whl or function()
+function Thread.Start(id, fn, whl_fn, init_fn, term_fn)
+    whl_fn = whl_fn ~= nil and whl_fn or function()
         return true
     end
 
     return StartThread(function()
         Debug.String("Thread started")
-        if init then
-            init()
+        if init_fn then
+            init_fn()
         end
-        while whl() do
+        while whl_fn() do
             fn()
         end
-        if term then
-            term()
+        if term_fn then
+            term_fn()
         end
         Thread.Clear()
     end, id)

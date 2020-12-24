@@ -1,11 +1,10 @@
 ----
--- Different mod utilities.
---
--- Includes different utilities used throughout the whole mod.
+-- Different utilities.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
 -- @module SDK.Utils
+-- @see SDK
 -- @see SDK.Utils.Chain
 -- @see SDK.Utils.Methods
 -- @see SDK.Utils.String

@@ -1,7 +1,5 @@
 ----
--- Constant.
---
--- Includes constant functionality.
+-- Different constant functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
@@ -14,6 +12,9 @@
 -- @release 0.1
 ----
 local Constant = {}
+
+--- General
+-- @section general
 
 --- Gets a skin index.
 -- @see GetStringSkinName

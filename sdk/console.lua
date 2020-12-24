@@ -1,7 +1,5 @@
 ----
--- Console.
---
--- Includes console functionality.
+-- Different console functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

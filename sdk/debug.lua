@@ -1,7 +1,5 @@
 ----
--- Debug.
---
--- Includes debug functionality.
+-- Different debug functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

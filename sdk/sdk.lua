@@ -1,7 +1,7 @@
 ----
 -- Mod SDK.
 --
--- Includes Don't Starve Together mod SDK to simplify mods' development.
+-- Includes Don't Starve Together mod SDK to simplify mod development.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

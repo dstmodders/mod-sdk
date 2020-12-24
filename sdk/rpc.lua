@@ -1,7 +1,5 @@
 ----
--- RPC.
---
--- Includes RPC functionality.
+-- Different RPC functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
