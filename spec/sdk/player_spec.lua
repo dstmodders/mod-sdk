@@ -133,6 +133,11 @@ describe("#sdk SDK.Player", function()
         match = require "luassert.match"
     end)
 
+    teardown(function()
+        _G.ThePlayer = nil
+        _G.TheNet = nil
+    end)
+
     before_each(function()
         -- test data
         inst = MockPlayerInst("PlayerInst", nil, { "godmode", "idle" }, { "wereness" })

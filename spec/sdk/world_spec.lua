@@ -12,6 +12,10 @@ describe("#sdk SDK.World", function()
         match = require "luassert.match"
     end)
 
+    teardown(function()
+        _G.TheWorld = nil
+    end)
+
     before_each(function()
         -- globals
         _G.TheWorld = {
