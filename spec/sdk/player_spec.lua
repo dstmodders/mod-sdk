@@ -352,6 +352,32 @@ describe("#sdk SDK.Player", function()
             end)
         end)
 
+        describe("IsHUDConsoleScreenOpen", function()
+            it("should return [player].HUD.IsConsoleScreenOpen() value", function()
+                assert.is_equal(
+                    _G.ThePlayer.HUD.IsConsoleScreenOpen(),
+                    Player.IsHUDConsoleScreenOpen()
+                )
+            end)
+
+            it("should call [player].HUD.IsConsoleScreenOpen()", function()
+                assert.spy(_G.ThePlayer.HUD.IsConsoleScreenOpen).was_not_called()
+                Player.IsHUDConsoleScreenOpen()
+                assert.spy(_G.ThePlayer.HUD.IsConsoleScreenOpen).was_called(1)
+                assert.spy(_G.ThePlayer.HUD.IsConsoleScreenOpen).was_called_with(
+                    match.is_ref(_G.ThePlayer.HUD)
+                )
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.IsHUDConsoleScreenOpen())
+                    end, _G.ThePlayer, "HUD", "IsConsoleScreenOpen")
+                end)
+            end)
+        end)
+
         describe("IsIdle", function()
             describe("when the player is idle", function()
                 describe("based on the state graph", function()

@@ -69,6 +69,14 @@ function Player.IsHUDChatInputScreenOpen(player)
     return Chain.Get(player, "HUD", "IsChatInputScreenOpen", true)
 end
 
+--- Checks if a HUD console is open.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.IsHUDConsoleScreenOpen(player)
+    player = player ~= nil and player or ThePlayer
+    return Chain.Get(player, "HUD", "IsConsoleScreenOpen", true)
+end
+
 --- Checks if a player is in idle.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
