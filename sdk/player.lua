@@ -61,6 +61,14 @@ function Player.IsGhost(player)
     return player and player.HasTag and player:HasTag("playerghost")
 end
 
+--- Checks if a HUD chat is open.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.IsHUDChatInputScreenOpen(player)
+    player = player ~= nil and player or ThePlayer
+    return Chain.Get(player, "HUD", "IsChatInputScreenOpen", true)
+end
+
 --- Checks if a player is in idle.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
