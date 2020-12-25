@@ -118,6 +118,7 @@ describe("#sdk SDK.Player", function()
             GetPosition = ReturnValueFn({
                 Get = ReturnValuesFn(1, 0, -1),
             }),
+            GetTemperature = ReturnValueFn(36),
             HasTag = function(_, tag)
                 return TableHasValue(tags, tag)
             end,
@@ -1095,6 +1096,29 @@ describe("#sdk SDK.Player", function()
 
         describe("GetSanityPercent", function()
             TestReplicaAttributePercent("sanity", "GetSanityPercent", "GetPercent", 100)
+        end)
+
+        describe("GetTemperature", function()
+            it("should return [player].GetTemperature() value", function()
+                assert.is_equal(_G.ThePlayer.GetTemperature(), Player.GetTemperature())
+            end)
+
+            it("should call [player].GetTemperature()", function()
+                assert.spy(_G.ThePlayer.GetTemperature).was_not_called()
+                Player.GetTemperature()
+                assert.spy(_G.ThePlayer.GetTemperature).was_called(1)
+                assert.spy(_G.ThePlayer.GetTemperature).was_called_with(
+                    match.is_ref(_G.ThePlayer)
+                )
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.GetTemperature())
+                    end, _G.ThePlayer, "GetTemperature")
+                end)
+            end)
         end)
     end)
 

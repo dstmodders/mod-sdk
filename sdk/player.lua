@@ -251,6 +251,14 @@ function Player.GetSanityPercent(player)
     return sanity and sanity * 100
 end
 
+--- Gets a temperature value.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.GetTemperature(player)
+    player = player ~= nil and player or ThePlayer
+    return Chain.Get(player, "GetTemperature", true)
+end
+
 --- Light Watcher
 -- @section light-watcher
 
