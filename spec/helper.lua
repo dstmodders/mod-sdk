@@ -19,6 +19,20 @@ end
 -- General
 --
 
+-- http://lua-users.org/wiki/CopyTable
+function shallowcopy(orig, dest)
+    local copy
+    if type(orig) == 'table' then
+        copy = dest or {}
+        for k, v in pairs(orig) do
+            copy[k] = v
+        end
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
 function Empty()
 end
 
@@ -33,6 +47,14 @@ function ReturnValuesFn(...)
     return function()
         return unpack(args)
     end
+end
+
+function TableCount(t)
+    local result = 0
+    for _, _ in pairs(t) do
+        result = result + 1
+    end
+    return result
 end
 
 function TableHasValue(t, value)

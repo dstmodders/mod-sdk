@@ -23,6 +23,39 @@ local SDK
 --- General
 -- @section general
 
+--- Gets a client table.
+--
+-- Unlike `TheNet.GetClientTable`, a player parameter can be passed which calls
+-- `TheNet.GetClientTableForUser` instead. Moreover, a second parameter can be passed to ignore the
+-- host.
+--
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @tparam[opt] boolean is_host_ignored Should the host be ignored?
+-- @treturn table
+function Player.GetClientTable(player, is_host_ignored)
+    if player and player.userid then
+        return TheNet
+            and TheNet.GetClientTableForUser
+            and TheNet:GetClientTableForUser(player.userid)
+    end
+
+    local clients = Chain.Get(TheNet, "GetClientTable", true)
+    if is_host_ignored
+        and type(clients) == "table"
+        and not Chain.Get(TheNet, "GetServerIsClientHosted", true)
+    then
+        clients = shallowcopy(clients)
+        for k, v in pairs(clients) do
+            if v.performance ~= nil then
+                table.remove(clients, k) -- remove "host" object
+                break
+            end
+        end
+    end
+
+    return clients
+end
+
 --- Gets a HUD.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table

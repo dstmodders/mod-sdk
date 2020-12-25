@@ -31,9 +31,9 @@ describe("#sdk SDK.Player", function()
         }
 
         return require("busted").mock({
-            GetClientTable = function()
-                return client_table
-            end,
+            GetClientTable = ReturnValueFn(client_table),
+            GetClientTableForUser = ReturnValueFn(client_table[1]),
+            GetServerIsClientHosted = ReturnValueFn(false),
             SendRemoteExecute = Empty,
         })
     end
@@ -196,6 +196,11 @@ describe("#sdk SDK.Player", function()
                 userid = "KU_five",
                 admin = false
             },
+            {
+                userid = "KU_host",
+                admin = true,
+                performance = 1,
+            }
         })
 
         -- initialization
@@ -203,6 +208,88 @@ describe("#sdk SDK.Player", function()
     end)
 
     describe("general", function()
+        describe("GetClientTable", function()
+            describe("when a player is passed", function()
+                it("should call TheNet.GetClientTableForUser()", function()
+                    assert.spy(_G.TheNet.GetClientTableForUser).was_not_called()
+                    Player.GetClientTable(_G.ThePlayer)
+                    assert.spy(_G.TheNet.GetClientTableForUser).was_called(1)
+                    assert.spy(_G.TheNet.GetClientTableForUser).was_called_with(
+                        _G.TheNet,
+                        _G.ThePlayer.userid
+                    )
+                end)
+
+                it("should return a client table for user", function()
+                    local table = Player.GetClientTable(_G.ThePlayer)
+                    assert.is_equal(_G.ThePlayer.userid, table.userid)
+                end)
+
+                describe("when some chain fields are missing", function()
+                    it("should return nil", function()
+                        AssertChainNil(function()
+                            assert.is_nil(Player.GetClientTable(_G.ThePlayer))
+                        end, _G.TheNet, "GetClientTableForUser")
+                    end)
+                end)
+            end)
+
+            describe("when a player is not passed", function()
+                describe("and the host is not ignored", function()
+                    it("shouldn't call TheNet.GetServerIsClientHosted()", function()
+                        assert.spy(_G.TheNet.GetServerIsClientHosted).was_not_called()
+                        Player.GetClientTable()
+                        assert.spy(_G.TheNet.GetServerIsClientHosted).was_not_called()
+                    end)
+
+                    it("should return a client table with a host", function()
+                        local table = Player.GetClientTable()
+                        assert.is_equal(_G.TheNet:GetClientTable(), table)
+                        assert.is_equal(TableCount(_G.TheNet:GetClientTable()), TableCount(table))
+                    end)
+                end)
+
+                describe("and the host is ignored", function()
+                    it("should call TheNet.GetServerIsClientHosted()", function()
+                        assert.spy(_G.TheNet.GetServerIsClientHosted).was_not_called()
+                        Player.GetClientTable(nil, true)
+                        assert.spy(_G.TheNet.GetServerIsClientHosted).was_called(1)
+                        assert.spy(_G.TheNet.GetServerIsClientHosted).was_called_with(_G.TheNet)
+                    end)
+
+                    it("should return a client table without a host", function()
+                        local table = Player.GetClientTable(nil, true)
+                        assert.is_not_equal(_G.TheNet:GetClientTable(), table)
+                        assert.is_equal(
+                            TableCount(_G.TheNet:GetClientTable()) - 1,
+                            TableCount(table)
+                        )
+                    end)
+                end)
+
+                it("should call TheNet.GetClientTable()", function()
+                    assert.spy(_G.TheNet.GetClientTable).was_not_called()
+                    Player.GetClientTable()
+                    assert.spy(_G.TheNet.GetClientTable).was_called(1)
+                    assert.spy(_G.TheNet.GetClientTable).was_called_with(_G.TheNet)
+                end)
+
+                it("shouldn't call TheNet.GetClientTableForUser()", function()
+                    assert.spy(_G.TheNet.GetClientTableForUser).was_not_called()
+                    Player.GetClientTable()
+                    assert.spy(_G.TheNet.GetClientTableForUser).was_not_called()
+                end)
+
+                describe("when some chain fields are missing", function()
+                    it("should return nil", function()
+                        AssertChainNil(function()
+                            assert.is_nil(Player.GetClientTable())
+                        end, _G.TheNet, "GetClientTable")
+                    end)
+                end)
+            end)
+        end)
+
         describe("GetHUD", function()
             it("should return [player].HUD", function()
                 assert.is_equal(_G.ThePlayer.HUD, Player.GetHUD())

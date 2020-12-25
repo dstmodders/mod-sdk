@@ -73,6 +73,7 @@ files["**/*.lua"] = {
         "ReturnValues",
         "ReturnValuesFn",
         "SendRPCToServer",
+        "shallowcopy",
         "TableCount",
         "TableCountFunctions",
         "TableHasValue",
