@@ -23,6 +23,17 @@ local SDK
 --- General
 -- @section general
 
+--- Checks if a user can press a key in a gameplay.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.CanPressKeyInGamePlay(player)
+    player = player ~= nil and player or ThePlayer
+    return InGamePlay()
+        and not Player.IsHUDChatInputScreenOpen(player)
+        and not Player.IsHUDConsoleScreenOpen(player)
+        and not Player.IsHUDWriteableScreenActive(player)
+end
+
 --- Gets a client table.
 --
 -- Unlike `TheNet.GetClientTable`, a player parameter can be passed which calls
@@ -110,7 +121,7 @@ function Player.IsHUDConsoleScreenOpen(player)
     return Chain.Get(player, "HUD", "IsConsoleScreenOpen", true)
 end
 
---- Checks if the HUD writable screen is active.
+--- Checks if a HUD writable screen is active.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsHUDWriteableScreenActive(player)

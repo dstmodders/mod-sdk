@@ -64,6 +64,7 @@ files["**/*.lua"] = {
         "EQUIPSLOTS",
         "GetModConfigData",
         "GROUND",
+        "InGamePlay",
         "KillThreadsWithID",
         "MODS_ROOT",
         "PREFAB_SKINS_IDS",

@@ -208,6 +208,75 @@ describe("#sdk SDK.Player", function()
     end)
 
     describe("general", function()
+        describe("CanPressKeyInGamePlay", function()
+            describe("when not in a gameplay", function()
+                before_each(function()
+                    _G.InGamePlay = spy.new(ReturnValueFn(false))
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player.CanPressKeyInGamePlay())
+                end)
+            end)
+
+            describe("when in a gameplay", function()
+                before_each(function()
+                    _G.InGamePlay = spy.new(ReturnValueFn(true))
+                end)
+
+                describe("and a chat input screen is open", function()
+                    local _IsHUDChatInputScreenOpen
+
+                    before_each(function()
+                        _IsHUDChatInputScreenOpen = Player.IsHUDChatInputScreenOpen
+                        Player.IsHUDChatInputScreenOpen = spy.new(ReturnValueFn(true))
+                    end)
+
+                    teardown(function()
+                        Player.IsHUDChatInputScreenOpen = _IsHUDChatInputScreenOpen
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.CanPressKeyInGamePlay())
+                    end)
+                end)
+
+                describe("and a console screen is open", function()
+                    local _IsHUDConsoleScreenOpen
+
+                    before_each(function()
+                        _IsHUDConsoleScreenOpen = Player.IsHUDConsoleScreenOpen
+                        Player.IsHUDConsoleScreenOpen = spy.new(ReturnValueFn(true))
+                    end)
+
+                    teardown(function()
+                        Player.IsHUDConsoleScreenOpen = _IsHUDConsoleScreenOpen
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.CanPressKeyInGamePlay())
+                    end)
+                end)
+
+                describe("and a writeable screen is active", function()
+                    local _IsHUDWriteableScreenActive
+
+                    before_each(function()
+                        _IsHUDWriteableScreenActive = Player.IsHUDWriteableScreenActive
+                        Player.IsHUDWriteableScreenActive = spy.new(ReturnValueFn(true))
+                    end)
+
+                    teardown(function()
+                        Player.IsHUDWriteableScreenActive = _IsHUDWriteableScreenActive
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.CanPressKeyInGamePlay())
+                    end)
+                end)
+            end)
+        end)
+
         describe("GetClientTable", function()
             describe("when a player is passed", function()
                 it("should call TheNet.GetClientTableForUser()", function()
