@@ -38,6 +38,7 @@ local _MODULES = {
     Input = "sdk/input",
     Inventory = "sdk/inventory",
     ModMain = "sdk/modmain",
+    PersistentData = "sdk/persistentdata",
     Player = "sdk/player",
     RPC = "sdk/rpc",
     Thread = "sdk/thread",

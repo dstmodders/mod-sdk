@@ -43,6 +43,11 @@ files["**/*.lua"] = {
     -- globals
     globals = {
         "AssertChainNil",
+        "AssertHasFunction",
+        "AssertHasNoFunction",
+        "AssertModuleGetter",
+        "AssertModuleSetter",
+        "AssertReturnSelf",
         "ClassRegistry",
         "Empty",
         "KnownModIndex",
@@ -57,10 +62,12 @@ files["**/*.lua"] = {
     },
     read_globals = {
         "AllPlayers",
+        "BRANCH",
         "CONTROL_MOVE_DOWN",
         "CONTROL_MOVE_LEFT",
         "CONTROL_MOVE_RIGHT",
         "CONTROL_MOVE_UP",
+        "ENCODE_SAVES",
         "EQUIPSLOTS",
         "GetModConfigData",
         "GROUND",
@@ -69,6 +76,7 @@ files["**/*.lua"] = {
         "MODS_ROOT",
         "PREFAB_SKINS_IDS",
         "RPC",
+        "SavePersistentString",
         "scheduler",
         "SetDebugEntity",
         "softresolvefilepath",
@@ -80,6 +88,8 @@ files["**/*.lua"] = {
         "ThePlayer",
         "TheSim",
         "TheWorld",
+        "TrackedAssert",
         "TrimString",
+        "USER_HISTORY_EXPIRY_TIME",
     },
 }
