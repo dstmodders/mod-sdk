@@ -50,7 +50,7 @@ function Player.GetClientTable(player, is_host_ignored)
             and TheNet:GetClientTableForUser(player.userid)
     end
 
-    local clients = Chain.Get(TheNet, "GetClientTable", true)
+    local clients = Chain.Get(TheNet, "GetClientTable", true) or {}
     if is_host_ignored
         and type(clients) == "table"
         and not Chain.Get(TheNet, "GetServerIsClientHosted", true)
