@@ -12,6 +12,8 @@
 -- @license MIT
 -- @release 0.1
 ----
+_G.MOD_SDK_TEST = false
+
 local SDK = {
     -- general
     env = nil,

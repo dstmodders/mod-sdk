@@ -2,6 +2,8 @@
 -- Packages
 --
 
+_G.MOD_SDK_TEST = true
+
 require "spec/vector3"
 
 local preloads = {
@@ -91,4 +93,67 @@ function AssertChainNil(fn, src, ...)
             AssertChainNil(fn, src, unpack(args))
         end
     end
+end
+
+function AssertHasFunction(module, fn_name)
+    local assert = require("busted").assert
+    assert.is_not_nil(module[fn_name], string.format("%s() is missing", tostring(fn_name)))
+end
+
+function AssertHasNoFunction(module, fn_name)
+    local assert = require("busted").assert
+    assert.is_nil(module[fn_name], string.format("%s() exists", fn_name))
+end
+
+function AssertModuleGetter(module, field, fn_name, test_data)
+    test_data = test_data ~= nil and test_data or "test"
+
+    AssertHasFunction(module, fn_name)
+    local fn = module[fn_name]
+    local msg = string.format(
+        "Module getter %s() doesn't return value: %s",
+        tostring(fn_name),
+        tostring(field)
+    )
+
+    local assert = require("busted").assert
+    local value = module[field]
+    assert.is_equal(module[field], fn(), msg)
+    module[field] = test_data
+    assert.is_equal(test_data, fn(), msg)
+    module[field] = value
+end
+
+function AssertModuleSetter(module, field, fn_name, is_return_self, test_data)
+    test_data = test_data ~= nil and test_data or "test"
+
+    AssertHasFunction(module, fn_name)
+    local fn = module[fn_name]
+    local assert = require("busted").assert
+    local value = module[field]
+
+    fn(test_data)
+    assert.is_equal(test_data, module[field], string.format(
+        "Module setter %s() doesn't set value: %s",
+        tostring(fn_name),
+        tostring(field)
+    ))
+
+    if is_return_self then
+        assert.is_equal(module, fn(test_data), string.format(
+            "Module setter %s() doesn't return self",
+            tostring(fn_name)
+        ))
+    end
+
+    module[field] = value
+end
+
+function AssertReturnSelf(module, fn_name, ...)
+    local assert = require("busted").assert
+    assert.is_equal(
+        module,
+        module[fn_name](unpack({ ... })),
+        string.format("Module function %s() doesn't return self", fn_name)
+    )
 end
