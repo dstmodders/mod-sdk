@@ -44,6 +44,7 @@ local _MODULES = {
     World = "sdk/world",
 }
 
+local _IS_IN_CHARACTER_SELECT = false
 local _ON_ENTER_CHARACTER_SELECT = {}
 local _ON_LOAD_WORLD = {}
 local _ON_PLAYER_ACTIVATED = {}
@@ -82,6 +83,7 @@ local function AddWorldPostInit()
         end
 
         self:ListenForEvent("entercharacterselect", function(...)
+            _IS_IN_CHARACTER_SELECT = true
             if #_ON_ENTER_CHARACTER_SELECT > 0 then
                 for _, fn in pairs(_ON_ENTER_CHARACTER_SELECT) do
                     if type(fn) == "function" then
@@ -92,6 +94,7 @@ local function AddWorldPostInit()
         end)
 
         self:ListenForEvent("playeractivated", function(world, player, ...)
+            _IS_IN_CHARACTER_SELECT = false
             if #_ON_PLAYER_ACTIVATED > 0 and player == ThePlayer then
                 for _, fn in pairs(_ON_PLAYER_ACTIVATED) do
                     if type(fn) == "function" then
@@ -102,6 +105,7 @@ local function AddWorldPostInit()
         end)
 
         self:ListenForEvent("playerdeactivated", function(world, player, ...)
+            _IS_IN_CHARACTER_SELECT = false
             if #_ON_PLAYER_DEACTIVATED > 0 and player == ThePlayer then
                 for _, fn in pairs(_ON_PLAYER_DEACTIVATED) do
                     if type(fn) == "function" then
@@ -165,7 +169,7 @@ end
 --- General
 -- @section general
 
---- Gets an nvironment.
+--- Gets an environment.
 -- @treturn table
 function SDK.GetEnv()
     return SDK.env
@@ -234,6 +238,12 @@ end
 
 --- Post Initializers
 -- @section post-initializers
+
+--- Checks if in a character select.
+-- @treturn boolean
+function SDK.IsInCharacterSelect()
+    return _IS_IN_CHARACTER_SELECT
+end
 
 --- Triggered when entering the character select screen.
 -- @tparam function fn Function
