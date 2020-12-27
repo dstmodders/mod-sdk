@@ -296,6 +296,32 @@ function SDK.LoadModule(name, path)
     return true
 end
 
+--- Loads a single submodule.
+-- @tparam table parent
+-- @tparam string name
+-- @tparam string path
+-- @tparam[opt] table global
+-- @treturn boolean
+function SDK.LoadSubmodule(parent, name, path, global)
+    if not parent or not name or not path then
+        return false
+    end
+
+    local module = require(SDK.path .. "/" ..  path)
+    if type(module) ~= "table" then
+        return false
+    end
+
+    module = module._DoInit and module._DoInit(SDK) or module
+    module = SDK._DoInitModule(parent, module, name, global)
+
+    SDK._Info("Loaded", tostring(module))
+
+    parent[name] = module
+
+    return true
+end
+
 --- Post Initializers
 -- @section post-initializers
 
