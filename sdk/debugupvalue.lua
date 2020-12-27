@@ -19,6 +19,8 @@
 -- @release 0.1
 local DebugUpvalue = {}
 
+local SDK
+
 --- Helpers
 -- @section helpers
 
@@ -53,6 +55,17 @@ end
 function DebugUpvalue.SetUpvalue(start_fn, new_fn, ...)
     local _, fni, scope_fn = DebugUpvalue.GetUpvalue(start_fn, ...)
     debug.setupvalue(scope_fn, fni, new_fn)
+end
+
+--- Lifecycle
+-- @section lifecycle
+
+--- Initializes.
+-- @tparam SDK sdk
+-- @treturn SDK.DebugUpvalue
+function DebugUpvalue._DoInit(sdk)
+    SDK = sdk
+    return SDK._DoInitModule(SDK, DebugUpvalue, "DebugUpvalue")
 end
 
 return DebugUpvalue

@@ -80,7 +80,7 @@ end
 -- @treturn SDK.Input
 function Input._DoInit(sdk)
     SDK = sdk
-    return Input
+    return SDK._DoInitModule(SDK, Input, "Input")
 end
 
 return Input

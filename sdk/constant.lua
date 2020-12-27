@@ -13,6 +13,8 @@
 ----
 local Constant = {}
 
+local SDK
+
 --- General
 -- @section general
 
@@ -42,6 +44,17 @@ end
 -- @treturn string
 function Constant.GetStringName(name)
     return STRINGS.NAMES[string.upper(name)]
+end
+
+--- Lifecycle
+-- @section lifecycle
+
+--- Initializes.
+-- @tparam SDK sdk
+-- @treturn SDK.Constant
+function Constant._DoInit(sdk)
+    SDK = sdk
+    return SDK._DoInitModule(SDK, Constant, "Constant")
 end
 
 return Constant
