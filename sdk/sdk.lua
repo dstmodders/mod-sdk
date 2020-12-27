@@ -286,13 +286,14 @@ function SDK.LoadModule(name, path)
     end
 
     local module = require(path)
-    if type(module) == "table" then
-        SDK[name] = module._DoInit and module._DoInit(SDK) or module
-        SDK._Info("Loaded", "SDK." .. name)
-        return true
+    if type(module) ~= "table" then
+        return false
     end
 
-    return false
+    SDK[name] = module._DoInit and module._DoInit(SDK) or module
+    SDK._Info("Loaded", tostring(SDK[name]))
+
+    return true
 end
 
 --- Post Initializers
@@ -412,6 +413,9 @@ setmetatable(SDK, {
             return
         end
         return rawget(self, k)
+    end,
+    __tostring = function()
+        return "SDK"
     end,
 })
 
