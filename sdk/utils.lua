@@ -17,10 +17,7 @@
 ----
 local Utils = {}
 
-Utils.Chain = require "sdk/utils/chain"
-Utils.Methods = require "sdk/utils/methods"
-Utils.String = require "sdk/utils/string"
-Utils.Table = require "sdk/utils/table"
+local SDK
 
 --- Asserts if a field is not missing.
 -- @tparam string name
@@ -34,6 +31,24 @@ end
 -- @treturn boolean
 function Utils.IsInteger(value)
     return value == math.floor(value)
+end
+
+--- Lifecycle
+-- @section lifecycle
+
+--- Initializes.
+-- @tparam SDK sdk
+-- @treturn SDK.Utils
+function Utils._DoInit(sdk)
+    SDK = sdk
+
+    SDK._SetModuleName(SDK, Utils, "Utils")
+    SDK.LoadSubmodule(Utils, "Chain", "sdk/utils/chain")
+    SDK.LoadSubmodule(Utils, "Methods", "sdk/utils/methods")
+    SDK.LoadSubmodule(Utils, "String", "sdk/utils/string")
+    SDK.LoadSubmodule(Utils, "Table", "sdk/utils/table")
+
+    return SDK._DoInitModule(SDK, Utils, "Utils")
 end
 
 return Utils

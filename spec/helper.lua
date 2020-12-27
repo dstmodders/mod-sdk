@@ -8,6 +8,10 @@ require "spec/vector3"
 
 local preloads = {
     ["yoursubdirectory/sdk/sdk/utils"] = "./sdk/utils",
+    ["yoursubdirectory/sdk/sdk/utils/chain"] = "./sdk/utils/chain",
+    ["yoursubdirectory/sdk/sdk/utils/methods"] = "./sdk/utils/methods",
+    ["yoursubdirectory/sdk/sdk/utils/string"] = "./sdk/utils/string",
+    ["yoursubdirectory/sdk/sdk/utils/table"] = "./sdk/utils/table",
     class = "spec/class",
 }
 
