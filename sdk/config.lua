@@ -41,7 +41,7 @@ end
 -- @treturn SDK.Config
 function Config._DoInit(sdk)
     SDK = sdk
-    return SDK._DoInitModule(Config, "Config")
+    return SDK._DoInitModule(SDK, Config, "Config")
 end
 
 return Config

@@ -202,7 +202,7 @@ end
 -- @treturn SDK.Entity
 function Entity._DoInit(sdk)
     SDK = sdk
-    return SDK._DoInitModule(Entity, "Entity")
+    return SDK._DoInitModule(SDK, Entity, "Entity")
 end
 
 return Entity

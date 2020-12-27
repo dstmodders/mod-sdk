@@ -183,7 +183,7 @@ end
 -- @treturn SDK.Debug
 function Debug._DoInit(sdk)
     SDK = sdk
-    return SDK._DoInitModule(Debug, "Debug")
+    return SDK._DoInitModule(SDK, Debug, "Debug")
 end
 
 return Debug

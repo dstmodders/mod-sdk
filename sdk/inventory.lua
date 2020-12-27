@@ -175,7 +175,7 @@ end
 -- @treturn SDK.Inventory
 function Inventory._DoInit(sdk)
     SDK = sdk
-    return SDK._DoInitModule(Inventory, "Inventory", "ThePlayer")
+    return SDK._DoInitModule(SDK, Inventory, "Inventory", "ThePlayer")
 end
 
 return Inventory

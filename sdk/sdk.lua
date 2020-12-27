@@ -143,9 +143,8 @@ function SDK._DebugErrorNoFunction(module, fn_name)
     SDK.Debug.Error(string.format("SDK.%s.%s() doesn't exist", module, fn_name))
 end
 
-function SDK._DoInitModule(module, name, global)
-    local t = {}
-    setmetatable(t, {
+function SDK._DoInitModule(parent, module, name, global)
+    local mt = setmetatable({}, {
         __index = function(_, k)
             if global and not _G[global] then
                 SDK._DebugErrorNoCallWithoutGlobal(name, k, global)
@@ -164,11 +163,12 @@ function SDK._DoInitModule(module, name, global)
                 return nil
             end
         end,
-        __tostring = function()
-            return "SDK." .. name
-        end,
     })
-    return t
+
+    SDK._SetModuleName(parent, module, name)
+    SDK._SetModuleName(parent, mt, name)
+
+    return mt
 end
 
 function SDK._Error(...)

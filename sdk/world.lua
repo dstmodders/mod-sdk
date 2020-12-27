@@ -215,7 +215,7 @@ end
 -- @treturn SDK.World
 function World._DoInit(sdk)
     SDK = sdk
-    return SDK._DoInitModule(World, "World", "TheWorld")
+    return SDK._DoInitModule(SDK, World, "World", "TheWorld")
 end
 
 return World

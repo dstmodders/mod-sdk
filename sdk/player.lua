@@ -382,7 +382,7 @@ end
 -- @treturn SDK.Player
 function Player._DoInit(sdk)
     SDK = sdk
-    return SDK._DoInitModule(Player, "Player", "ThePlayer")
+    return SDK._DoInitModule(SDK, Player, "Player", "ThePlayer")
 end
 
 return Player

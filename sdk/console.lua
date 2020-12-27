@@ -50,7 +50,7 @@ end
 -- @treturn SDK.Console
 function Console._DoInit(sdk)
     SDK = sdk
-    return SDK._DoInitModule(Console, "Console")
+    return SDK._DoInitModule(SDK, Console, "Console")
 end
 
 return Console
