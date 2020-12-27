@@ -33,6 +33,7 @@ local SDK = {
     env = nil,
     modname = nil,
     path = nil,
+    path_full = nil,
 
     -- constants
     OVERRIDE = {
@@ -223,6 +224,12 @@ function SDK.GetPath()
     return SDK.path
 end
 
+--- Gets an SDK full path.
+-- @treturn string
+function SDK.GetPathFull()
+    return SDK.path_full
+end
+
 --- Loads an SDK.
 -- @tparam table env Environment
 -- @tparam string path Path
@@ -241,12 +248,13 @@ function SDK.Load(env, path, modules)
 
     SDK.env = env
     SDK.modname = env.modname
-    SDK.path = MODS_ROOT .. SDK.modname .. "/scripts/" .. path
+    SDK.path = path
+    SDK.path_full = MODS_ROOT .. SDK.modname .. "/scripts/" .. path
 
-    SDK._Info("Loading SDK:", SDK.path)
+    SDK._Info("Loading SDK:", SDK.path_full)
 
-    if softresolvefilepath(SDK.path .. "/sdk/sdk.lua") then
-        package.path = SDK.path .. "/?.lua;" .. package.path
+    if softresolvefilepath(SDK.path_full .. "/sdk/sdk.lua") then
+        package.path = SDK.path_full .. "/?.lua;" .. package.path
         SDK.LoadModule("Utils", path .. "/sdk/utils")
 
         local total = SDK.Utils.Table.Count(modules)

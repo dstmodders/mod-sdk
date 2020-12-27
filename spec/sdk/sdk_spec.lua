@@ -101,6 +101,7 @@ describe("#sdk SDK", function()
                     env = "GetEnv",
                     modname = "GetModName",
                     path = "GetPath",
+                    path_full = "GetPathFull",
                 }
 
                 for field, getter in pairs(getters) do
@@ -157,6 +158,7 @@ describe("#sdk SDK", function()
 
                     SDK.env = nil
                     SDK.path = nil
+                    SDK.path_full = nil
                 end)
 
                 teardown(function()
@@ -173,7 +175,13 @@ describe("#sdk SDK", function()
                 it("should add SDK.path", function()
                     assert.is_nil(SDK.path)
                     SDK.Load(env, "yoursubdirectory/sdk")
-                    assert.is_equal("./dst-mod-sdk/scripts/yoursubdirectory/sdk", SDK.path)
+                    assert.is_equal("yoursubdirectory/sdk", SDK.path)
+                end)
+
+                it("should add SDK.path_full", function()
+                    assert.is_nil(SDK.path_full)
+                    SDK.Load(env, "yoursubdirectory/sdk")
+                    assert.is_equal("./dst-mod-sdk/scripts/yoursubdirectory/sdk", SDK.path_full)
                 end)
 
                 describe("when path is resolved", function()
@@ -185,7 +193,7 @@ describe("#sdk SDK", function()
                         assert.spy(SDK._Info).was_not_called()
                         SDK.Load(env, "yoursubdirectory/sdk")
                         assert.spy(SDK._Info).was_called(3)
-                        assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path)
+                        assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils")
                         assert.spy(SDK._Info).was_called_with("Added world post initializer")
                     end)
@@ -210,7 +218,7 @@ describe("#sdk SDK", function()
                         assert.spy(SDK._Info).was_not_called()
                         SDK.Load(env, "yoursubdirectory/sdk")
                         assert.spy(SDK._Info).was_called(1)
-                        assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path)
+                        assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                     end)
 
                     it("should print error", function()
