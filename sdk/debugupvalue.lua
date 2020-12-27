@@ -1,8 +1,8 @@
 ----
--- Debug upvalue.
+-- Tool to debug upvalue.
 --
--- Includes features/functionality to access to some in-game local variables using `debug` module
--- and it has been inspired by `UpvalueHacker` from
+-- Includes functionality to access to some in-game local variables using `debug` module and it has
+-- been inspired by `UpvalueHacker` from
 -- [here](https://github.com/rezecib/Rezecib-s-Rebalance/blob/master/scripts/tools/upvaluehacker.lua)
 -- created by Rafael Lizarralde ([@rezecib](https://github.com/rezecib)).
 --
