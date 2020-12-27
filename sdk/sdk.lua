@@ -1,7 +1,18 @@
 ----
 -- Mod SDK.
 --
--- Includes Don't Starve Together mod SDK to simplify mod development.
+-- This is an SDK entry point. On its own it doesn't do much and requires `SDK.Load` to be called
+-- inside your `modmain.lua` in order to initialize SDK and load all corresponding submodules.
+--
+--    local SDK = require "<your subdirectory>/sdk/sdk/sdk"
+--
+--    SDK.Load(env, "<your subdirectory>/sdk")
+--
+-- That's it! You may now use SDK by requiring it in any of your mod files:
+--
+--    local SDK = require "<your subdirectory>/sdk/sdk/sdk"
+--
+--    dumptable(SDK.Entity.GetTags(ThePlayer))
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
@@ -12,7 +23,10 @@
 -- @license MIT
 -- @release 0.1
 ----
-_G.MOD_SDK_TEST = false
+local metatable = getmetatable(_G)
+if metatable and not (metatable.__declared and metatable.__declared.MOD_SDK_TEST) then
+    _G.MOD_SDK_TEST = false
+end
 
 local SDK = {
     -- general
@@ -55,18 +69,6 @@ local _ON_PLAYER_DEACTIVATED = {}
 
 --- Helpers
 -- @section helpers
-
-local function Info(...) -- luacheck: only
-    local msg = "[SDK]"
-    for i = 1, arg.n do
-        msg = msg .. " " .. tostring(arg[i])
-    end
-    print(msg)
-end
-
-local function Error(...)
-    Info("[error]", ...)
-end
 
 local function AddWorldPostInit()
     SDK.env.AddPrefabPostInit("world", function(self)
@@ -118,7 +120,7 @@ local function AddWorldPostInit()
             end
         end)
     end)
-    Info("Added world post initializer")
+    SDK._Info("Added world post initializer")
 end
 
 --- Internal
@@ -169,6 +171,21 @@ function SDK._DoInitModule(module, name, global)
     return t
 end
 
+function SDK._Error(...)
+    SDK._Info("[error]", ...)
+end
+
+function SDK._Info(...) -- luacheck: only
+    local msg = (SDK.env and SDK.env.modname)
+        and string.format("[sdk] [%s]", SDK.env.modname)
+        or "[sdk]"
+
+    for i = 1, arg.n do
+        msg = msg .. " " .. tostring(arg[i])
+    end
+    print(msg)
+end
+
 --- General
 -- @section general
 
@@ -190,41 +207,37 @@ function SDK.GetPath()
     return SDK.path
 end
 
---- Loads a single module.
--- @tparam string name
--- @tparam[opt] string path
-function SDK.LoadModule(name, path)
-    path = path ~= nil and path or _MODULES[name]
-    local module = require(path)
-    if type(module) == "table" then
-        SDK[name] = module._DoInit and module._DoInit(SDK) or module
-    end
-end
-
 --- Loads an SDK.
 -- @tparam table env Environment
 -- @tparam string path Path
--- @tparam table modules Modules to load
+-- @tparam[opt] table modules Modules to load
 -- @treturn boolean
 function SDK.Load(env, path, modules)
-    path = path ~= nil and path or "scripts/sdk"
+    if not env then
+        SDK._Error("SDK.Load():", "required env not passed")
+        return false
+    end
+
+    if not path then
+        SDK._Error("SDK.Load():", "required path not passed")
+        return false
+    end
 
     SDK.env = env
     SDK.modname = env.modname
-    SDK.path = MODS_ROOT .. SDK.modname .. "/" .. path
+    SDK.path = MODS_ROOT .. SDK.modname .. "/scripts/" .. path
 
-    Info(string.format("Loading from: %s", SDK.path))
+    SDK._Info("Loading SDK:", SDK.path)
 
     if softresolvefilepath(SDK.path .. "/sdk/sdk.lua") then
         package.path = SDK.path .. "/?.lua;" .. package.path
-
-        SDK.LoadModule("Utils", "sdk/utils")
+        SDK.LoadModule("Utils", path .. "/sdk/utils")
 
         local total = SDK.Utils.Table.Count(modules)
         if total ~= false and total > 0 then
             for k, v in pairs(modules) do
                 if type(k) == "number" then
-                    SDK.LoadModule(v)
+                    SDK.LoadModule(v, path .. "/" .. _MODULES[v])
                 else
                     SDK.LoadModule(k, v)
                 end
@@ -235,7 +248,26 @@ function SDK.Load(env, path, modules)
         return true
     end
 
-    Error(string.format("Path not resolved: %s", SDK.path))
+    SDK._Error("SDK.Load():", "path not resolved")
+    return false
+end
+
+--- Loads a single module.
+-- @tparam string name
+-- @tparam[opt] string path
+-- @treturn boolean
+function SDK.LoadModule(name, path)
+    if not name or not path then
+        return false
+    end
+
+    local module = require(path)
+    if type(module) == "table" then
+        SDK[name] = module._DoInit and module._DoInit(SDK) or module
+        SDK._Info("Loaded", "SDK." .. name)
+        return true
+    end
+
     return false
 end
 
@@ -351,7 +383,7 @@ setmetatable(SDK, {
                 k,
                 k
             )
-            Error(msg)
+            SDK._Error(msg)
             assert(false, msg)
             return
         end
