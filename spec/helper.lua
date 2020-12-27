@@ -7,6 +7,7 @@ _G.MOD_SDK_TEST = true
 require "spec/vector3"
 
 local preloads = {
+    ["yoursubdirectory/sdk/sdk/utils"] = "./sdk/utils",
     class = "spec/class",
 }
 

@@ -5,7 +5,7 @@ describe("#sdk SDK.Console", function()
     -- setup
     local match
 
-    -- before_each initialization
+    -- setup initialization
     local Console
 
     setup(function()
