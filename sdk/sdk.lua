@@ -23,8 +23,8 @@
 -- @license MIT
 -- @release 0.1
 ----
-local metatable = getmetatable(_G)
-if metatable and not (metatable.__declared and metatable.__declared.MOD_SDK_TEST) then
+local _mt = getmetatable(_G)
+if _mt and not (_mt.__declared and _mt.__declared.MOD_SDK_TEST) then
     _G.MOD_SDK_TEST = false
 end
 
@@ -184,6 +184,22 @@ function SDK._Info(...) -- luacheck: only
         msg = msg .. " " .. tostring(arg[i])
     end
     print(msg)
+end
+
+function SDK._SetModuleName(parent, module, name)
+    local fn = function()
+        return tostring(parent) .. "." .. name
+    end
+
+    local mt = getmetatable(module)
+    if mt then
+        mt.__tostring = fn
+        return
+    end
+
+    setmetatable(module, {
+        __tostring = fn
+    })
 end
 
 --- General
