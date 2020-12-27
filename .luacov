@@ -1,5 +1,3 @@
-return {
-  include = { "sdk" },
-  includeuntestedfiles = true,
-  runreport = true,
-}
+include = { "sdk" }
+includeuntestedfiles = true
+runreport = true
