@@ -52,6 +52,7 @@ describe("#sdk SDK.Entity", function()
     before_each(function()
         SDK = require "sdk/sdk"
         SDK.path = "./"
+        SDK.SetIsSilent(true)
 
         SDK.Utils = require "sdk/utils"
         SDK.Utils._DoInit(SDK)

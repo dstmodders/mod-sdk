@@ -33,6 +33,7 @@ describe("#sdk SDK.World", function()
         -- initialization
         SDK = require "sdk/sdk"
         SDK.path = "./"
+        SDK.SetIsSilent(true)
 
         SDK.Utils = require "sdk/utils"
         SDK.Utils._DoInit(SDK)

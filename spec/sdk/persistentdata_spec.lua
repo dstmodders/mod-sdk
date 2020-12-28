@@ -51,6 +51,7 @@ describe("#sdk SDK.PersistentData", function()
         SDK = require "sdk/sdk"
         SDK.env = { modname = "dst-mod-sdk" }
         SDK.path = "./"
+        SDK.SetIsSilent(true)
 
         SDK.Debug = require "sdk/debug"
         SDK.Debug._DoInit(SDK)

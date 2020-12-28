@@ -5,7 +5,8 @@ describe("#sdk SDK.Console", function()
     -- setup
     local match
 
-    -- setup initialization
+    -- before_each initialization
+    local SDK
     local Console
 
     setup(function()
@@ -23,9 +24,18 @@ describe("#sdk SDK.Console", function()
                 return 1, 2, 3
             end,
         })
+    end)
 
-        -- initialization
+    before_each(function()
+        SDK = require "sdk/sdk"
+        SDK.path = "./"
+        SDK.SetIsSilent(true)
+
+        SDK.Utils = require "sdk/utils"
+        SDK.Utils._DoInit(SDK)
+
         Console = require "sdk/console"
+        Console._DoInit(SDK)
     end)
 
     teardown(function()

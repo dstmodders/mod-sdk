@@ -31,6 +31,7 @@ end
 local SDK = {
     -- general
     env = nil,
+    is_silent = false,
     modname = nil,
     path = nil,
     path_full = nil,
@@ -177,6 +178,10 @@ function SDK._Error(...)
 end
 
 function SDK._Info(...) -- luacheck: only
+    if SDK.is_silent then
+        return
+    end
+
     local msg = (SDK.env and SDK.env.modname)
         and string.format("[sdk] [%s]", SDK.env.modname)
         or "[sdk]"
@@ -228,6 +233,12 @@ end
 -- @treturn string
 function SDK.GetPathFull()
     return SDK.path_full
+end
+
+--- Checks if in a silent state.
+-- @treturn string
+function SDK.IsSilent()
+    return SDK.is_silent
 end
 
 --- Loads an SDK.
@@ -320,6 +331,14 @@ function SDK.LoadSubmodule(parent, name, path, global)
     parent[name] = module
 
     return true
+end
+
+--- Sets a silent state.
+-- @tparam boolean is_silent
+-- @treturn SDK
+function SDK.SetIsSilent(is_silent)
+    SDK.is_silent = is_silent
+    return SDK
 end
 
 --- Post Initializers

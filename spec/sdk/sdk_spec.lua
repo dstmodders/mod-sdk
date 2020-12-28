@@ -6,7 +6,8 @@ describe("#sdk SDK", function()
     local SDK
 
     before_each(function()
-        SDK = require "sdk"
+        SDK = require "sdk/sdk"
+        SDK.SetIsSilent(true)
     end)
 
     describe("internal", function()
@@ -18,10 +19,12 @@ describe("#sdk SDK", function()
 
         before_each(function()
             _G.print = spy.new(Empty)
+            SDK.SetIsSilent(false)
         end)
 
         teardown(function()
             _G.print = _print
+            SDK.SetIsSilent(true)
         end)
 
         describe("Info()", function()

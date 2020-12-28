@@ -207,6 +207,7 @@ describe("#sdk SDK.Player", function()
         -- initialization
         SDK = require "sdk/sdk"
         SDK.path = "./"
+        SDK.SetIsSilent(true)
 
         SDK.Debug = require "sdk/debug"
         SDK.Debug._DoInit(SDK)
