@@ -11,9 +11,9 @@
 -- @license MIT
 -- @release 0.1
 ----
-local Debug = require "sdk/debug"
-
 local Thread = {}
+
+local SDK
 
 --- Starts a new thread.
 --
@@ -31,7 +31,7 @@ function Thread.Start(id, fn, whl_fn, init_fn, term_fn)
     end
 
     return StartThread(function()
-        Debug.String("Thread started")
+        SDK.Debug.String("Thread started")
         if init_fn then
             init_fn()
         end
@@ -51,14 +51,25 @@ function Thread.Clear(thread)
     local task = scheduler:GetCurrentTask()
     if thread or task then
         if thread and not task then
-            Debug.String("[" .. thread.id .. "]", "Thread cleared")
+            SDK.Debug.String("[" .. thread.id .. "]", "Thread cleared")
         else
-            Debug.String("Thread cleared")
+            SDK.Debug.String("Thread cleared")
         end
         thread = thread ~= nil and thread or task
         KillThreadsWithID(thread.id)
         thread:SetList(nil)
     end
+end
+
+--- Lifecycle
+-- @section lifecycle
+
+--- Initializes.
+-- @tparam SDK sdk
+-- @treturn SDK.Thread
+function Thread._DoInit(sdk)
+    SDK = sdk
+    return SDK._DoInitModule(SDK, Thread, "Thread")
 end
 
 return Thread

@@ -6,6 +6,7 @@ describe("#sdk SDK.World", function()
     local match
 
     -- before_each initialization
+    local SDK
     local World
 
     setup(function()
@@ -30,7 +31,14 @@ describe("#sdk SDK.World", function()
         }
 
         -- initialization
+        SDK = require "sdk/sdk"
+        SDK.path = "./"
+
+        SDK.Utils = require "sdk/utils"
+        SDK.Utils._DoInit(SDK)
+
         World = require "sdk/world"
+        World._DoInit(SDK)
     end)
 
     describe("general", function()

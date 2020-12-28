@@ -11,9 +11,9 @@
 -- @license MIT
 -- @release 0.1
 ----
-local Chain = require "sdk/utils/chain"
-
 local ModMain = {}
+
+local SDK
 
 local _GetModInfo
 
@@ -25,15 +25,15 @@ local _GetModInfo
 -- Overrides the global `KnownModIndex.GetModInfo` to hide the changelog if it's included in the
 -- description.
 --
--- @tparam[opt] boolean enable
+-- @tparam[opt] boolean is_enabled
 -- @treturn boolean
-function ModMain.HideChangelog(enable)
-    enable = enable ~= nil and true or false
+function ModMain.HideChangelog(is_enabled)
+    is_enabled = is_enabled ~= nil and true or false
 
-    if enable and not _GetModInfo then
+    if is_enabled and not _GetModInfo then
         _GetModInfo = KnownModIndex.GetModInfo
         KnownModIndex.GetModInfo = function(self, modname)
-            local mod = Chain.Get(self, "savedata", "known_mods", modname)
+            local mod = SDK.Utils.Chain.Get(self, "savedata", "known_mods", modname)
             if modname == ModMain.modname and mod then
                 local TrimString = TrimString
                 local modinfo = mod.modinfo
@@ -52,6 +52,17 @@ function ModMain.HideChangelog(enable)
     KnownModIndex.GetModInfo = _GetModInfo
     _GetModInfo = nil
     return false
+end
+
+--- Lifecycle
+-- @section lifecycle
+
+--- Initializes.
+-- @tparam SDK sdk
+-- @treturn SDK.ModMain
+function ModMain._DoInit(sdk)
+    SDK = sdk
+    return SDK._DoInitModule(SDK, ModMain, "ModMain")
 end
 
 return ModMain

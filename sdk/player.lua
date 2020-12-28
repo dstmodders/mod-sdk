@@ -13,9 +13,6 @@
 -- @license MIT
 -- @release 0.1
 ----
-local Chain = require "sdk/utils/chain"
-local Debug = require "sdk/debug"
-
 local Player = {}
 
 local SDK
@@ -50,10 +47,10 @@ function Player.GetClientTable(player, is_host_ignored)
             and TheNet:GetClientTableForUser(player.userid)
     end
 
-    local clients = Chain.Get(TheNet, "GetClientTable", true) or {}
+    local clients = SDK.Utils.Chain.Get(TheNet, "GetClientTable", true) or {}
     if is_host_ignored
         and type(clients) == "table"
-        and not Chain.Get(TheNet, "GetServerIsClientHosted", true)
+        and not SDK.Utils.Chain.Get(TheNet, "GetServerIsClientHosted", true)
     then
         clients = shallowcopy(clients)
         for k, v in pairs(clients) do
@@ -110,7 +107,7 @@ end
 -- @treturn boolean
 function Player.IsHUDChatInputScreenOpen(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "HUD", "IsChatInputScreenOpen", true)
+    return SDK.Utils.Chain.Get(player, "HUD", "IsChatInputScreenOpen", true)
 end
 
 --- Checks if a HUD console is open.
@@ -118,7 +115,7 @@ end
 -- @treturn boolean
 function Player.IsHUDConsoleScreenOpen(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "HUD", "IsConsoleScreenOpen", true)
+    return SDK.Utils.Chain.Get(player, "HUD", "IsConsoleScreenOpen", true)
 end
 
 --- Checks if a HUD writable screen is active.
@@ -126,7 +123,7 @@ end
 -- @treturn boolean
 function Player.IsHUDWriteableScreenActive(player)
     player = player ~= nil and player or ThePlayer
-    local screen = Chain.Get(TheFrontEnd, "GetActiveScreen", true)
+    local screen = SDK.Utils.Chain.Get(TheFrontEnd, "GetActiveScreen", true)
     if screen then
         local hud = Player.GetHUD(player)
         if hud and screen == hud.writeablescreen then
@@ -159,7 +156,7 @@ end
 -- @treturn boolean
 function Player.IsInvincible(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "components", "health", "invincible")
+    return SDK.Utils.Chain.Get(player, "components", "health", "invincible")
 end
 
 --- Checks if a player is on a platform.
@@ -167,10 +164,10 @@ end
 -- @treturn boolean
 function Player.IsOnPlatform(player)
     player = player ~= nil and player or ThePlayer
-    if Chain.Validate(TheWorld, "Map", "GetPlatformAtPoint")
-        and Chain.Validate(player, "GetPosition")
+    if SDK.Utils.Chain.Validate(TheWorld, "Map", "GetPlatformAtPoint")
+        and SDK.Utils.Chain.Validate(player, "GetPosition")
     then
-        return TheWorld.Map:GetPlatformAtPoint(Chain.Get(player:GetPosition(), "Get", true))
+        return TheWorld.Map:GetPlatformAtPoint(SDK.Utils.Chain.Get(player:GetPosition(), "Get", true))
             and true
             or false
     end
@@ -181,7 +178,7 @@ end
 -- @treturn boolean
 function Player.IsOverWater(player)
     player = player ~= nil and player or ThePlayer
-    local x, y, z = Chain.Get(player, "Transform", "GetWorldPosition", true)
+    local x, y, z = SDK.Utils.Chain.Get(player, "Transform", "GetWorldPosition", true)
     if TheWorld and TheWorld.Map and x and y and z then
         return not TheWorld.Map:IsVisualGroundAtPoint(x, y, z)
             and TheWorld.Map:GetTileAtPoint(x, y, z) ~= GROUND.INVALID
@@ -244,7 +241,7 @@ end
 -- @treturn number
 function Player.GetHealthPercent(player)
     player = player ~= nil and player or ThePlayer
-    local health = Chain.Get(player, "replica", "health", "GetPercent", true)
+    local health = SDK.Utils.Chain.Get(player, "replica", "health", "GetPercent", true)
     return health and health * 100
 end
 
@@ -256,7 +253,7 @@ end
 -- @treturn number
 function Player.GetHealthLimitPercent(player)
     player = player ~= nil and player or ThePlayer
-    local penalty = Chain.Get(player, "replica", "health", "GetPenaltyPercent", true)
+    local penalty = SDK.Utils.Chain.Get(player, "replica", "health", "GetPenaltyPercent", true)
     return penalty and (1 - penalty) * 100
 end
 
@@ -265,7 +262,7 @@ end
 -- @treturn number
 function Player.GetHealthPenaltyPercent(player)
     player = player ~= nil and player or ThePlayer
-    local penalty = Chain.Get(player, "replica", "health", "GetPenaltyPercent", true)
+    local penalty = SDK.Utils.Chain.Get(player, "replica", "health", "GetPenaltyPercent", true)
     return penalty and penalty * 100
 end
 
@@ -274,7 +271,7 @@ end
 -- @treturn number
 function Player.GetHungerPercent(player)
     player = player ~= nil and player or ThePlayer
-    local hunger = Chain.Get(player, "replica", "hunger", "GetPercent", true)
+    local hunger = SDK.Utils.Chain.Get(player, "replica", "hunger", "GetPercent", true)
     return hunger and hunger * 100
 end
 
@@ -283,7 +280,7 @@ end
 -- @treturn number
 function Player.GetMoisturePercent(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "GetMoisture", true)
+    return SDK.Utils.Chain.Get(player, "GetMoisture", true)
 end
 
 --- Gets a sanity value.
@@ -291,7 +288,7 @@ end
 -- @treturn number
 function Player.GetSanityPercent(player)
     player = player ~= nil and player or ThePlayer
-    local sanity = Chain.Get(player, "replica", "sanity", "GetPercent", true)
+    local sanity = SDK.Utils.Chain.Get(player, "replica", "sanity", "GetPercent", true)
     return sanity and sanity * 100
 end
 
@@ -300,7 +297,7 @@ end
 -- @treturn number
 function Player.GetTemperature(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "GetTemperature", true)
+    return SDK.Utils.Chain.Get(player, "GetTemperature", true)
 end
 
 --- Light Watcher
@@ -310,14 +307,14 @@ end
 -- @treturn number
 function Player.GetTimeInDark(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "LightWatcher", "GetTimeInDark", true)
+    return SDK.Utils.Chain.Get(player, "LightWatcher", "GetTimeInDark", true)
 end
 
 --- Gets a time in the light.
 -- @treturn number
 function Player.GetTimeInLight(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "LightWatcher", "GetTimeInLight", true)
+    return SDK.Utils.Chain.Get(player, "LightWatcher", "GetTimeInLight", true)
 end
 
 --- Checks if a player is in the light.
@@ -325,7 +322,7 @@ end
 -- @treturn boolean
 function Player.IsInLight(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "LightWatcher", "IsInLight", true)
+    return SDK.Utils.Chain.Get(player, "LightWatcher", "IsInLight", true)
 end
 
 --- Movement Prediction
@@ -336,7 +333,7 @@ end
 -- @treturn boolean
 function Player.HasMovementPrediction(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "components", "locomotor") ~= nil
+    return SDK.Utils.Chain.Get(player, "components", "locomotor") ~= nil
 end
 
 --- Enables/Disables the movement prediction.
@@ -345,14 +342,14 @@ end
 -- @treturn boolean
 function Player.SetMovementPrediction(is_enabled, player)
     if TheWorld.ismastersim then
-        Debug.Error("SDK.Player.SetMovementPrediction: Can't be toggled on the master simulation")
+        SDK.Debug.Error("SDK.Player.SetMovementPrediction: Can't be toggled on the master simulation")
         return false
     end
 
     is_enabled = is_enabled and true or false
     player = player ~= nil and player or ThePlayer
 
-    local locomotor = Chain.Get(player, "components", "locomotor")
+    local locomotor = SDK.Utils.Chain.Get(player, "components", "locomotor")
     if is_enabled then
         player:EnableMovementPrediction(true)
     elseif locomotor then
@@ -360,7 +357,7 @@ function Player.SetMovementPrediction(is_enabled, player)
         player:EnableMovementPrediction(false)
     end
 
-    Debug.String("Movement prediction:", is_enabled and "enabled" or "disabled")
+    SDK.Debug.String("Movement prediction:", is_enabled and "enabled" or "disabled")
     TheSim:SetSetting("misc", "movementprediction", tostring(is_enabled))
 
     return is_enabled

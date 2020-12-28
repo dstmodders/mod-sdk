@@ -10,6 +10,7 @@ describe("#sdk SDK.Player", function()
     local player_dead, player_hopping, player_over_water, player_running, player_sinking, players
 
     -- before_each initialization
+    local SDK
     local Player
 
     local function EachPlayer(fn, except, init_fn)
@@ -204,7 +205,17 @@ describe("#sdk SDK.Player", function()
         })
 
         -- initialization
+        SDK = require "sdk/sdk"
+        SDK.path = "./"
+
+        SDK.Debug = require "sdk/debug"
+        SDK.Debug._DoInit(SDK)
+
+        SDK.Utils = require "sdk/utils"
+        SDK.Utils._DoInit(SDK)
+
         Player = require "sdk/player"
+        Player._DoInit(SDK)
     end)
 
     describe("general", function()

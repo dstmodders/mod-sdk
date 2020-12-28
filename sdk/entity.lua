@@ -11,10 +11,6 @@
 -- @license MIT
 -- @release 0.1
 ----
-local Chain = require "sdk/utils/chain"
-local Debug = require "sdk/debug"
-local Table = require "sdk/utils/table"
-
 local Entity = {}
 
 local SDK
@@ -66,14 +62,14 @@ function Entity.GetTags(entity, is_all)
             end
         else
             for tag in tags:gmatch("%S+") do
-                if not Table.HasValue(result, tag) then
+                if not SDK.Utils.Table.HasValue(result, tag) then
                     table.insert(result, tag)
                 end
             end
         end
 
         if #result > 0 then
-            return Table.SortAlphabetically(result)
+            return SDK.Utils.Table.SortAlphabetically(result)
         end
     end
 end
@@ -91,7 +87,7 @@ function Entity.GetTentSleeper(tent, range)
     range = range ~= nil and range or 100
 
     local player
-    local sleepingbag = Chain.Get(tent, "components", "sleepingbag")
+    local sleepingbag = SDK.Utils.Chain.Get(tent, "components", "sleepingbag")
     if sleepingbag then
         player = sleepingbag.sleeper
     end
@@ -109,7 +105,7 @@ end
 function Entity.SetDebugEntity(entity)
     if entity then
         SetDebugEntity(entity)
-        Debug.String("New debug entity:", entity:GetDisplayName())
+        SDK.Debug.String("New debug entity:", entity:GetDisplayName())
         return true
     end
     return false

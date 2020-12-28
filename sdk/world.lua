@@ -13,10 +13,6 @@
 -- @license MIT
 -- @release 0.1
 ----
-local Chain = require "sdk/utils/chain"
-local DebugUpvalue = require "sdk/debugupvalue"
-local Table = require "sdk/utils/table"
-
 local World = {}
 
 local SDK
@@ -75,8 +71,8 @@ end
 -- @tparam Vector3 pt Point to check
 -- @treturn boolean
 function World.IsPointPassable(pt)
-    return Chain.Validate(TheWorld, "Map", "IsPassableAtPoint")
-        and Chain.Validate(pt, "Get")
+    return SDK.Utils.Chain.Validate(TheWorld, "Map", "IsPassableAtPoint")
+        and SDK.Utils.Chain.Validate(pt, "Get")
         and TheWorld.Map:IsPassableAtPoint(pt:Get())
         or false
 end
@@ -102,7 +98,7 @@ end
 -- @tparam string phase Current phase
 -- @treturn string Next phase
 function World.GetPhaseNext(phase)
-    return Table.NextValue({ "day", "dusk", "night" }, phase)
+    return SDK.Utils.Table.NextValue({ "day", "dusk", "night" }, phase)
 end
 
 --- Gets the time until a certain phase.
@@ -114,7 +110,7 @@ end
 -- @tparam string phase
 -- @treturn number
 function World.GetTimeUntilPhase(phase)
-    local clock = Chain.Get(TheWorld, "net", "components", "clock")
+    local clock = SDK.Utils.Chain.Get(TheWorld, "net", "components", "clock")
     return clock and clock:GetTimeUntilPhase(phase)
 end
 
@@ -146,7 +142,7 @@ end
 -- @treturn[1] Weather
 -- @treturn[2] CaveWeather
 function World.GetWeatherComponent()
-    local components = Chain.Get(TheWorld, "net", "components")
+    local components = SDK.Utils.Chain.Get(TheWorld, "net", "components")
     if components then
         return World.IsCave() and components.caveweather or components.weather
     end
@@ -169,21 +165,21 @@ end
 --- Overrides `Weather:OnUpdate()`.
 -- @tparam Weather|CaveWeather self
 function World.WeatherOnUpdate(self)
-    local _moisturefloor = DebugUpvalue.GetUpvalue(self.GetDebugString, "_moisturefloor")
-    local _moisturerate = DebugUpvalue.GetUpvalue(self.GetDebugString, "_moisturerate")
-    local _temperature = DebugUpvalue.GetUpvalue(self.GetDebugString, "_temperature")
+    local _moisturefloor = SDK.DebugUpvalue.GetUpvalue(self.GetDebugString, "_moisturefloor")
+    local _moisturerate = SDK.DebugUpvalue.GetUpvalue(self.GetDebugString, "_moisturerate")
+    local _temperature = SDK.DebugUpvalue.GetUpvalue(self.GetDebugString, "_temperature")
 
-    local _peakprecipitationrate = DebugUpvalue.GetUpvalue(
+    local _peakprecipitationrate = SDK.DebugUpvalue.GetUpvalue(
         self.GetDebugString,
         "_peakprecipitationrate"
     )
 
-    local CalculatePrecipitationRate = DebugUpvalue.GetUpvalue(
+    local CalculatePrecipitationRate = SDK.DebugUpvalue.GetUpvalue(
         self.GetDebugString,
         "CalculatePrecipitationRate"
     )
 
-    local CalculateWetnessRate = DebugUpvalue.GetUpvalue(
+    local CalculateWetnessRate = SDK.DebugUpvalue.GetUpvalue(
         self.GetDebugString,
         "CalculateWetnessRate"
     )

@@ -52,9 +52,6 @@
 -- @license MIT
 -- @release 0.1
 ----
-local Chain = require "sdk/utils/chain"
-local Debug = require "sdk/debug"
-
 local _DEFAULT_PERSIST_DATA = { general = {}, servers = {} }
 
 local PersistentData = {
@@ -215,7 +212,7 @@ function PersistentData.Get(key, dest, field)
 
         local value = PersistentData.data.general[key]
         if value then
-            Debug.String("[persistent_data]", "[get]", key)
+            SDK.Debug.String("[persistent_data]", "[get]", key)
             if dest then
                 field = field ~= nil and field or key
                 dest[field] = value
@@ -223,7 +220,7 @@ function PersistentData.Get(key, dest, field)
             return value
         end
 
-        Debug.Error("[persistent_data]", "[get]", key)
+        SDK.Debug.Error("[persistent_data]", "[get]", key)
     elseif PersistentData.mode == PersistentData.SERVER then
         local server = PersistentData.GetServer()
         if not server or not server.data then
@@ -232,7 +229,7 @@ function PersistentData.Get(key, dest, field)
 
         local value = server.data[key]
         if value then
-            Debug.String("[persistent_data]", "[get]", "[" .. PersistentData.server_id .. "]", key)
+            SDK.Debug.String("[persistent_data]", "[get]", "[" .. PersistentData.server_id .. "]", key)
             if dest then
                 field = field ~= nil and field or key
                 dest[field] = value
@@ -241,7 +238,7 @@ function PersistentData.Get(key, dest, field)
             return value
         end
 
-        Debug.Error("[persistent_data]", "[get]", "[" .. PersistentData.server_id .. "]", key)
+        SDK.Debug.Error("[persistent_data]", "[get]", "[" .. PersistentData.server_id .. "]", key)
     end
 end
 
@@ -259,13 +256,13 @@ function PersistentData.Set(key, value)
             PersistentData.data.general = {}
         end
 
-        Debug.String("[persistent_data]", "[set]", key .. ":", value)
+        SDK.Debug.String("[persistent_data]", "[set]", key .. ":", value)
         PersistentData.data.general[key] = value
         PersistentData.is_dirty = true
     elseif PersistentData.mode == PersistentData.SERVER then
         local data = PersistentData.GetServerData()
         if data then
-            Debug.String(
+            SDK.Debug.String(
                 "[persistent_data]",
                 "[set]",
                 "[" .. PersistentData.server_id .. "]",
@@ -287,7 +284,7 @@ end
 --
 -- @treturn SDK.PersistentData
 function PersistentData.CleanServers()
-    local servers = Chain.Get(PersistentData, "data", "servers")
+    local servers = SDK.Utils.Chain.Get(PersistentData, "data", "servers")
     if type(servers) == "table" then
         local i = 0
         local time = os.time()
@@ -295,7 +292,7 @@ function PersistentData.CleanServers()
             i = i + 1
             if server and server.lastseen then
                 if os.difftime(time, server.lastseen) > PersistentData.server_expire_time then
-                    Debug.String("[persistent_data]", "[remove]", "[" .. id .. "]")
+                    SDK.Debug.String("[persistent_data]", "[remove]", "[" .. id .. "]")
                     PersistentData.data.servers[id] = nil
                     PersistentData.is_dirty = true
                 end
@@ -326,7 +323,7 @@ function PersistentData.GetServer()
             return server
         end
     end
-    Debug.Error("[persistent_data]", "No server data")
+    SDK.Debug.Error("[persistent_data]", "No server data")
 end
 
 --- Gets a server ID.
@@ -336,7 +333,7 @@ end
 -- @treturn string
 -- @todo Investigate uniqueness of `GetMasterSessionId()` and possible collisions
 function PersistentData.GetServerID()
-    return Chain.Get(TheWorld, "net", "components", "shardstate", "GetMasterSessionId", true)
+    return SDK.Utils.Chain.Get(TheWorld, "net", "components", "shardstate", "GetMasterSessionId", true)
 end
 
 --- Gets a server last seen time.
@@ -383,7 +380,7 @@ end
 --
 -- @tparam[opt] function cb Callback
 function PersistentData.Load(cb)
-    Debug.String(
+    SDK.Debug.String(
         "[persistent_data]",
         "[load]",
         string.format("Loading %s...", PersistentData.GetSaveName())
@@ -405,14 +402,14 @@ end
 -- @tparam[opt] function cb Callback
 function PersistentData.OnLoad(str, cb)
     if str == nil or string.len(str) == 0 then
-        Debug.Error("[persistent_data]", "[load]", "Failure", "(empty string)")
+        SDK.Debug.Error("[persistent_data]", "[load]", "Failure", "(empty string)")
         if cb then
             cb(false)
         end
         return
     end
 
-    Debug.String("[persistent_data]", "[load]", "Success", "(length: " .. #str .. ")")
+    SDK.Debug.String("[persistent_data]", "[load]", "Success", "(length: " .. #str .. ")")
 
     local data = TrackedAssert(
         "TheSim:GetPersistentString " .. PersistentData.name,
@@ -442,10 +439,10 @@ end
 
 --- Saves.
 -- @tparam[opt] function cb Callback
--- @tparam[opt] string name Debug name
+-- @tparam[opt] string name SDK.Debug name
 function PersistentData.Save(cb, name)
     if PersistentData.is_dirty then
-        Debug.String("[persistent_data]", "[save]", name ~= nil
+        SDK.Debug.String("[persistent_data]", "[save]", name ~= nil
             and string.format("Saved (%s)", name)
             or "Saved"
         )
@@ -474,11 +471,7 @@ end
 -- @treturn SDK.PersistentData
 function PersistentData._DoInit(sdk)
     SDK = sdk
-    return PersistentData
-end
-
-if _G.MOD_SDK_TEST then
-    PersistentData.Debug = Debug
+    return SDK._DoInitModule(SDK, PersistentData, "PersistentData")
 end
 
 return PersistentData

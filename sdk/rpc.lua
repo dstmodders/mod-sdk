@@ -11,9 +11,9 @@
 -- @license MIT
 -- @release 0.1
 ----
-local Debug = require "sdk/debug"
-
 local RPC = {}
+
+local SDK
 
 local _SendRPCToServer
 
@@ -34,9 +34,9 @@ function RPC.DisableSendToServer()
     if not _SendRPCToServer then
         _SendRPCToServer = SendRPCToServer
         SendRPCToServer = function() end
-        Debug.String("SendRPCToServer: disabled")
+        SDK.Debug.String("SendRPCToServer: disabled")
     else
-        Debug.String("SendRPCToServer: already disabled")
+        SDK.Debug.String("SendRPCToServer: already disabled")
     end
 end
 
@@ -45,10 +45,21 @@ function RPC.EnableSendToServer()
     if _SendRPCToServer then
         SendRPCToServer = _SendRPCToServer
         _SendRPCToServer = nil
-        Debug.String("SendRPCToServer: enabled")
+        SDK.Debug.String("SendRPCToServer: enabled")
     else
-        Debug.String("SendRPCToServer: already enabled")
+        SDK.Debug.String("SendRPCToServer: already enabled")
     end
+end
+
+--- Lifecycle
+-- @section lifecycle
+
+--- Initializes.
+-- @tparam SDK sdk
+-- @treturn SDK.RPC
+function RPC._DoInit(sdk)
+    SDK = sdk
+    return SDK._DoInitModule(SDK, RPC, "RPC")
 end
 
 return RPC

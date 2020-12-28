@@ -11,10 +11,6 @@
 -- @license MIT
 -- @release 0.1
 ----
-local Chain = require "sdk/utils/chain"
-local Constant = require "sdk/constant"
-local Debug = require "sdk/debug"
-
 local Inventory = {}
 
 local SDK
@@ -36,17 +32,17 @@ function Inventory.EquipActiveItem(is_using_the_net)
     end or SendRPCToServer
 
     if item:HasTag("_equippable") then
-        if Chain.Get(item, "replica", "equippable", "EquipSlot", true) then
+        if SDK.Utils.Chain.Get(item, "replica", "equippable", "EquipSlot", true) then
             _SendRPCToServer(RPC.SwapEquipWithActiveItem)
         end
         _SendRPCToServer(RPC.EquipActiveItem)
         return true
     end
 
-    Debug.Error(
+    SDK.Debug.Error(
         "SDK.Inventory.EquipActiveItem():",
         "not equippable",
-        "(" ..  Constant.GetStringName(item.prefab) .. ")"
+        "(" ..  SDK.Constant.GetStringName(item.prefab) .. ")"
     )
 
     return false
@@ -66,7 +62,7 @@ end
 -- @treturn table
 function Inventory.GetInventory(player)
     player = player ~= nil and player or ThePlayer
-    return Chain.Get(player, "replica", "inventory")
+    return SDK.Utils.Chain.Get(player, "replica", "inventory")
 end
 
 --- Gets inventory items.
@@ -142,11 +138,11 @@ function Inventory.GetEquippedBackpackContainer(player)
     local backpack = Inventory.GetEquippedBackpack(player)
     if backpack then
         local container = SDK.World.IsMasterSim()
-            and Chain.Get(backpack, "components", "container")
-            or Chain.Get(backpack, "replica", "container", "classified")
+            and SDK.Utils.Chain.Get(backpack, "components", "container")
+            or SDK.Utils.Chain.Get(backpack, "replica", "container", "classified")
 
         if not container then
-            Debug.Error("SDK.Inventory.GetEquippedBackpackContainer():", "container not available")
+            SDK.Debug.Error("SDK.Inventory.GetEquippedBackpackContainer():", "container not available")
         end
     end
 end

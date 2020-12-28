@@ -9,18 +9,11 @@ describe("#sdk SDK.PersistentData", function()
     local MasterSessionId
 
     -- before_each initialization
+    local SDK
     local PersistentData
 
     setup(function()
-        -- match
         match = require "luassert.match"
-
-        -- globals
-        _G.SDK = {
-            env = {
-                modname = "dst-mod-sdk",
-            },
-        }
     end)
 
     teardown(function()
@@ -55,21 +48,31 @@ describe("#sdk SDK.PersistentData", function()
         })
 
         -- initialization
+        SDK = require "sdk/sdk"
+        SDK.env = { modname = "dst-mod-sdk" }
+        SDK.path = "./"
+
+        SDK.Debug = require "sdk/debug"
+        SDK.Debug._DoInit(SDK)
+
+        SDK.Utils = require "sdk/utils"
+        SDK.Utils._DoInit(SDK)
+
         PersistentData = require "sdk/persistentdata"
-        PersistentData._DoInit(_G.SDK)
+        PersistentData._DoInit(SDK)
 
         -- debug
-        PersistentData.Debug.Error = spy.on(PersistentData.Debug, "Error")
-        PersistentData.Debug.String = spy.on(PersistentData.Debug, "String")
+        SDK.Debug.Error = spy.on(SDK.Debug, "Error")
+        SDK.Debug.String = spy.on(SDK.Debug, "String")
     end)
 
     local function TestDebugErrorNoServerData(fn_name, ...)
         local args = { ... }
         it("should debug error string", function()
-            assert.spy(PersistentData.Debug.Error).was_not_called()
+            assert.spy(SDK.Debug.Error).was_not_called()
             PersistentData[fn_name](unpack(args))
-            assert.spy(PersistentData.Debug.Error).was_called(1)
-            assert.spy(PersistentData.Debug.Error).was_called_with(
+            assert.spy(SDK.Debug.Error).was_called(1)
+            assert.spy(SDK.Debug.Error).was_called_with(
                 "[persistent_data]",
                 "No server data"
             )
@@ -182,10 +185,10 @@ describe("#sdk SDK.PersistentData", function()
                     end)
 
                     it("should debug error string", function()
-                        assert.spy(PersistentData.Debug.Error).was_not_called()
+                        assert.spy(SDK.Debug.Error).was_not_called()
                         PersistentData.Get("foo")
-                        assert.spy(PersistentData.Debug.Error).was_called(1)
-                        assert.spy(PersistentData.Debug.Error).was_called_with(
+                        assert.spy(SDK.Debug.Error).was_called(1)
+                        assert.spy(SDK.Debug.Error).was_called_with(
                             "[persistent_data]",
                             "[get]",
                             "foo"
@@ -213,10 +216,10 @@ describe("#sdk SDK.PersistentData", function()
                     end)
 
                     it("should debug string", function()
-                        assert.spy(PersistentData.Debug.String).was_not_called()
+                        assert.spy(SDK.Debug.String).was_not_called()
                         PersistentData.Get("foo")
-                        assert.spy(PersistentData.Debug.String).was_called(1)
-                        assert.spy(PersistentData.Debug.String).was_called_with(
+                        assert.spy(SDK.Debug.String).was_called(1)
+                        assert.spy(SDK.Debug.String).was_called_with(
                             "[persistent_data]",
                             "[get]",
                             "foo"
@@ -249,10 +252,10 @@ describe("#sdk SDK.PersistentData", function()
 
                     describe("and in gameplay", function()
                         it("should debug error string", function()
-                            assert.spy(PersistentData.Debug.Error).was_not_called()
+                            assert.spy(SDK.Debug.Error).was_not_called()
                             PersistentData.Get("foo")
-                            assert.spy(PersistentData.Debug.Error).was_called(1)
-                            assert.spy(PersistentData.Debug.Error).was_called_with(
+                            assert.spy(SDK.Debug.Error).was_called(1)
+                            assert.spy(SDK.Debug.Error).was_called_with(
                                 "[persistent_data]",
                                 "[get]",
                                 "[" .. PersistentData.server_id .. "]",
@@ -304,10 +307,10 @@ describe("#sdk SDK.PersistentData", function()
 
                     describe("and in gameplay", function()
                         it("should debug string", function()
-                            assert.spy(PersistentData.Debug.String).was_not_called()
+                            assert.spy(SDK.Debug.String).was_not_called()
                             PersistentData.Get("foo")
-                            assert.spy(PersistentData.Debug.String).was_called(1)
-                            assert.spy(PersistentData.Debug.String).was_called_with(
+                            assert.spy(SDK.Debug.String).was_called(1)
+                            assert.spy(SDK.Debug.String).was_called_with(
                                 "[persistent_data]",
                                 "[get]",
                                 "[" .. PersistentData.server_id .. "]",
@@ -330,10 +333,10 @@ describe("#sdk SDK.PersistentData", function()
                             end)
 
                             it("should debug error string", function()
-                                assert.spy(PersistentData.Debug.Error).was_not_called()
+                                assert.spy(SDK.Debug.Error).was_not_called()
                                 PersistentData.Get("foo")
-                                assert.spy(PersistentData.Debug.Error).was_called(1)
-                                assert.spy(PersistentData.Debug.Error).was_called_with(
+                                assert.spy(SDK.Debug.Error).was_called(1)
+                                assert.spy(SDK.Debug.Error).was_called_with(
                                     "[persistent_data]",
                                     "[get]",
                                     "[" .. PersistentData.server_id .. "]",
@@ -365,10 +368,10 @@ describe("#sdk SDK.PersistentData", function()
                 end)
 
                 it("should debug string", function()
-                    assert.spy(PersistentData.Debug.String).was_not_called()
+                    assert.spy(SDK.Debug.String).was_not_called()
                     PersistentData.Set("foo", "bar")
-                    assert.spy(PersistentData.Debug.String).was_called(1)
-                    assert.spy(PersistentData.Debug.String).was_called_with(
+                    assert.spy(SDK.Debug.String).was_called(1)
+                    assert.spy(SDK.Debug.String).was_called_with(
                         "[persistent_data]",
                         "[set]",
                         "foo:",
@@ -418,10 +421,10 @@ describe("#sdk SDK.PersistentData", function()
                 describe("and in gameplay", function()
                     describe("and a server exists", function()
                         it("should debug string", function()
-                            assert.spy(PersistentData.Debug.String).was_not_called()
+                            assert.spy(SDK.Debug.String).was_not_called()
                             PersistentData.Set("foo", "bar")
-                            assert.spy(PersistentData.Debug.String).was_called(1)
-                            assert.spy(PersistentData.Debug.String).was_called_with(
+                            assert.spy(SDK.Debug.String).was_called(1)
+                            assert.spy(SDK.Debug.String).was_called_with(
                                 "[persistent_data]",
                                 "[set]",
                                 "[" .. PersistentData.server_id .. "]",
@@ -454,10 +457,10 @@ describe("#sdk SDK.PersistentData", function()
     describe("loading", function()
         describe("Load()", function()
             it("should debug string", function()
-                assert.spy(PersistentData.Debug.String).was_not_called()
+                assert.spy(SDK.Debug.String).was_not_called()
                 PersistentData.Load()
-                assert.spy(PersistentData.Debug.String).was_called(1)
-                assert.spy(PersistentData.Debug.String).was_called_with(
+                assert.spy(SDK.Debug.String).was_called(1)
+                assert.spy(SDK.Debug.String).was_called_with(
                     "[persistent_data]",
                     "[load]",
                     string.format("Loading %s...", PersistentData.GetSaveName())
@@ -496,10 +499,10 @@ describe("#sdk SDK.PersistentData", function()
 
             local function TestEmptyOrNilString(str)
                 it("should debug error string", function()
-                    assert.spy(PersistentData.Debug.Error).was_not_called()
+                    assert.spy(SDK.Debug.Error).was_not_called()
                     PersistentData.OnLoad(str)
-                    assert.spy(PersistentData.Debug.Error).was_called(1)
-                    assert.spy(PersistentData.Debug.Error).was_called_with(
+                    assert.spy(SDK.Debug.Error).was_called(1)
+                    assert.spy(SDK.Debug.Error).was_called_with(
                         "[persistent_data]",
                         "[load]",
                         "Failure",
@@ -537,10 +540,10 @@ describe("#sdk SDK.PersistentData", function()
                 end)
 
                 it("should debug string", function()
-                    assert.spy(PersistentData.Debug.String).was_not_called()
+                    assert.spy(SDK.Debug.String).was_not_called()
                     PersistentData.OnLoad(str)
-                    assert.spy(PersistentData.Debug.String).was_called(2)
-                    assert.spy(PersistentData.Debug.String).was_called_with(
+                    assert.spy(SDK.Debug.String).was_called(2)
+                    assert.spy(SDK.Debug.String).was_called_with(
                         "[persistent_data]",
                         "[load]",
                         "Success",
@@ -619,10 +622,10 @@ describe("#sdk SDK.PersistentData", function()
 
                 describe("and the name is passed", function()
                     it("should debug string", function()
-                        assert.spy(PersistentData.Debug.String).was_not_called()
+                        assert.spy(SDK.Debug.String).was_not_called()
                         PersistentData.Save(nil, "Test")
-                        assert.spy(PersistentData.Debug.String).was_called(1)
-                        assert.spy(PersistentData.Debug.String).was_called_with(
+                        assert.spy(SDK.Debug.String).was_called(1)
+                        assert.spy(SDK.Debug.String).was_called_with(
                             "[persistent_data]",
                             "[save]",
                             "Saved (Test)"
@@ -632,10 +635,10 @@ describe("#sdk SDK.PersistentData", function()
 
                 describe("and the name is not passed", function()
                     it("should debug string", function()
-                        assert.spy(PersistentData.Debug.String).was_not_called()
+                        assert.spy(SDK.Debug.String).was_not_called()
                         PersistentData.Save()
-                        assert.spy(PersistentData.Debug.String).was_called(1)
-                        assert.spy(PersistentData.Debug.String).was_called_with(
+                        assert.spy(SDK.Debug.String).was_called(1)
+                        assert.spy(SDK.Debug.String).was_called_with(
                             "[persistent_data]",
                             "[save]",
                             "Saved"
@@ -682,9 +685,9 @@ describe("#sdk SDK.PersistentData", function()
                 end)
 
                 it("shouldn't debug string", function()
-                    assert.spy(PersistentData.Debug.String).was_not_called()
+                    assert.spy(SDK.Debug.String).was_not_called()
                     PersistentData.Save()
-                    assert.spy(PersistentData.Debug.String).was_not_called()
+                    assert.spy(SDK.Debug.String).was_not_called()
                 end)
 
                 it("shouldn't call the SavePersistentString()", function()

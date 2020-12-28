@@ -6,6 +6,7 @@ describe("#sdk SDK.Entity", function()
     local test_debug_string
 
     -- before_each initialization
+    local SDK
     local Entity
 
     setup(function()
@@ -49,7 +50,14 @@ describe("#sdk SDK.Entity", function()
     end)
 
     before_each(function()
+        SDK = require "sdk/sdk"
+        SDK.path = "./"
+
+        SDK.Utils = require "sdk/utils"
+        SDK.Utils._DoInit(SDK)
+
         Entity = require "sdk/entity"
+        Entity._DoInit(SDK)
     end)
 
     describe("general", function()

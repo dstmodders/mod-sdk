@@ -11,9 +11,9 @@
 -- @license MIT
 -- @release 0.1
 ----
-local Table = require "sdk/utils/table"
-
 local Dump = {}
+
+local SDK
 
 --- Helpers
 -- @section helpers
@@ -55,7 +55,7 @@ function Dump.GetComponents(entity, is_sorted)
             end
         end
     end
-    return is_sorted and Table.SortAlphabetically(result) or result
+    return is_sorted and SDK.Utils.Table.SortAlphabetically(result) or result
 end
 
 --- Gets a table on all entity event listeners.
@@ -76,7 +76,7 @@ function Dump.GetEventListeners(entity, is_sorted)
             end
         end
     end
-    return is_sorted and Table.SortAlphabetically(result) or result
+    return is_sorted and SDK.Utils.Table.SortAlphabetically(result) or result
 end
 
 --- Gets a table on all entity fields.
@@ -97,7 +97,7 @@ function Dump.GetFields(entity, is_sorted)
             end
         end
     end
-    return is_sorted and Table.SortAlphabetically(result) or result
+    return is_sorted and SDK.Utils.Table.SortAlphabetically(result) or result
 end
 
 --- Gets a table on all entity functions.
@@ -127,7 +127,7 @@ function Dump.GetFunctions(entity, is_sorted)
         end
     end
 
-    return is_sorted and Table.SortAlphabetically(result) or result
+    return is_sorted and SDK.Utils.Table.SortAlphabetically(result) or result
 end
 
 --- Gets a table on all entity replicas.
@@ -146,7 +146,7 @@ function Dump.GetReplicas(entity, is_sorted)
             table.insert(result, k)
         end
     end
-    return is_sorted and Table.SortAlphabetically(result) or result
+    return is_sorted and SDK.Utils.Table.SortAlphabetically(result) or result
 end
 
 --- Dumps all entity components.
@@ -217,6 +217,17 @@ end
 -- @treturn table
 function Dump.Replicas(entity, name, prepend)
     PrintDumpValues(Dump.GetReplicas(entity, true), "Replicas", name, prepend)
+end
+
+--- Lifecycle
+-- @section lifecycle
+
+--- Initializes.
+-- @tparam SDK sdk
+-- @treturn SDK.Dump
+function Dump._DoInit(sdk)
+    SDK = sdk
+    return SDK._DoInitModule(SDK, Dump, "Dump")
 end
 
 return Dump
