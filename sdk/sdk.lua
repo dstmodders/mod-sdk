@@ -267,15 +267,17 @@ function SDK.Load(env, path, modules)
     if softresolvefilepath(SDK.path_full .. "/sdk/sdk.lua") then
         package.path = SDK.path_full .. "/?.lua;" .. package.path
         SDK.LoadModule("Utils", path .. "/sdk/utils")
-
-        local total = SDK.Utils.Table.Count(modules)
-        if total ~= false and total > 0 then
+        if type(modules) == "table" and SDK.Utils.Table.Count(modules) > 0 then
             for k, v in pairs(modules) do
                 if type(k) == "number" then
                     SDK.LoadModule(v, path .. "/" .. _MODULES[v])
                 else
                     SDK.LoadModule(k, v)
                 end
+            end
+        else
+            for k, v in pairs(_MODULES) do
+                SDK.LoadModule(k, v)
             end
         end
 
