@@ -7,11 +7,26 @@ _G.MOD_SDK_TEST = true
 require "spec/vector3"
 
 local preloads = {
+    ["yoursubdirectory/sdk/sdk/config"] = "./sdk/config",
+    ["yoursubdirectory/sdk/sdk/console"] = "./sdk/console",
+    ["yoursubdirectory/sdk/sdk/constant"] = "./sdk/constant",
+    ["yoursubdirectory/sdk/sdk/debug"] = "./sdk/debug",
+    ["yoursubdirectory/sdk/sdk/debugupvalue"] = "./sdk/debugupvalue",
+    ["yoursubdirectory/sdk/sdk/dump"] = "./sdk/dump",
+    ["yoursubdirectory/sdk/sdk/entity"] = "./sdk/entity",
+    ["yoursubdirectory/sdk/sdk/input"] = "./sdk/input",
+    ["yoursubdirectory/sdk/sdk/inventory"] = "./sdk/inventory",
+    ["yoursubdirectory/sdk/sdk/modmain"] = "./sdk/modmain",
+    ["yoursubdirectory/sdk/sdk/persistentdata"] = "./sdk/persistentdata",
+    ["yoursubdirectory/sdk/sdk/player"] = "./sdk/player",
+    ["yoursubdirectory/sdk/sdk/rpc"] = "./sdk/rpc",
+    ["yoursubdirectory/sdk/sdk/thread"] = "./sdk/thread",
     ["yoursubdirectory/sdk/sdk/utils"] = "./sdk/utils",
     ["yoursubdirectory/sdk/sdk/utils/chain"] = "./sdk/utils/chain",
     ["yoursubdirectory/sdk/sdk/utils/methods"] = "./sdk/utils/methods",
     ["yoursubdirectory/sdk/sdk/utils/string"] = "./sdk/utils/string",
     ["yoursubdirectory/sdk/sdk/utils/table"] = "./sdk/utils/table",
+    ["yoursubdirectory/sdk/sdk/world"] = "./sdk/world",
     class = "spec/class",
 }
 

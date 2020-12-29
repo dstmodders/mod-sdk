@@ -277,7 +277,7 @@ function SDK.Load(env, path, modules)
             end
         else
             for k, v in pairs(_MODULES) do
-                SDK.LoadModule(k, v)
+                SDK.LoadModule(k, path .. "/" .. v)
             end
         end
 
