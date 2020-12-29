@@ -1,15 +1,15 @@
 require "busted.runner"()
 require "class"
 
-describe("#sdk SDK.Utils.Methods", function()
+describe("#sdk SDK.Utils.Method", function()
     -- before_each initialization
-    local Methods
+    local Method
 
     before_each(function()
-        Methods = require "sdk/utils/methods"
+        Method = require "sdk/utils/method"
     end)
 
-    describe("AddMethodsToAnotherClass", function()
+    describe("AddToAnotherClass", function()
         local TestClassDestination, TestClassSource
         local src, dest
 
@@ -66,7 +66,7 @@ describe("#sdk SDK.Utils.Methods", function()
                 assert.is_nil(dest.TestTwo)
                 assert.is_nil(dest.TestThree)
 
-                Methods.AddToAnotherClass(src, dest, {
+                Method.AddToAnotherClass(src, dest, {
                     "TestOne",
                     "TestTwo",
                     "TestThree",
@@ -84,7 +84,7 @@ describe("#sdk SDK.Utils.Methods", function()
                 assert.is_nil(dest.TestTwo)
                 assert.is_nil(dest.TestThree)
 
-                Methods.AddToAnotherClass(src, dest, {
+                Method.AddToAnotherClass(src, dest, {
                     NewTestOne = "TestOne",
                     "TestTwo",
                     "TestThree",

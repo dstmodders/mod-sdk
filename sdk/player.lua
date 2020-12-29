@@ -351,6 +351,8 @@ function Player.SetMovementPrediction(is_enabled, player)
 
     local locomotor = SDK.Utils.Chain.Get(player, "components", "locomotor")
     if is_enabled then
+        --local x, _, z = player.Transform:GetWorldPosition()
+        --SendRPCToServer(RPC.LeftClick, ACTIONS.WALKTO.code, x, z)
         player:EnableMovementPrediction(true)
     elseif locomotor then
         locomotor:Stop()

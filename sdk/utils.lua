@@ -6,7 +6,7 @@
 -- @module SDK.Utils
 -- @see SDK
 -- @see SDK.Utils.Chain
--- @see SDK.Utils.Methods
+-- @see SDK.Utils.Method
 -- @see SDK.Utils.String
 -- @see SDK.Utils.Table
 --
@@ -44,7 +44,7 @@ function Utils._DoInit(sdk)
 
     SDK._SetModuleName(SDK, Utils, "Utils")
     SDK.LoadSubmodule(Utils, "Chain", "sdk/utils/chain")
-    SDK.LoadSubmodule(Utils, "Methods", "sdk/utils/methods")
+    SDK.LoadSubmodule(Utils, "Method", "sdk/utils/method")
     SDK.LoadSubmodule(Utils, "String", "sdk/utils/string")
     SDK.LoadSubmodule(Utils, "Table", "sdk/utils/table")
 
