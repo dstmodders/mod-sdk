@@ -59,6 +59,7 @@ local _MODULES = {
     PersistentData = "sdk/persistentdata",
     Player = "sdk/player",
     RPC = "sdk/rpc",
+    Test = "sdk/test",
     Thread = "sdk/thread",
     World = "sdk/world",
 }
@@ -255,6 +256,21 @@ function SDK.Load(env, path, modules)
     if not path then
         SDK._Error("SDK.Load():", "required path not passed")
         return false
+    end
+
+    if package.loaded.busted then
+        if not _G.MODS_ROOT then
+            _G.MODS_ROOT = ""
+        end
+
+        if not _G.softresolvefilepath then
+            _G.softresolvefilepath = function(filepath)
+                return _G.MODS_ROOT .. filepath
+            end
+        end
+
+        require(path .. "/spec/class")
+        require(path .. "/spec/vector3")
     end
 
     SDK.env = env
