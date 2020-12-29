@@ -1,5 +1,3 @@
-require "spec/class"
-
 Vector3 = Class(function(self, x, y, z)
     self.x, self.y, self.z = x or 0, y or 0, z or 0
 end)

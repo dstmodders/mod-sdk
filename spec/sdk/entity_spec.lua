@@ -1,5 +1,4 @@
 require "busted.runner"()
-require "class"
 
 describe("#sdk SDK.Entity", function()
     -- setup

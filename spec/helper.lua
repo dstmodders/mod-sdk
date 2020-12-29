@@ -4,6 +4,7 @@
 
 _G.MOD_SDK_TEST = true
 
+require "spec/class"
 require "spec/vector3"
 
 local preloads = {
@@ -27,7 +28,6 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/utils/string"] = "./sdk/utils/string",
     ["yoursubdirectory/sdk/sdk/utils/table"] = "./sdk/utils/table",
     ["yoursubdirectory/sdk/sdk/world"] = "./sdk/world",
-    class = "spec/class",
 }
 
 package.path = "./sdk/?.lua;" .. package.path
