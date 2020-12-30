@@ -118,6 +118,14 @@ function Player.IsHUDConsoleScreenOpen(player)
     return SDK.Utils.Chain.Get(player, "HUD", "IsConsoleScreenOpen", true)
 end
 
+--- Checks if a HUD has an input focus.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.IsHUDHasInputFocus(player)
+    player = player ~= nil and player or ThePlayer
+    return not SDK.Utils.Chain.Get(player, "HUD", "HasInputFocus", true)
+end
+
 --- Checks if a HUD writable screen is active.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
