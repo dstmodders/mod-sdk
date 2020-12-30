@@ -241,6 +241,20 @@ function Player.IsSinking(player)
     end
 end
 
+--- Walks to a certain point.
+-- @tparam Vector3 pt Destination point
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.WalkToPoint(pt, player)
+    player = player ~= nil and player or ThePlayer
+    local playercontroller = SDK.Utils.Chain.Get(player, "components", "playercontroller")
+    if playercontroller and playercontroller.locomotor then
+        playercontroller:DoAction(BufferedAction(player, nil, ACTIONS.WALKTO, nil, pt))
+        return true
+    end
+    return false
+end
+
 --- Attributes
 -- @section attributes
 
