@@ -81,11 +81,9 @@ end
 -- @treturn SDK.Method
 function Method.AddGetters(getters, class)
     class = class ~= nil and class or _CLASS
-
     for k, v in pairs(getters) do
         Method.AddGetter(k, v, class)
     end
-
     return Method
 end
 
@@ -115,11 +113,9 @@ end
 -- @treturn SDK.Method
 function Method.AddSetters(setters, is_return_self, class)
     class = class ~= nil and class or _CLASS
-
     for k, v in pairs(setters) do
         Method.AddSetter(k, v, is_return_self, class)
     end
-
     return Method
 end
 
@@ -139,6 +135,38 @@ function Method.AddToAnotherClass(dest, methods, class)
         end
     end
 
+    return Method
+end
+
+--- Adds a toggler.
+-- @tparam string field_name Field name
+-- @tparam string toggler_name Toggler name
+-- @tparam[opt] boolean is_return_self Should a toggler return self?
+-- @tparam[opt] table class
+-- @treturn SDK.Method
+function Method.AddToggler(field_name, toggler_name, is_return_self, class)
+    class = class ~= nil and class or _CLASS
+
+    class[toggler_name] = function()
+        class[field_name] = not class[field_name]
+        if is_return_self then
+            return class
+        end
+    end
+
+    return Method
+end
+
+--- Adds setters.
+-- @tparam table togglers Table, keys are fields and values are names
+-- @tparam[opt] boolean is_return_self Should togglers return self?
+-- @tparam[opt] table class
+-- @treturn SDK.Method
+function Method.AddTogglers(togglers, is_return_self, class)
+    class = class ~= nil and class or _CLASS
+    for k, v in pairs(togglers) do
+        Method.AddToggler(k, v, is_return_self, class)
+    end
     return Method
 end
 

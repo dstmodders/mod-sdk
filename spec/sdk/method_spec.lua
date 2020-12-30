@@ -19,8 +19,9 @@ describe("#sdk SDK.Method", function()
 
         -- source
         Src = Class(function(self)
-            self.foo = "bar"
             self.bar = "foo"
+            self.bool = true
+            self.foo = "bar"
         end)
 
         function Src:ReturnMultiple(value)
@@ -329,6 +330,110 @@ describe("#sdk SDK.Method", function()
                         "ReturnSelf",
                     }, src)
                 end)
+            end)
+        end)
+
+        describe("AddToggler()", function()
+            describe("when is_return_self is not passed", function()
+                it("should add a setter", function()
+                    assert.is_nil(src.ToggleBool)
+                    Method.AddToggler("bool", "ToggleBool", nil, src)
+                    assert.is_not_nil(src.ToggleBool)
+                    assert.is_true(src.bool)
+
+                    src:ToggleBool()
+                    assert.is_false(src.bool)
+
+                    src:ToggleBool()
+                    assert.is_true(src.bool)
+                end)
+
+                it("should return nil", function()
+                    Method.AddToggler("bool", "ToggleBool", nil, src)
+                    assert.is_nil(src:ToggleBool())
+                end)
+
+                TestReturnSelf("AddToggler","bool", "ToggleBool", nil, src)
+            end)
+
+            describe("when is_return_self is passed", function()
+                it("should add a setter", function()
+                    assert.is_nil(src.ToggleBool)
+                    Method.AddToggler("bool", "ToggleBool", true, src)
+                    assert.is_not_nil(src.ToggleBool)
+                    assert.is_true(src.bool)
+
+                    src:ToggleBool()
+                    assert.is_false(src.bool)
+
+                    src:ToggleBool()
+                    assert.is_true(src.bool)
+                end)
+
+                it("should return self", function()
+                    Method.AddToggler("bool", "ToggleBool", true, src)
+                    assert.is_equal(src, src:ToggleBool())
+                end)
+
+                TestReturnSelf("AddToggler", "bool", "ToggleBool", true, src)
+            end)
+        end)
+
+        describe("AddTogglers()", function()
+            describe("when is_return_self is not passed", function()
+                it("should add setters", function()
+                    assert.is_nil(src.ToggleBool)
+                    Method.AddTogglers({
+                        bool = "ToggleBool",
+                    }, nil, src)
+                    assert.is_not_nil(src.ToggleBool)
+                    assert.is_true(src.bool)
+
+                    src:ToggleBool()
+                    assert.is_false(src.bool)
+
+                    src:ToggleBool()
+                    assert.is_true(src.bool)
+                end)
+
+                it("should return nil", function()
+                    Method.AddTogglers({
+                        bool = "ToggleBool",
+                    }, nil, src)
+                    assert.is_nil(src:ToggleBool())
+                end)
+
+                TestReturnSelf("AddTogglers", {
+                    bool = "ToggleBool",
+                }, nil, src)
+            end)
+
+            describe("when is_return_self is passed", function()
+                it("should add setters", function()
+                    assert.is_nil(src.ToggleBool)
+                    Method.AddTogglers({
+                        bool = "ToggleBool",
+                    }, true, src)
+                    assert.is_not_nil(src.ToggleBool)
+                    assert.is_true(src.bool)
+
+                    src:ToggleBool()
+                    assert.is_false(src.bool)
+
+                    src:ToggleBool()
+                    assert.is_true(src.bool)
+                end)
+
+                it("should return self", function()
+                    Method.AddTogglers({
+                        bool = "ToggleBool",
+                    }, true, src)
+                    assert.is_equal(src, src:ToggleBool())
+                end)
+
+                TestReturnSelf("AddTogglers", {
+                    bool = "ToggleBool",
+                }, true, src)
             end)
         end)
 
