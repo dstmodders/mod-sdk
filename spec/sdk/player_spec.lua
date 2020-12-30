@@ -35,6 +35,7 @@ describe("#sdk SDK.Player", function()
             GetClientTableForUser = ReturnValueFn(client_table[1]),
             GetServerIsClientHosted = ReturnValueFn(false),
             SendRemoteExecute = Empty,
+            SendRPCToServer = Empty,
         })
     end
 
@@ -140,9 +141,11 @@ describe("#sdk SDK.Player", function()
     end)
 
     teardown(function()
+        _G.ACTIONS = nil
+        _G.RPC = nil
         _G.TheFrontEnd = nil
-        _G.ThePlayer = nil
         _G.TheNet = nil
+        _G.ThePlayer = nil
     end)
 
     before_each(function()
@@ -165,6 +168,16 @@ describe("#sdk SDK.Player", function()
         }
 
         -- globals
+        _G.ACTIONS = {
+            WALKTO = {
+                code = 177,
+            },
+        }
+
+        _G.RPC = {
+            LeftClick = 28,
+        }
+
         _G.ThePlayer = inst
 
         _G.TheFrontEnd = mock({
