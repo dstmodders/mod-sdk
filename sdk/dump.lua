@@ -34,6 +34,16 @@ local function PrintDumpValues(table, title, name, prepend)
     end
 end
 
+local function SortByTypeAndValue(a, b)
+    local a_type, b_type = type(a), type(b)
+    return a_type < b_type or (
+        a_type ~= "table"
+            and b_type ~= "table"
+            and a_type == b_type
+            and a < b
+    )
+end
+
 --- General
 -- @section general
 
@@ -149,6 +159,9 @@ function Dump.GetReplicas(entity, is_sorted)
     return is_sorted and SDK.Utils.Table.SortAlphabetically(result) or result
 end
 
+--- Dump
+-- @section dump
+
 --- Dumps all entity components.
 -- @usage DumpComponents(ThePlayer, "ThePlayer")
 -- @see EventListeners
@@ -217,6 +230,72 @@ end
 -- @treturn table
 function Dump.Replicas(entity, name, prepend)
     PrintDumpValues(Dump.GetReplicas(entity, true), "Replicas", name, prepend)
+end
+
+--- Dumps a table.
+--
+-- The same as the original `dumptable` from the `debugtools` module. The only difference is in the
+-- local `SortByTypeAndValue` which avoids comparing tables to avoid non-sandbox crashes and entity
+-- type is checked.
+--
+-- @tparam table obj
+-- @tparam number indent
+-- @tparam number recurse_levels
+-- @tparam table visit_table
+-- @tparam boolean is_terse
+function Dump.Table(obj, indent, recurse_levels, visit_table, is_terse)
+    local is_top_level = visit_table == nil
+    if visit_table == nil then
+        visit_table = {}
+    end
+
+    indent = indent or 1
+    local i_recurse_levels = recurse_levels or 5
+    if obj then
+        local dent = string.rep("\t", indent)
+
+        if type(obj) == type("") then
+            print(obj)
+            return
+        end
+
+        if type(obj) == "table" then
+            if visit_table[obj] ~= nil then
+                print(dent .. "(Already visited", obj, "-- skipping.)")
+                return
+            else
+                visit_table[obj] = true
+            end
+        end
+
+        local keys = {}
+
+        for k, _ in pairs(obj) do
+            table.insert(keys, k)
+        end
+
+        table.sort(keys, SortByTypeAndValue)
+
+        if not is_terse and is_top_level and #keys == 0 then
+            print(dent .. "(empty)")
+        end
+
+        for _, k in ipairs(keys) do
+            local v = obj[k]
+            if type(v) == "table" and i_recurse_levels > 0 then
+                if type(v.entity) == "table" and v.entity:GetGUID() then
+                    print(dent .. "K: ", k, " V: ", v, "(Entity -- skipping.)")
+                else
+                    print(dent .. "K: ", k, " V: ", v)
+                    Dump.Table(v, indent + 1, i_recurse_levels - 1, visit_table)
+                end
+            else
+                print(dent .. "K: ", k, " V: ", v)
+            end
+        end
+    elseif not is_terse then
+        print("nil")
+    end
 end
 
 --- Lifecycle
