@@ -24,7 +24,20 @@ local _DEBUG_SPY = {}
 --- General
 -- @section general
 
---- Copies the top level value and its direct children.
+--- Dumps a table.
+-- @see SDK.Dump.Table
+-- @tparam table obj
+-- @tparam number indent
+-- @tparam number recurse_levels
+-- @tparam table visit_table
+-- @tparam boolean is_terse
+function Test.dumptable(obj, indent, recurse_levels, visit_table, is_terse)
+    SDK.Dump.Table(obj, indent, recurse_levels, visit_table, is_terse)
+end
+
+--- Copies a table in a shallow mode.
+--
+-- Copies the top level value and its direct children.
 --
 -- [http://lua-users.org/wiki/CopyTable](http://lua-users.org/wiki/CopyTable)
 --
@@ -351,6 +364,7 @@ end
 -- @section table
 
 --- Counts the number of elements inside a table.
+-- @see SDK.Utils.Table.Count
 -- @tparam table t Table
 -- @treturn number
 function Test.TableCount(t)
@@ -358,6 +372,7 @@ function Test.TableCount(t)
 end
 
 --- Checks if a table has the provided value.
+-- @see SDK.Utils.Table.HasValue
 -- @tparam table t Table
 -- @tparam string value
 -- @treturn boolean
@@ -402,6 +417,7 @@ function Test._DoInit(sdk)
         _G.DebugSpyClear = Test.DebugSpyClear
         _G.DebugSpyInit = Test.DebugSpyInit
         _G.DebugSpyTerm = Test.DebugSpyTerm
+        _G.dumptable = Test.dumptable
         _G.Empty = Test.Empty
         _G.ReturnValueFn = Test.ReturnValueFn
         _G.ReturnValuesFn = Test.ReturnValuesFn

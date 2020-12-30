@@ -51,4 +51,7 @@ SDK = require "sdk/sdk"
 SDK.SetIsSilent(true).Load({
     modname = "dst-mod-sdk",
     AddPrefabPostInit = function() end
-}, ".", { "Test" })
+}, ".", {
+    "Dump",
+    "Test",
+})
