@@ -51,6 +51,15 @@ function RPC.EnableSendToServer()
     end
 end
 
+--- Actions
+-- @section actions
+
+--- Walks to a certain point.
+-- @tparam Vector3 pt Destination point
+function RPC.WalkToPoint(pt)
+    SendRPCToServer(RPC.LeftClick, ACTIONS.WALKTO.code, pt.x, pt.z)
+end
+
 --- Lifecycle
 -- @section lifecycle
 
