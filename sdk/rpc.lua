@@ -11,7 +11,7 @@
 -- @license MIT
 -- @release 0.1
 ----
-local RPC = {}
+local _RPC = {}
 
 local SDK
 
@@ -22,7 +22,7 @@ local _SendRPCToServer
 
 --- Checks if `SendRPCToServer()` is enabled.
 -- @treturn boolean
-function RPC.IsSendToServerEnabled()
+function _RPC.IsSendToServerEnabled()
     return _SendRPCToServer == nil
 end
 
@@ -30,7 +30,7 @@ end
 --
 -- Only affects the `SendRPCToServer()` wrapper function Utils.and leaves the `TheNet:SendRPCToServer()`
 -- as is.
-function RPC.DisableSendToServer()
+function _RPC.DisableSendToServer()
     if not _SendRPCToServer then
         _SendRPCToServer = SendRPCToServer
         SendRPCToServer = function() end
@@ -41,7 +41,7 @@ function RPC.DisableSendToServer()
 end
 
 --- Enables `SendRPCToServer()`.
-function RPC.EnableSendToServer()
+function _RPC.EnableSendToServer()
     if _SendRPCToServer then
         SendRPCToServer = _SendRPCToServer
         _SendRPCToServer = nil
@@ -56,7 +56,7 @@ end
 
 --- Walks to a certain point.
 -- @tparam Vector3 pt Destination point
-function RPC.WalkToPoint(pt)
+function _RPC.WalkToPoint(pt)
     SendRPCToServer(RPC.LeftClick, ACTIONS.WALKTO.code, pt.x, pt.z)
 end
 
@@ -66,9 +66,9 @@ end
 --- Initializes.
 -- @tparam SDK sdk
 -- @treturn SDK.RPC
-function RPC._DoInit(sdk)
+function _RPC._DoInit(sdk)
     SDK = sdk
-    return SDK._DoInitModule(SDK, RPC, "RPC")
+    return SDK._DoInitModule(SDK, _RPC, "RPC")
 end
 
-return RPC
+return _RPC
