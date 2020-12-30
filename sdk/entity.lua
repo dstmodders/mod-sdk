@@ -38,6 +38,18 @@ function Entity.GetInvisiblePlayerInRange(pt, range)
     return player, player ~= nil and range_sq or nil
 end
 
+--- Gets a closest position between two entities.
+-- @tparam EntityScript entity1
+-- @tparam EntityScript entity2
+-- @treturn number
+function Entity.GetPositionNearEntities(entity1, entity2)
+    local rad1 = SDK.Utils.Chain.Get(entity1, "Physics", "GetRadius", true)
+    local rad2 = SDK.Utils.Chain.Get(entity2, "Physics", "GetRadius", true)
+    if type(rad1) == "number" and type(rad2) == "number" then
+        return entity1:GetPositionAdjacentTo(entity2, rad1 + rad2)
+    end
+end
+
 --- Gets an entity tags.
 -- @tparam EntityScript entity
 -- @tparam boolean is_all
