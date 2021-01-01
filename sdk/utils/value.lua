@@ -84,6 +84,13 @@ function Value.IsUnitInterval(value)
     return Value.IsNumber(value) and value >= 0 and value <= 1
 end
 
+--- Checks if a value is an unsigned number.
+-- @tparam any value
+-- @treturn boolean
+function Value.IsUnsigned(value)
+    return Value.IsNumber(value) and value >= 0
+end
+
 --- Converters
 -- @section converters
 
