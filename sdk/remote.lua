@@ -28,11 +28,11 @@ end
 -- @tparam number days
 function Remote.Rollback(days)
     days = days ~= nil and days or 0
-    SDK.Debug.String("[remote]", "Rollback:", string.format(
-        "%d day%s",
-        days,
-        days == 1 and "" or "s"
-    ))
+    SDK.Debug.String(
+        "[remote]",
+        "Rollback:",
+        string.format("%d day%s", days, days == 1 and "" or "s")
+    )
     Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days })
 end
 
@@ -56,14 +56,30 @@ function Remote.ForcePrecipitation(bool)
     Remote.Send('TheWorld:PushEvent("ms_forceprecipitation", %s)', { tostring(bool) })
 end
 
---- Sends a request to set season.
+--- Sends a request to set a season.
 -- @tparam string season
 function Remote.Season(season)
     SDK.Debug.String("[remote]", "Season:", tostring(season))
     Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
 end
 
---- Sends a request to set world delta moisture.
+--- Sends a request to set a season length.
+-- @tparam string season
+-- @tparam number length
+-- @treturn boolean
+function Remote.SeasonLength(season, length)
+    SDK.Debug.String(
+        "[remote]",
+        "Season length:",
+        tostring(season), string.format("(%d day%s)", length, length == 1 and "" or "s")
+    )
+    Remote.Send('TheWorld:PushEvent("ms_setseasonlength", { season = "%s", length = %d })', {
+        season,
+        length
+    })
+end
+
+--- Sends a request to set a world delta moisture.
 -- @tparam[opt] number delta
 function Remote.WorldDeltaMoisture(delta)
     delta = delta ~= nil and delta or 0
@@ -71,7 +87,7 @@ function Remote.WorldDeltaMoisture(delta)
     Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
 end
 
---- Sends a request to set world delta wetness.
+--- Sends a request to set a world delta wetness.
 -- @tparam[opt] number delta
 function Remote.WorldDeltaWetness(delta)
     delta = delta ~= nil and delta or 0
