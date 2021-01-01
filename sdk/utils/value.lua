@@ -23,6 +23,13 @@ function Value.IsBoolean(value)
     return type(value) == "boolean"
 end
 
+--- Checks if a value is an entity.
+-- @tparam any value
+-- @treturn boolean
+function Value.IsEntity(value)
+    return type(value) == "table" and value.GUID ~= nil
+end
+
 --- Checks if a value is a temperature.
 -- @tparam any value
 -- @treturn boolean
