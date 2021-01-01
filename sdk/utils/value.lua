@@ -32,6 +32,13 @@ function Value.IsEntityTemperature(value)
         and value <= TUNING.MAX_ENTITY_TEMP
 end
 
+--- Checks if a value is an integer.
+-- @tparam any value
+-- @treturn boolean
+function Value.IsInteger(value)
+    return Value.IsNumber(value) and value == math.floor(value)
+end
+
 --- Checks if a value is a number.
 -- @tparam any value
 -- @treturn boolean
