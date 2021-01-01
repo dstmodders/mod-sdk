@@ -39,7 +39,7 @@ describe("#sdk SDK.Utils.Chain", function()
         }
     end)
 
-    describe("ChainGet", function()
+    describe("Get()", function()
         describe("when an invalid src is passed", function()
             it("should return nil", function()
                 assert.is_nil(Chain.Get(nil, "net"))
@@ -151,7 +151,7 @@ describe("#sdk SDK.Utils.Chain", function()
         end)
     end)
 
-    describe("ChainValidate", function()
+    describe("Validate()", function()
         describe("when an invalid src is passed", function()
             it("should return false", function()
                 assert.is_false(Chain.Validate(nil, "net"))

@@ -90,6 +90,7 @@ files["**/*.lua"] = {
         "TheWorld",
         "TrackedAssert",
         "TrimString",
+        "TUNING",
         "USER_HISTORY_EXPIRY_TIME",
     },
 }

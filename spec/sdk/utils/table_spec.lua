@@ -8,7 +8,7 @@ describe("#sdk SDK.Utils.Table", function()
         Table = require "sdk/utils/table"
     end)
 
-    describe("TableCompare", function()
+    describe("Compare()", function()
         it("should return true when both tables have the same reference", function()
             local test = {}
             assert.is_true(Table.Compare(test, test))
@@ -39,7 +39,7 @@ describe("#sdk SDK.Utils.Table", function()
         end)
     end)
 
-    describe("TableCount", function()
+    describe("Count()", function()
         it("should return false when the passed parameter is not a table", function()
             assert.is_false(Table.Count("test"))
         end)
@@ -59,7 +59,7 @@ describe("#sdk SDK.Utils.Table", function()
         end)
     end)
 
-    describe("TableHasValue", function()
+    describe("HasValue()", function()
         it("should return false when the passed parameter is not a table", function()
             assert.is_false(Table.HasValue("test"))
         end)
@@ -89,7 +89,7 @@ describe("#sdk SDK.Utils.Table", function()
         end)
     end)
 
-    describe("TableKeyByValue", function()
+    describe("KeyByValue()", function()
         it("should return false when the passed parameter is not a table", function()
             assert.is_false(Table.KeyByValue("test"))
         end)
@@ -100,7 +100,7 @@ describe("#sdk SDK.Utils.Table", function()
         end)
     end)
 
-    describe("TableMerge", function()
+    describe("Merge()", function()
         it("should return two combined simple tables", function()
             local a = { a = "a", b = "b", c = "c" }
             local b = { d = "d", e = "e", a = "f" }
@@ -117,7 +117,7 @@ describe("#sdk SDK.Utils.Table", function()
         end)
     end)
 
-    describe("TableNextValue", function()
+    describe("NextValue()", function()
         it("should return the next value", function()
             local t = { "a", "b", "c" }
             assert.is_equal("c", Table.NextValue(t, "b"))
@@ -129,7 +129,7 @@ describe("#sdk SDK.Utils.Table", function()
         end)
     end)
 
-    describe("TableSortAlphabetically", function()
+    describe("SortAlphabetically()", function()
         it("should return false when the passed parameter is not a table", function()
             assert.is_false(Table.SortAlphabetically("test"))
         end)

@@ -8,6 +8,7 @@
 -- @see SDK.Utils.Chain
 -- @see SDK.Utils.String
 -- @see SDK.Utils.Table
+-- @see SDK.Utils.Value
 --
 -- @author Victor Popkov
 -- @copyright 2020
@@ -45,6 +46,7 @@ function Utils._DoInit(sdk)
     SDK.LoadSubmodule(Utils, "Chain", "sdk/utils/chain")
     SDK.LoadSubmodule(Utils, "String", "sdk/utils/string")
     SDK.LoadSubmodule(Utils, "Table", "sdk/utils/table")
+    SDK.LoadSubmodule(Utils, "Value", "sdk/utils/value")
 
     return SDK._DoInitModule(SDK, Utils, "Utils")
 end
