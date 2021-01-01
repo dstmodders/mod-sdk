@@ -18,6 +18,12 @@ local SDK
 --- General
 -- @section general
 
+--- Sends a world rollback request to server.
+function Remote.Rollback(days)
+    SDK.Debug.String("Sending a world rollback request to server...")
+    Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days or 0 })
+end
+
 --- Sends a remote command to execute.
 -- @tparam string cmd Command to execute
 -- @tparam[opt] table data Data to unpack and used alongside with string
