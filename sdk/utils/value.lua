@@ -110,6 +110,19 @@ function Value.ToClockString(seconds, has_no_hours)
     end
 end
 
+--- Converts a number into a days string.
+-- @tparam number|string value
+-- @treturn string|nil
+-- @todo Consider making a complete pluralization solution
+function Value.ToDaysString(value)
+    value = tonumber(value)
+    return Value.IsNumber(value) and string.format(
+        "%s day%s",
+        tostring(value),
+        (value >= -1 and value <= 1 and value ~= 0) and "" or "s"
+    ) or nil
+end
+
 --- Converts a number into a float string.
 -- @tparam number|string value
 -- @treturn string|nil
