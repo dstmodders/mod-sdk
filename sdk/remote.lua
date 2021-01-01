@@ -18,10 +18,21 @@ local SDK
 --- General
 -- @section general
 
+--- Gathers players.
+function Remote.GatherPlayers()
+    SDK.Debug.String("[remote]", "Gather players")
+    Remote.Send("c_gatherplayers()")
+end
+
 --- Sends a world rollback request to server.
 function Remote.Rollback(days)
-    SDK.Debug.String("Sending a world rollback request to server...")
-    Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days or 0 })
+    days = days ~= nil and days or 0
+    SDK.Debug.String("[remote]", "Rollback", string.format(
+        "(%d day%s)",
+        days,
+        days == 1 and "" or "s"
+    ))
+    Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days })
 end
 
 --- Sends a remote command to execute.

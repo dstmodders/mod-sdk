@@ -46,6 +46,16 @@ describe("#sdk SDK.Remote", function()
         _G.TheSim = nil
     end)
 
+    local function TestDebugString(fn, ...)
+        local args = { ... }
+        it("should debug string", function()
+            assert.spy(SDK.Debug.String).was_not_called()
+            fn()
+            assert.spy(SDK.Debug.String).was_called(1)
+            assert.spy(SDK.Debug.String).was_called_with(unpack(args))
+        end)
+    end
+
     local function TestSendRemoteExecuteWasCalled(fn, ...)
         local args = { ..., 1, 3 }
         it("should call TheSim:SendRemoteExecute()", function()
@@ -60,26 +70,45 @@ describe("#sdk SDK.Remote", function()
     end
 
     describe("general", function()
+        describe("GatherPlayers()", function()
+            TestDebugString(function()
+                Remote.GatherPlayers()
+            end, "[remote]", "Gather players")
+
+            TestSendRemoteExecuteWasCalled(function()
+                Remote.GatherPlayers()
+            end, "c_gatherplayers()")
+        end)
+
         describe("Rollback()", function()
             describe("when no days are passed", function()
+                TestDebugString(function()
+                    Remote.Rollback()
+                end, "[remote]", "Rollback", "(0 days)")
+
                 TestSendRemoteExecuteWasCalled(function()
                     Remote.Rollback()
-                end, 'TheNet:SendWorldRollbackRequestToServer(0)')
+                end, "TheNet:SendWorldRollbackRequestToServer(0)")
             end)
 
-            describe("when days are passed", function()
+            describe("when 1 day is passed", function()
+                TestDebugString(function()
+                    Remote.Rollback(1)
+                end, "[remote]", "Rollback", "(1 day)")
+
+                TestSendRemoteExecuteWasCalled(function()
+                    Remote.Rollback(1)
+                end, 'TheNet:SendWorldRollbackRequestToServer(1)')
+            end)
+
+            describe("when 3 day is passed", function()
+                TestDebugString(function()
+                    Remote.Rollback(3)
+                end, "[remote]", "Rollback", "(3 days)")
+
                 TestSendRemoteExecuteWasCalled(function()
                     Remote.Rollback(3)
-                end, 'TheNet:SendWorldRollbackRequestToServer(3)')
-            end)
-
-            it("should debug string", function()
-                assert.spy(SDK.Debug.String).was_not_called()
-                Remote.Rollback()
-                assert.spy(SDK.Debug.String).was_called(1)
-                assert.spy(SDK.Debug.String).was_called_with(
-                    "Sending a world rollback request to server..."
-                )
+                end, "TheNet:SendWorldRollbackRequestToServer(3)")
             end)
         end)
 
