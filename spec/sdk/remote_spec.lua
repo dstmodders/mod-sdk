@@ -369,6 +369,74 @@ describe("#sdk SDK.Remote", function()
             end)
         end)
 
+        describe("SendLightningStrike()", function()
+            describe("when not in a forest world", function()
+                before_each(function()
+                    _G.TheWorld.HasTag = ReturnValueFn(true)
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Remote.SendLightningStrike(Vector3(1, 0, 3)))
+                end)
+
+                TestDebugError(
+                    function()
+                        Remote.SendLightningStrike(Vector3(1, 0, 3))
+                    end,
+                    "SDK.Remote.SendLightningStrike():",
+                    'Invalid world type',
+                    "(must be in a forest)"
+                )
+
+                TestSendRemoteExecuteWasNotCalled(function()
+                    Remote.SendLightningStrike(Vector3(1, 0, 3))
+                end)
+            end)
+
+            describe("when in a forest world", function()
+                before_each(function()
+                    _G.TheWorld.HasTag = ReturnValueFn(false)
+                end)
+
+                describe("and an invalid delta is passed", function()
+                    describe("(foo)", function()
+                        it("should return false", function()
+                            assert.is_false(Remote.SendLightningStrike("foo"))
+                        end)
+
+                        TestDebugError(
+                            function()
+                                Remote.SendLightningStrike("foo")
+                            end,
+                            "SDK.Remote.SendLightningStrike():",
+                            'Invalid argument (pt) is passed',
+                            "(must be a point)"
+                        )
+
+                        TestSendRemoteExecuteWasNotCalled(function()
+                            Remote.SendLightningStrike("foo")
+                        end)
+                    end)
+                end)
+
+                describe("and a valid delta is passed", function()
+                    describe("(point)", function()
+                        it("should return true", function()
+                            assert.is_true(Remote.SendLightningStrike(Vector3(1, 0, 3)))
+                        end)
+
+                        TestDebugString(function()
+                            Remote.SendLightningStrike(Vector3(1, 0, 3))
+                        end, "[remote]", "Send lighting strike:", "(1.00, 0.00, 3.00)")
+
+                        TestSendRemoteExecuteWasCalled(function()
+                            Remote.SendLightningStrike(Vector3(1, 0, 3))
+                        end, 'TheWorld:PushEvent("ms_sendlightningstrike", Vector3(1.00, 0.00, 3.00))') -- luacheck: only
+                    end)
+                end)
+            end)
+        end)
+
         describe("SetSnowLevel()", function()
             describe("when not in a forest world", function()
                 before_each(function()
@@ -419,7 +487,7 @@ describe("#sdk SDK.Remote", function()
                     end)
                 end)
 
-                describe("when no delta is passed", function()
+                describe("and no delta is passed", function()
                     it("should return true", function()
                         assert.is_true(Remote.SetSnowLevel())
                     end)
@@ -433,7 +501,7 @@ describe("#sdk SDK.Remote", function()
                     end, 'TheWorld:PushEvent("ms_setsnowlevel", 0.00)')
                 end)
 
-                describe("when a valid delta is passed", function()
+                describe("and a valid delta is passed", function()
                     describe("(1)", function()
                         it("should return true", function()
                             assert.is_true(Remote.SetSnowLevel(1))

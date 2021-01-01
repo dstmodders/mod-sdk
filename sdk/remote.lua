@@ -122,6 +122,26 @@ function Remote.SetSeasonLength(season, length)
     return false
 end
 
+--- Sends a request to send a lightning strike.
+-- @tparam Vector3 pt Point
+-- @treturn boolean
+function Remote.SendLightningStrike(pt)
+    if TheWorld:HasTag("cave") then
+        DebugErrorInvalidWorldType("must be in a forest")
+        return false
+    end
+
+    if Value.IsPoint(pt) then
+        local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
+        SDK.Debug.String("[remote]", "Send lighting strike:", tostring(pt))
+        Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
+        return true
+    end
+
+    DebugErrorInvalidArg("pt", "must be a point")
+    return false
+end
+
 --- Sends a request to set a snow level.
 -- @tparam number delta
 -- @treturn boolean
