@@ -27,6 +27,14 @@ local function DebugErrorInvalidArg(arg_name, explanation)
     )
 end
 
+local function DebugErrorInvalidWorldType(explanation)
+    SDK.Debug.Error(
+        string.format("SDK.Remote.%s():", debug.getinfo(2).name),
+        "Invalid world type",
+        explanation and "(" .. explanation .. ")"
+    )
+end
+
 --- General
 -- @section general
 
@@ -114,6 +122,27 @@ function Remote.SeasonLength(season, length)
     return false
 end
 
+--- Sends a request to set a snow level.
+-- @tparam number delta
+-- @treturn boolean
+function Remote.SnowLevel(delta)
+    delta = delta ~= nil and delta or 0
+
+    if TheWorld:HasTag("cave") then
+        DebugErrorInvalidWorldType("must be in a forest")
+        return false
+    end
+
+    if Value.IsUnitInterval(delta) then
+        SDK.Debug.String("[remote]", "Snow level:", tostring(delta))
+        Remote.Send('TheWorld:PushEvent("ms_setsnowlevel", %0.2f)', { delta })
+        return true
+    end
+
+    DebugErrorInvalidArg("delta", "must be a unit interval")
+    return false
+end
+
 --- Sends a request to set a world delta moisture.
 -- @tparam[opt] number delta
 -- @treturn boolean
@@ -151,7 +180,7 @@ end
 function Remote._DoInit(sdk)
     SDK = sdk
     Value = SDK.Utils.Value
-    return SDK._DoInitModule(SDK, Remote, "Remote")
+    return SDK._DoInitModule(SDK, Remote, "Remote", TheWorld)
 end
 
 return Remote

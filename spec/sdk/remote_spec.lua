@@ -25,6 +25,10 @@ describe("#sdk SDK.Remote", function()
             end,
         })
 
+        _G.TheWorld = mock({
+            HasTag = ReturnValueFn(false),
+        })
+
         -- initialization
         SDK = require "sdk/sdk"
         SDK.path = "./"
@@ -45,6 +49,7 @@ describe("#sdk SDK.Remote", function()
     teardown(function()
         _G.TheNet = nil
         _G.TheSim = nil
+        _G.TheWorld = nil
     end)
 
     local function TestDebugError(fn, ...)
@@ -359,6 +364,88 @@ describe("#sdk SDK.Remote", function()
 
                     TestSendRemoteExecuteWasNotCalled(function()
                         Remote.SeasonLength("foo", 10)
+                    end)
+                end)
+            end)
+        end)
+
+        describe("SnowLevel()", function()
+            describe("when not in a forest world", function()
+                before_each(function()
+                    _G.TheWorld.HasTag = ReturnValueFn(true)
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Remote.SnowLevel(1))
+                end)
+
+                TestDebugError(
+                    function()
+                        Remote.SnowLevel(1)
+                    end,
+                    "SDK.Remote.SnowLevel():",
+                    'Invalid world type',
+                    "(must be in a forest)"
+                )
+
+                TestSendRemoteExecuteWasNotCalled(function()
+                    Remote.SnowLevel(1)
+                end)
+            end)
+
+            describe("when in a forest world", function()
+                before_each(function()
+                    _G.TheWorld.HasTag = ReturnValueFn(false)
+                end)
+
+                describe("and an invalid delta is passed", function()
+                    describe("(2)", function()
+                        it("should return false", function()
+                            assert.is_false(Remote.SnowLevel(2))
+                        end)
+
+                        TestDebugError(
+                            function()
+                                Remote.SnowLevel(2)
+                            end,
+                            "SDK.Remote.SnowLevel():",
+                            'Invalid argument (delta) is passed',
+                            "(must be a unit interval)"
+                        )
+
+                        TestSendRemoteExecuteWasNotCalled(function()
+                            Remote.SnowLevel(2)
+                        end)
+                    end)
+                end)
+
+                describe("when no delta is passed", function()
+                    it("should return true", function()
+                        assert.is_true(Remote.SnowLevel())
+                    end)
+
+                    TestDebugString(function()
+                        Remote.SnowLevel()
+                    end, "[remote]", "Snow level:", "0")
+
+                    TestSendRemoteExecuteWasCalled(function()
+                        Remote.SnowLevel()
+                    end, 'TheWorld:PushEvent("ms_setsnowlevel", 0.00)')
+                end)
+
+                describe("when a valid delta is passed", function()
+                    describe("(1)", function()
+                        it("should return true", function()
+                            assert.is_true(Remote.SnowLevel(1))
+                        end)
+
+                        TestDebugString(function()
+                            Remote.SnowLevel(1)
+                        end, "[remote]", "Snow level:", "1")
+
+                        TestSendRemoteExecuteWasCalled(function()
+                            Remote.SnowLevel(1)
+                        end, 'TheWorld:PushEvent("ms_setsnowlevel", 1.00)')
                     end)
                 end)
             end)
