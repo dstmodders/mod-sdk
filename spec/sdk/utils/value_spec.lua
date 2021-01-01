@@ -19,221 +19,74 @@ describe("#sdk SDK.Utils.Value", function()
         Value = require "sdk/utils/value"
     end)
 
+    local function TestChecker(name, valid, invalid)
+        describe(name .. "()", function()
+            describe("when a valid value is passed", function()
+                it("should return true", function()
+                    for _, v in pairs(valid) do
+                        assert.is_true(Value[name](v))
+                    end
+                end)
+            end)
+
+            describe("when an invalid value is passed", function()
+                it("should return false", function()
+                    for _, v in pairs(invalid) do
+                        assert.is_false(Value[name](v))
+                    end
+                end)
+            end)
+        end)
+    end
+
     describe("checkers", function()
-        describe("IsBoolean()", function()
-            describe("when a boolean value is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsBoolean(true))
-                    assert.is_true(Value.IsBoolean(false))
-                end)
-            end)
+        TestChecker("IsBoolean", { false, true }, { "string", 0, {} })
+        TestChecker("IsEntity", { { GUID = 1, } }, { "string", 0, false, true, {} })
 
-            describe("when a non-boolean value is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsBoolean("string"))
-                    assert.is_false(Value.IsBoolean(0))
-                    assert.is_false(Value.IsBoolean({}))
-                end)
-            end)
-        end)
+        TestChecker("IsEntityTemperature", {
+            0,
+            _G.TUNING.MAX_ENTITY_TEMP,
+            _G.TUNING.MIN_ENTITY_TEMP,
+        }, {
+            100,
+            _G.TUNING.MAX_ENTITY_TEMP + 1,
+            _G.TUNING.MIN_ENTITY_TEMP - 1,
+            false,
+            true,
+            {},
+        })
 
-        describe("IsEntity()", function()
-            describe("when an entity value is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsEntity({ GUID = 1, }))
-                end)
-            end)
+        TestChecker("IsInteger", { 0, -1, 1 }, { "string", -0.5, 0.5, false, true, {} })
+        TestChecker("IsNumber", { 0, -1, 1 }, { "string", false, true, {} })
+        TestChecker("IsPercent", { 0, 50, 100 }, { "string", -1, 101, false, true, {} })
 
-            describe("when a non-entity value is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsEntity("string"))
-                    assert.is_false(Value.IsEntity(true))
-                    assert.is_false(Value.IsEntity(false))
-                    assert.is_false(Value.IsEntity(0))
-                    assert.is_false(Value.IsEntity({}))
-                end)
-            end)
-        end)
+        TestChecker("IsPoint", {
+            Vector3(1, 0, 3),
+            { x = 1, y = 0, z = 3 },
+        }, {
+            "string",
+            0,
+            false,
+            true,
+            {},
+        })
 
-        describe("IsEntityTemperature()", function()
-            describe("when a number within a temperature range is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsEntityTemperature(_G.TUNING.MIN_ENTITY_TEMP))
-                    assert.is_true(Value.IsEntityTemperature(_G.TUNING.MAX_ENTITY_TEMP))
-                    assert.is_true(Value.IsEntityTemperature(0))
-                end)
-            end)
+        TestChecker("IsSeason", {
+            "autumn",
+            "spring",
+            "summer",
+            "winter",
+        }, {
+            "string",
+            0,
+            false,
+            true,
+            {},
+        })
 
-            describe("when a number non-within a temperature range is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsEntityTemperature(_G.TUNING.MIN_ENTITY_TEMP - 1))
-                    assert.is_false(Value.IsEntityTemperature(_G.TUNING.MAX_ENTITY_TEMP + 1))
-                    assert.is_false(Value.IsEntityTemperature(100))
-                    assert.is_false(Value.IsEntityTemperature("string"))
-                    assert.is_false(Value.IsEntityTemperature(true))
-                    assert.is_false(Value.IsEntityTemperature(false))
-                    assert.is_false(Value.IsEntityTemperature({}))
-                end)
-            end)
-        end)
-
-        describe("IsInteger()", function()
-            describe("when an integer value is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsInteger(-1))
-                    assert.is_true(Value.IsInteger(0))
-                    assert.is_true(Value.IsInteger(1))
-                end)
-            end)
-
-            describe("when a non-integer value is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsInteger(-0.5))
-                    assert.is_false(Value.IsInteger(0.5))
-                    assert.is_false(Value.IsInteger("string"))
-                    assert.is_false(Value.IsInteger(true))
-                    assert.is_false(Value.IsInteger(false))
-                    assert.is_false(Value.IsInteger({}))
-                end)
-            end)
-        end)
-
-        describe("IsNumber()", function()
-            describe("when a number value is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsNumber(-1))
-                    assert.is_true(Value.IsNumber(0))
-                    assert.is_true(Value.IsNumber(1))
-                end)
-            end)
-
-            describe("when a non-number value is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsNumber("string"))
-                    assert.is_false(Value.IsNumber(true))
-                    assert.is_false(Value.IsNumber(false))
-                    assert.is_false(Value.IsNumber({}))
-                end)
-            end)
-        end)
-
-        describe("IsPercent()", function()
-            describe("when a percent value is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsPercent(0))
-                    assert.is_true(Value.IsPercent(50))
-                    assert.is_true(Value.IsPercent(100))
-                end)
-            end)
-
-            describe("when a non-percent value is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsPercent(-1))
-                    assert.is_false(Value.IsPercent(101))
-                    assert.is_false(Value.IsPercent("string"))
-                    assert.is_false(Value.IsPercent(true))
-                    assert.is_false(Value.IsPercent(false))
-                    assert.is_false(Value.IsPercent({}))
-                end)
-            end)
-        end)
-
-        describe("IsPoint()", function()
-            describe("when a point value is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsPoint({ x = 1, y = 0, z = 3 }))
-                    assert.is_true(Value.IsPoint(Vector3(1, 0, 3)))
-                end)
-            end)
-
-            describe("when a non-point value is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsPoint("string"))
-                    assert.is_false(Value.IsPoint(true))
-                    assert.is_false(Value.IsPoint(false))
-                    assert.is_false(Value.IsPoint(0))
-                    assert.is_false(Value.IsPoint({}))
-                end)
-            end)
-        end)
-
-        describe("IsSeason()", function()
-            describe("when a season value is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsSeason("autumn"))
-                    assert.is_true(Value.IsSeason("winter"))
-                    assert.is_true(Value.IsSeason("spring"))
-                    assert.is_true(Value.IsSeason("summer"))
-                end)
-            end)
-
-            describe("when a non-season value is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsSeason("string"))
-                    assert.is_false(Value.IsSeason(true))
-                    assert.is_false(Value.IsSeason(false))
-                    assert.is_false(Value.IsSeason(0))
-                    assert.is_false(Value.IsSeason({}))
-                end)
-            end)
-        end)
-
-        describe("IsString()", function()
-            describe("when a string value is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsString("string"))
-                end)
-            end)
-
-            describe("when a non-string value is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsString(true))
-                    assert.is_false(Value.IsString(false))
-                    assert.is_false(Value.IsString(0))
-                    assert.is_false(Value.IsString({}))
-                end)
-            end)
-        end)
-
-        describe("IsUnitInterval()", function()
-            describe("when a unit interval value is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsUnitInterval(0))
-                    assert.is_true(Value.IsUnitInterval(0.5))
-                    assert.is_true(Value.IsUnitInterval(1))
-                end)
-            end)
-
-            describe("when a non-unit interval value is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsUnitInterval(-1))
-                    assert.is_false(Value.IsUnitInterval(2))
-                    assert.is_false(Value.IsUnitInterval(true))
-                    assert.is_false(Value.IsUnitInterval(false))
-                    assert.is_false(Value.IsUnitInterval({}))
-                end)
-            end)
-        end)
-
-        describe("IsUnsigned()", function()
-            describe("when an unsigned number is passed", function()
-                it("should return true", function()
-                    assert.is_true(Value.IsUnsigned(0))
-                    assert.is_true(Value.IsUnsigned(0.5))
-                    assert.is_true(Value.IsUnsigned(1))
-                end)
-            end)
-
-            describe("when a non-unsigned number is passed", function()
-                it("should return false", function()
-                    assert.is_false(Value.IsUnsigned(-1))
-                    assert.is_false(Value.IsUnsigned(-0.5))
-                    assert.is_false(Value.IsUnsigned(true))
-                    assert.is_false(Value.IsUnsigned(false))
-                    assert.is_false(Value.IsUnsigned({}))
-                end)
-            end)
-        end)
+        TestChecker("IsString", { "string" }, { 0, false, true, {} })
+        TestChecker("IsUnitInterval", { 0, 0.5, 1 }, { -1, 2, false, true, {} })
+        TestChecker("IsUnsigned", { 0, 0.5, 1 }, { -1, -0.5, false, true, {} })
     end)
 
     describe("converters", function()
@@ -263,14 +116,14 @@ describe("#sdk SDK.Utils.Value", function()
 
         describe("ToClockString()", function()
             describe("when a seconds value is passed", function()
-                describe("when has_no_hours is not passed", function()
+                describe("and has_no_hours is not passed", function()
                     it("should return a clock string", function()
                         assert.is_equal("08:30:15", Value.ToClockString(30615))
                         assert.is_equal("00:00:00", Value.ToClockString(0))
                     end)
                 end)
 
-                describe("when has_no_hours is passed", function()
+                describe("and has_no_hours is passed", function()
                     it("should return a clock string", function()
                         assert.is_equal("30:15", Value.ToClockString(30615, true))
                         assert.is_equal("00:00", Value.ToClockString(0, true))
