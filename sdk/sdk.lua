@@ -59,6 +59,7 @@ local _MODULES = {
     ModMain = "sdk/modmain",
     PersistentData = "sdk/persistentdata",
     Player = "sdk/player",
+    Remote = "sdk/remote",
     RPC = "sdk/rpc",
     Test = "sdk/test",
     Thread = "sdk/thread",

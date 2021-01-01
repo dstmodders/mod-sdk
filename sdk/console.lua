@@ -32,16 +32,6 @@ function Console.AddWordPredictionDictionaries(dictionaries)
     end)
 end
 
---- Executes a console command remotely.
--- @tparam string cmd Command to execute
--- @tparam[opt] table data Data that will be unpacked and used alongside with string
--- @treturn table
-function Console.Remote(cmd, data)
-    local fn_str = string.format(cmd, unpack(data or {}))
-    local x, _, z = TheSim:ProjectScreenPos(TheSim:GetPosition())
-    TheNet:SendRemoteExecute(fn_str, x, z)
-end
-
 --- Lifecycle
 -- @section lifecycle
 
