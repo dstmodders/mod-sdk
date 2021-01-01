@@ -56,6 +56,14 @@ function Remote.WorldDeltaMoisture(delta)
     Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
 end
 
+--- Sends a request to set world delta wetness.
+-- @tparam number delta
+function Remote.WorldDeltaWetness(delta)
+    delta = delta ~= nil and delta or 0
+    SDK.Debug.String("[remote]", "World delta wetness:", tostring(delta))
+    Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
+end
+
 --- Lifecycle
 -- @section lifecycle
 
