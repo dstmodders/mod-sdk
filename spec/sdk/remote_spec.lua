@@ -140,6 +140,38 @@ describe("#sdk SDK.Remote", function()
     end)
 
     describe("world", function()
+        describe("ForcePrecipitation()", function()
+            describe("when no bool is passed", function()
+                TestDebugString(function()
+                    Remote.ForcePrecipitation()
+                end, "[remote]", "Force precipitation:", "true")
+
+                TestSendRemoteExecuteWasCalled(function()
+                    Remote.ForcePrecipitation()
+                end, 'TheWorld:PushEvent("ms_forceprecipitation", true)')
+            end)
+
+            describe("when true is passed", function()
+                TestDebugString(function()
+                    Remote.ForcePrecipitation(true)
+                end, "[remote]", "Force precipitation:", "true")
+
+                TestSendRemoteExecuteWasCalled(function()
+                    Remote.ForcePrecipitation(true)
+                end, 'TheWorld:PushEvent("ms_forceprecipitation", true)')
+            end)
+
+            describe("when false is passed", function()
+                TestDebugString(function()
+                    Remote.ForcePrecipitation(false)
+                end, "[remote]", "Force precipitation:", "false")
+
+                TestSendRemoteExecuteWasCalled(function()
+                    Remote.ForcePrecipitation(false)
+                end, 'TheWorld:PushEvent("ms_forceprecipitation", false)')
+            end)
+        end)
+
         describe("WorldDeltaMoisture()", function()
             describe("when no delta is passed", function()
                 TestDebugString(function()

@@ -48,8 +48,16 @@ end
 --- World
 -- @section world
 
+--- Sends a request to force precipitation.
+-- @tparam[opt] boolean bool
+function Remote.ForcePrecipitation(bool)
+    bool = bool ~= false and true or false
+    SDK.Debug.String("[remote]", "Force precipitation:", tostring(bool))
+    Remote.Send('TheWorld:PushEvent("ms_forceprecipitation", %s)', { tostring(bool) })
+end
+
 --- Sends a request to set world delta moisture.
--- @tparam number delta
+-- @tparam[opt] number delta
 function Remote.WorldDeltaMoisture(delta)
     delta = delta ~= nil and delta or 0
     SDK.Debug.String("[remote]", "World delta moisture:", tostring(delta))
@@ -57,7 +65,7 @@ function Remote.WorldDeltaMoisture(delta)
 end
 
 --- Sends a request to set world delta wetness.
--- @tparam number delta
+-- @tparam[opt] number delta
 function Remote.WorldDeltaWetness(delta)
     delta = delta ~= nil and delta or 0
     SDK.Debug.String("[remote]", "World delta wetness:", tostring(delta))
