@@ -85,7 +85,7 @@ end
 --- Sends a request to set a season.
 -- @tparam string season
 -- @treturn boolean
-function Remote.Season(season)
+function Remote.SetSeason(season)
     if Value.IsSeason(season) then
         SDK.Debug.String("[remote]", "Season:", tostring(season))
         Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
@@ -99,7 +99,7 @@ end
 -- @tparam string season
 -- @tparam number length
 -- @treturn boolean
-function Remote.SeasonLength(season, length)
+function Remote.SetSeasonLength(season, length)
     if Value.IsSeason(season) then
         if Value.IsUnsigned(length) and Value.IsInteger(length) then
             SDK.Debug.String(
@@ -125,7 +125,7 @@ end
 --- Sends a request to set a snow level.
 -- @tparam number delta
 -- @treturn boolean
-function Remote.SnowLevel(delta)
+function Remote.SetSnowLevel(delta)
     delta = delta ~= nil and delta or 0
 
     if TheWorld:HasTag("cave") then
@@ -146,7 +146,7 @@ end
 --- Sends a request to set a world delta moisture.
 -- @tparam[opt] number delta
 -- @treturn boolean
-function Remote.WorldDeltaMoisture(delta)
+function Remote.SetWorldDeltaMoisture(delta)
     delta = delta ~= nil and delta or 0
     if Value.IsNumber(delta) then
         SDK.Debug.String("[remote]", "World delta moisture:", tostring(delta))
@@ -160,7 +160,7 @@ end
 --- Sends a request to set a world delta wetness.
 -- @tparam[opt] number delta
 -- @treturn boolean
-function Remote.WorldDeltaWetness(delta)
+function Remote.SetWorldDeltaWetness(delta)
     delta = delta ~= nil and delta or 0
     if Value.IsNumber(delta) then
         SDK.Debug.String("[remote]", "World delta wetness:", tostring(delta))
