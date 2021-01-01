@@ -18,17 +18,18 @@ local SDK
 --- General
 -- @section general
 
---- Gathers players.
+--- Sends a request to gather players.
 function Remote.GatherPlayers()
     SDK.Debug.String("[remote]", "Gather players")
     Remote.Send("c_gatherplayers()")
 end
 
 --- Sends a world rollback request to server.
+-- @tparam number days
 function Remote.Rollback(days)
     days = days ~= nil and days or 0
-    SDK.Debug.String("[remote]", "Rollback", string.format(
-        "(%d day%s)",
+    SDK.Debug.String("[remote]", "Rollback:", string.format(
+        "%d day%s",
         days,
         days == 1 and "" or "s"
     ))
@@ -42,6 +43,17 @@ end
 function Remote.Send(cmd, data)
     local x, _, z = TheSim:ProjectScreenPos(TheSim:GetPosition())
     TheNet:SendRemoteExecute(string.format(cmd, unpack(data or {})), x, z)
+end
+
+--- World
+-- @section world
+
+--- Sends a request to set world delta moisture.
+-- @tparam number delta
+function Remote.WorldDeltaMoisture(delta)
+    delta = delta ~= nil and delta or 0
+    SDK.Debug.String("[remote]", "World delta moisture:", tostring(delta))
+    Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
 end
 
 --- Lifecycle
