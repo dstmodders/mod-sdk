@@ -56,6 +56,13 @@ function Remote.ForcePrecipitation(bool)
     Remote.Send('TheWorld:PushEvent("ms_forceprecipitation", %s)', { tostring(bool) })
 end
 
+--- Sends a request to set season.
+-- @tparam string season
+function Remote.Season(season)
+    SDK.Debug.String("[remote]", "Season:", tostring(season))
+    Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
+end
+
 --- Sends a request to set world delta moisture.
 -- @tparam[opt] number delta
 function Remote.WorldDeltaMoisture(delta)

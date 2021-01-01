@@ -172,6 +172,16 @@ describe("#sdk SDK.Remote", function()
             end)
         end)
 
+        describe("Season()", function()
+            TestDebugString(function()
+                Remote.Season("autumn")
+            end, "[remote]", "Season:", "autumn")
+
+            TestSendRemoteExecuteWasCalled(function()
+                Remote.Season("autumn")
+            end, 'TheWorld:PushEvent("ms_setseason", "autumn")')
+        end)
+
         describe("WorldDeltaMoisture()", function()
             describe("when no delta is passed", function()
                 TestDebugString(function()
