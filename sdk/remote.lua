@@ -46,6 +46,19 @@ function Remote.GatherPlayers()
     return true
 end
 
+--- Sends a request to go next to a certain prefab.
+-- @tparam EntityScript entity
+-- @treturn boolean
+function Remote.GoNext(entity)
+    if Value.IsEntity(entity) then
+        SDK.Debug.String("[remote]", "Go next:", entity:GetDisplayName())
+        Remote.Send('c_gonext("%s")', { entity.prefab })
+        return true
+    end
+    DebugErrorInvalidArg("entity", "must be an entity")
+    return false
+end
+
 --- Sends a world rollback request to server.
 -- @tparam number days
 -- @treturn boolean

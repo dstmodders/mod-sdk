@@ -12,6 +12,12 @@ describe("#sdk SDK.Remote", function()
         match = require "luassert.match"
     end)
 
+    teardown(function()
+        _G.TheNet = nil
+        _G.TheSim = nil
+        _G.TheWorld = nil
+    end)
+
     before_each(function()
         -- globals
         _G.TheNet = mock({
@@ -44,12 +50,6 @@ describe("#sdk SDK.Remote", function()
         Remote.Send = spy.on(Remote, "Send")
         SDK.Debug.Error = spy.on(SDK.Debug, "Error")
         SDK.Debug.String = spy.on(SDK.Debug, "String")
-    end)
-
-    teardown(function()
-        _G.TheNet = nil
-        _G.TheSim = nil
-        _G.TheWorld = nil
     end)
 
     local function TestDebugError(fn, ...)
@@ -106,6 +106,55 @@ describe("#sdk SDK.Remote", function()
             TestSendRemoteExecuteWasCalled(function()
                 Remote.GatherPlayers()
             end, "c_gatherplayers()")
+        end)
+
+        describe("GoNext()", function()
+            local entity
+
+            setup(function()
+                entity = {
+                    GUID = 1,
+                    prefab = "foobar",
+                    GetDisplayName = ReturnValueFn("Foo Bar"),
+                }
+            end)
+
+            describe("when a valid entity is passed", function()
+                describe("(entity)", function()
+                    it("should return true", function()
+                        assert.is_true(Remote.GoNext(entity))
+                    end)
+
+                    TestDebugString(function()
+                        Remote.GoNext(entity)
+                    end, "[remote]", "Go next:", "Foo Bar")
+
+                    TestSendRemoteExecuteWasCalled(function()
+                        Remote.GoNext(entity)
+                    end, 'c_gonext("foobar")')
+                end)
+            end)
+
+            describe("when an invalid entity is passed", function()
+                describe("(foo)", function()
+                    it("should return false", function()
+                        assert.is_false(Remote.GoNext("foo"))
+                    end)
+
+                    TestDebugError(
+                        function()
+                            Remote.GoNext("foo")
+                        end,
+                        "SDK.Remote.GoNext():",
+                        'Invalid argument (entity) is passed',
+                        "(must be an entity)"
+                    )
+
+                    TestSendRemoteExecuteWasNotCalled(function()
+                        Remote.GoNext("foo")
+                    end)
+                end)
+            end)
         end)
 
         describe("Rollback()", function()
