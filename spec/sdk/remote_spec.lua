@@ -299,30 +299,36 @@ describe("#sdk SDK.Remote", function()
                     end)
 
                     TestRemoteInvalidArg(name, "value", "must be a percent", "foo")
-                    TestRemoteInvalidArg(name, "player", "must be a player", 50, "foo")
-                    TestRemoteValid(name, debug, send, 50, _G.ThePlayer)
+                    TestRemoteInvalidArg(name, "player", "must be a player", 25, "foo")
+                    TestRemoteValid(name, debug, send, 25, _G.ThePlayer)
                 end)
 
-                TestRemotePlayerIsGhost("SetPlayerHealthPercent", _G.ThePlayer, 50)
+                TestRemotePlayerIsGhost("SetPlayerHealthPercent", _G.ThePlayer, 25)
             end)
         end
 
         TestSetPlayerAttributePercent(
             "SetPlayerHealthPercent",
-            { "Player health:", "50.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPercent(math.min(0.50, 1)) end' -- luacheck: only
+            { "Player health:", "25.00%", "(Player)" },
+            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
+        )
+
+        TestSetPlayerAttributePercent(
+            "SetPlayerHealthLimitPercent",
+            { "Player health limit:", "25.00%", "(Player)" },
+            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPenalty(0.75) end' -- luacheck: only
         )
 
         TestSetPlayerAttributePercent(
             "SetPlayerHungerPercent",
-            { "Player hunger:", "50.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.hunger then player.components.hunger:SetPercent(math.min(0.50, 1)) end' -- luacheck: only
+            { "Player hunger:", "25.00%", "(Player)" },
+            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.hunger then player.components.hunger:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
         )
 
         TestSetPlayerAttributePercent(
             "SetPlayerSanityPercent",
-            { "Player sanity:", "50.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.sanity then player.components.sanity:SetPercent(math.min(0.50, 1)) end' -- luacheck: only
+            { "Player sanity:", "25.00%", "(Player)" },
+            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.sanity then player.components.sanity:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
         )
     end)
 

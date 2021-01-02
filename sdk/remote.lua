@@ -143,6 +143,32 @@ function Remote.SetPlayerHealthPercent(percent, player)
     return true
 end
 
+--- Sends a request to set a player health limit percent.
+-- @tparam number percent Health limit percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Remote.SetPlayerHealthLimitPercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerHealthLimitPercent") then
+        return false
+    end
+
+    SDK.Debug.String(
+        "[remote]",
+        "Player health limit:",
+        Value.ToPercentString(percent),
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") if player.components.health then player.components.health:SetPenalty(%0.2f) end', -- luacheck: only
+        { player.userid, 1 - (percent / 100) }
+    )
+
+    return true
+end
+
 --- Sends a request to set a player hunger percent.
 -- @tparam number percent Hunger percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
