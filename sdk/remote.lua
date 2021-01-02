@@ -52,13 +52,14 @@ end
 -- @tparam EntityScript entity
 -- @treturn boolean
 function Remote.GoNext(entity)
-    if Value.IsEntity(entity) then
-        SDK.Debug.String("[remote]", "Go next:", entity:GetDisplayName())
-        Remote.Send('c_gonext("%s")', { entity.prefab })
-        return true
+    if not Value.IsEntity(entity) then
+        DebugErrorInvalidArg("entity", "must be an entity", "GoNext")
+        return false
     end
-    DebugErrorInvalidArg("entity", "must be an entity", "GoNext")
-    return false
+
+    SDK.Debug.String("[remote]", "Go next:", entity:GetDisplayName())
+    Remote.Send('c_gonext("%s")', { entity.prefab })
+    return true
 end
 
 --- Sends a world rollback request to server.
@@ -66,13 +67,15 @@ end
 -- @treturn boolean
 function Remote.Rollback(days)
     days = days ~= nil and days or 0
-    if Value.IsUnsigned(days) and Value.IsInteger(days) then
-        SDK.Debug.String("[remote]", "Rollback:", Value.ToDaysString(days))
-        Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days })
-        return true
+
+    if not Value.IsUnsigned(days) or not Value.IsInteger(days) then
+        DebugErrorInvalidArg("days", "must be an unsigned integer", "Rollback")
+        return false
     end
-    DebugErrorInvalidArg("days", "must be an unsigned integer", "Rollback")
-    return false
+
+    SDK.Debug.String("[remote]", "Rollback:", Value.ToDaysString(days))
+    Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days })
+    return true
 end
 
 --- Sends a remote command to execute.
@@ -97,54 +100,6 @@ function Remote.ForcePrecipitation(bool)
     return true
 end
 
---- Sends a request to set a season.
--- @tparam string season
--- @treturn boolean
-function Remote.SetSeason(season)
-    if Value.IsSeason(season) then
-        SDK.Debug.String("[remote]", "Season:", tostring(season))
-        Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
-        return true
-    end
-    DebugErrorInvalidArg(
-        "season",
-        "must be a season: autumn, winter, spring or summer",
-        "SetSeason"
-    )
-    return false
-end
-
---- Sends a request to set a season length.
--- @tparam string season
--- @tparam number length
--- @treturn boolean
-function Remote.SetSeasonLength(season, length)
-    if Value.IsSeason(season) then
-        if Value.IsUnsigned(length) and Value.IsInteger(length) then
-            SDK.Debug.String(
-                "[remote]",
-                "Season length:",
-                season,
-                "(" .. Value.ToDaysString(length) .. ")"
-            )
-            Remote.Send(
-                'TheWorld:PushEvent("ms_setseasonlength", { season = "%s", length = %d })',
-                { season, length }
-            )
-            return true
-        else
-            DebugErrorInvalidArg("length", "must be an unsigned integer", "SetSeasonLength")
-        end
-    else
-        DebugErrorInvalidArg(
-            "season",
-            "must be a season: autumn, winter, spring or summer",
-            "SetSeasonLength"
-        )
-    end
-    return false
-end
-
 --- Sends a request to send a lightning strike.
 -- @tparam Vector3 pt Point
 -- @treturn boolean
@@ -154,15 +109,61 @@ function Remote.SendLightningStrike(pt)
         return false
     end
 
-    if Value.IsPoint(pt) then
-        local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
-        SDK.Debug.String("[remote]", "Send lighting strike:", tostring(pt))
-        Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
-        return true
+    if not Value.IsPoint(pt) then
+        DebugErrorInvalidArg("pt", "must be a point", "SendLightningStrike")
+        return false
     end
 
-    DebugErrorInvalidArg("pt", "must be a point", "SendLightningStrike")
-    return false
+    local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
+    SDK.Debug.String("[remote]", "Send lighting strike:", tostring(pt))
+    Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
+    return true
+end
+
+--- Sends a request to set a season.
+-- @tparam string season
+-- @treturn boolean
+function Remote.SetSeason(season)
+    if not Value.IsSeason(season) then
+        DebugErrorInvalidArg(
+            "season",
+            "must be a season: autumn, winter, spring or summer",
+            "SetSeason"
+        )
+        return false
+    end
+
+    SDK.Debug.String("[remote]", "Season:", tostring(season))
+    Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
+    return true
+end
+
+--- Sends a request to set a season length.
+-- @tparam string season
+-- @tparam number length
+-- @treturn boolean
+function Remote.SetSeasonLength(season, length)
+    if not Value.IsSeason(season) then
+        DebugErrorInvalidArg(
+            "season",
+            "must be a season: autumn, winter, spring or summer",
+            "SetSeasonLength"
+        )
+        return false
+    end
+
+    if not Value.IsUnsigned(length) or not Value.IsInteger(length) then
+        DebugErrorInvalidArg("length", "must be an unsigned integer", "SetSeasonLength")
+        return false
+    end
+
+    SDK.Debug.String("[remote]", "Season length:", season, "(" .. Value.ToDaysString(length) .. ")")
+    Remote.Send(
+        'TheWorld:PushEvent("ms_setseasonlength", { season = "%s", length = %d })',
+        { season, length }
+    )
+
+    return true
 end
 
 --- Sends a request to set a snow level.
@@ -191,13 +192,15 @@ end
 -- @treturn boolean
 function Remote.SetWorldDeltaMoisture(delta)
     delta = delta ~= nil and delta or 0
-    if Value.IsNumber(delta) then
-        SDK.Debug.String("[remote]", "World delta moisture:", tostring(delta))
-        Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
-        return true
+
+    if not Value.IsNumber(delta) then
+        DebugErrorInvalidArg("delta", "must be a number", "SetWorldDeltaMoisture")
+        return false
     end
-    DebugErrorInvalidArg("delta", "must be a number", "SetWorldDeltaMoisture")
-    return false
+
+    SDK.Debug.String("[remote]", "World delta moisture:", tostring(delta))
+    Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
+    return true
 end
 
 --- Sends a request to set a world delta wetness.
@@ -205,13 +208,15 @@ end
 -- @treturn boolean
 function Remote.SetWorldDeltaWetness(delta)
     delta = delta ~= nil and delta or 0
-    if Value.IsNumber(delta) then
-        SDK.Debug.String("[remote]", "World delta wetness:", tostring(delta))
-        Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
-        return true
+
+    if not Value.IsNumber(delta) then
+        DebugErrorInvalidArg("delta", "must be a number", "SetWorldDeltaWetness")
+        return false
     end
-    DebugErrorInvalidArg("delta", "must be a number", "SetWorldDeltaWetness")
-    return false
+
+    SDK.Debug.String("[remote]", "World delta wetness:", tostring(delta))
+    Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
+    return true
 end
 
 --- Lifecycle
