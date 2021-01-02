@@ -15,6 +15,7 @@ describe("#sdk SDK.Remote", function()
     teardown(function()
         _G.TheNet = nil
         _G.TheSim = nil
+        _G.ThePlayer = nil
         _G.TheWorld = nil
     end)
 
@@ -28,6 +29,15 @@ describe("#sdk SDK.Remote", function()
             GetPosition = Empty,
             ProjectScreenPos = function()
                 return 1, 0, 3
+            end,
+        })
+
+        _G.ThePlayer = mock({
+            GUID = 1,
+            userid = "KU_foobar",
+            GetDisplayName = ReturnValueFn("Player"),
+            HasTag = function(_, tag)
+                return tag == "player"
             end,
         })
 
@@ -309,9 +319,11 @@ describe("#sdk SDK.Remote", function()
                 pt = Vector3(1, 0, 3)
             end)
 
-            describe("when not in a forest world", function()
+            describe("when in a cave world", function()
                 before_each(function()
-                    _G.TheWorld.HasTag = ReturnValueFn(true)
+                    _G.TheWorld.HasTag = spy.new(function(_, tag)
+                        return tag == "cave"
+                    end)
                 end)
 
                 TestRemoteInvalidWorldType("SendLightningStrike", "must be in a forest", pt)
@@ -319,7 +331,9 @@ describe("#sdk SDK.Remote", function()
 
             describe("when in a forest world", function()
                 before_each(function()
-                    _G.TheWorld.HasTag = ReturnValueFn(false)
+                    _G.TheWorld.HasTag = spy.new(function(_, tag)
+                        return tag == "forest"
+                    end)
                 end)
 
                 TestRemoteInvalidArg("SendLightningStrike", "pt", "must be a point", "foo")
@@ -329,6 +343,71 @@ describe("#sdk SDK.Remote", function()
                     { "Send lighting strike:", "(1.00, 0.00, 3.00)" },
                     'TheWorld:PushEvent("ms_sendlightningstrike", Vector3(1.00, 0.00, 3.00))',
                     pt
+                )
+            end)
+        end)
+
+        describe("SendMiniEarthquake()", function()
+            describe("when in a forest world", function()
+                before_each(function()
+                    _G.TheWorld.HasTag = spy.new(function(_, tag)
+                        return tag == "forest"
+                    end)
+                end)
+
+                TestRemoteInvalidWorldType("SendMiniEarthquake", "must be in a cave")
+            end)
+
+            describe("when in a cave world", function()
+                before_each(function()
+                    _G.TheWorld.HasTag = spy.new(function(_, tag)
+                        return tag == "cave"
+                    end)
+                end)
+
+                TestRemoteInvalidArg("SendMiniEarthquake", "player", "must be a player", "foo")
+
+                TestRemoteInvalidArg(
+                    "SendMiniEarthquake",
+                    "radius",
+                    "must be an unsigned integer",
+                    _G.ThePlayer,
+                    "foo"
+                )
+
+                TestRemoteInvalidArg(
+                    "SendMiniEarthquake",
+                    "amount",
+                    "must be an unsigned integer",
+                    _G.ThePlayer,
+                    20,
+                    -10
+                )
+
+                TestRemoteInvalidArg(
+                    "SendMiniEarthquake",
+                    "duration",
+                    "must be an unsigned number",
+                    _G.ThePlayer,
+                    20,
+                    20,
+                    true
+                )
+
+                TestRemoteValid(
+                    "SendMiniEarthquake",
+                    { "Send mini earthquake:", "Player" },
+                    'TheWorld:PushEvent("ms_miniquake", { target = LookupPlayerInstByUserID("KU_foobar"), rad = 20, num = 20, duration = 2.50 })' -- luacheck: only
+                )
+
+                TestRemoteValid(
+                    "SendMiniEarthquake",
+                    { "Send mini earthquake:", "Player" },
+                    'TheWorld:PushEvent("ms_miniquake", { target = LookupPlayerInstByUserID("KU_foobar"), rad = 20, num = 20, duration = 2.50 })', -- luacheck: only
+                    _G.ThePlayer,
+                    20,
+                    20,
+                    2.5
                 )
             end)
         end)

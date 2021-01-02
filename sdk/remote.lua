@@ -104,7 +104,7 @@ end
 -- @tparam Vector3 pt Point
 -- @treturn boolean
 function Remote.SendLightningStrike(pt)
-    if TheWorld:HasTag("cave") then
+    if not TheWorld:HasTag("forest") then
         DebugErrorInvalidWorldType("must be in a forest", "SendLightningStrike")
         return false
     end
@@ -117,6 +117,52 @@ function Remote.SendLightningStrike(pt)
     local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
     SDK.Debug.String("[remote]", "Send lighting strike:", tostring(pt))
     Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
+    return true
+end
+
+--- Sends a request to send a mini earthquake.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @tparam[opt] number radius Default: 20
+-- @tparam[opt] number amount Default: 20
+-- @tparam[opt] number duration Default: 2.5
+-- @treturn boolean
+function Remote.SendMiniEarthquake(player, radius, amount, duration)
+    player = player ~= nil and player or ThePlayer
+    radius = radius ~= nil and radius or 20
+    amount = amount ~= nil and amount or 20
+    duration = duration ~= nil and duration or 2.5
+
+    if not TheWorld:HasTag("cave") then
+        DebugErrorInvalidWorldType("must be in a cave", "SendMiniEarthquake")
+        return false
+    end
+
+    if not Value.IsEntity(player) or not player:HasTag("player") or not player.userid then
+        DebugErrorInvalidArg("player", "must be a player", "SendMiniEarthquake")
+        return false
+    end
+
+    if not Value.IsUnsigned(radius) or not Value.IsInteger(radius) then
+        DebugErrorInvalidArg("radius", "must be an unsigned integer", "SendMiniEarthquake")
+        return false
+    end
+
+    if not Value.IsUnsigned(amount) or not Value.IsInteger(amount) then
+        DebugErrorInvalidArg("amount", "must be an unsigned integer", "SendMiniEarthquake")
+        return false
+    end
+
+    if not Value.IsUnsigned(duration) or not Value.IsNumber(duration) then
+        DebugErrorInvalidArg("duration", "must be an unsigned number", "SendMiniEarthquake")
+        return false
+    end
+
+    SDK.Debug.String("[remote]", "Send mini earthquake:", player:GetDisplayName())
+    Remote.Send(
+        'TheWorld:PushEvent("ms_miniquake", { target = LookupPlayerInstByUserID("%s"), rad = %d, num = %d, duration = %0.2f })', -- luacheck: only
+        { player.userid, radius, amount, duration }
+    )
+
     return true
 end
 
