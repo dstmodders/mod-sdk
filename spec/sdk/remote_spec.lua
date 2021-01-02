@@ -17,6 +17,7 @@ describe("#sdk SDK.Remote", function()
         _G.ThePlayer = nil
         _G.TheSim = nil
         _G.TheWorld = nil
+        _G.TUNING = nil
     end)
 
     before_each(function()
@@ -44,6 +45,11 @@ describe("#sdk SDK.Remote", function()
         _G.TheWorld = mock({
             HasTag = ReturnValueFn(false),
         })
+
+        _G.TUNING = {
+            MIN_ENTITY_TEMP = -20,
+            MAX_ENTITY_TEMP = 90,
+        }
 
         -- initialization
         SDK = require "sdk/sdk"
@@ -336,6 +342,41 @@ describe("#sdk SDK.Remote", function()
             { "Player sanity:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.sanity then player.components.sanity:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
         )
+
+        describe("SetPlayerTemperature()", function()
+            describe("when a player is not a ghost", function()
+                before_each(function()
+                    _G.ThePlayer.HasTag = spy.new(function(_, tag)
+                        return tag ~= "playerghost"
+                    end)
+                end)
+
+                TestRemoteInvalidArg(
+                    "SetPlayerTemperature",
+                    "value",
+                    "must be an entity temperature",
+                    "foo"
+                )
+
+                TestRemoteInvalidArg(
+                    "SetPlayerTemperature",
+                    "player",
+                    "must be a player",
+                    25,
+                    "foo"
+                )
+
+                TestRemoteValid(
+                    "SetPlayerTemperature",
+                    { "Player temperature:", "25.00°", "(Player)" },
+                    'player = LookupPlayerInstByUserID("KU_foobar") if player.components.temperature then player.components.temperature:SetTemperature(25.00) end', -- luacheck: only
+                    25,
+                    _G.ThePlayer
+                )
+            end)
+
+            TestRemotePlayerIsGhost("SetPlayerTemperature", _G.ThePlayer, 25)
+        end)
     end)
 
     describe("world", function()

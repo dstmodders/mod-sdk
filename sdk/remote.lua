@@ -255,6 +255,37 @@ function Remote.SetPlayerSanityPercent(percent, player)
     return true
 end
 
+--- Sends a request to set a player temperature.
+-- @tparam number temperature Temperature percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Remote.SetPlayerTemperature(temperature, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not Value.IsEntityTemperature(temperature) then
+        DebugErrorInvalidArg("value", "must be an entity temperature", "SetPlayerTemperature")
+        return false
+    end
+
+    if not IsValidPlayerAlive(player, "SetPlayerTemperature") then
+        return false
+    end
+
+    SDK.Debug.String(
+        "[remote]",
+        "Player temperature:",
+        Value.ToDegreeString(temperature),
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") if player.components.temperature then player.components.temperature:SetTemperature(%0.2f) end', -- luacheck: only
+        { player.userid, temperature }
+    )
+
+    return true
+end
+
 --- World
 -- @section world
 
