@@ -312,6 +312,12 @@ describe("#sdk SDK.Remote", function()
             { "Player health:", "50.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPercent(math.min(0.50, 1)) end' -- luacheck: only
         )
+
+        TestSetPlayerAttributePercent(
+            "SetPlayerHungerPercent",
+            { "Player hunger:", "50.00%", "(Player)" },
+            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.hunger then player.components.hunger:SetPercent(math.min(0.50, 1)) end' -- luacheck: only
+        )
     end)
 
     describe("world", function()

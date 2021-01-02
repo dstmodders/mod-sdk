@@ -45,6 +45,25 @@ local function DebugErrorPlayerIsGhost(fn_name)
     )
 end
 
+local function IsValidSetPlayerAttributePercent(percent, player, fn_name)
+    if not Value.IsPercent(percent) then
+        DebugErrorInvalidArg("value", "must be a percent", fn_name)
+        return false
+    end
+
+    if not Value.IsEntity(player) or not player:HasTag("player") or not player.userid then
+        DebugErrorInvalidArg("player", "must be a player", fn_name)
+        return false
+    end
+
+    if player:HasTag("playerghost") then
+        DebugErrorPlayerIsGhost("SetPlayerHealthPercent")
+        return false
+    end
+
+    return true
+end
+
 --- General
 -- @section general
 
@@ -105,18 +124,7 @@ end
 function Remote.SetPlayerHealthPercent(percent, player)
     player = player ~= nil and player or ThePlayer
 
-    if not Value.IsPercent(percent) then
-        DebugErrorInvalidArg("value", "must be a percent", "SetPlayerHealthPercent")
-        return false
-    end
-
-    if not Value.IsEntity(player) or not player:HasTag("player") or not player.userid then
-        DebugErrorInvalidArg("player", "must be a player", "SetPlayerHealthPercent")
-        return false
-    end
-
-    if player:HasTag("playerghost") then
-        DebugErrorPlayerIsGhost("SetPlayerHealthPercent")
+    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerHealthPercent") then
         return false
     end
 
@@ -129,6 +137,32 @@ function Remote.SetPlayerHealthPercent(percent, player)
 
     Remote.Send(
         'player = LookupPlayerInstByUserID("%s") if player.components.health then player.components.health:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
+        { player.userid, percent / 100 }
+    )
+
+    return true
+end
+
+--- Sends a request to set a player hunger percent.
+-- @tparam number percent Hunger percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Remote.SetPlayerHungerPercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerHungerPercent") then
+        return false
+    end
+
+    SDK.Debug.String(
+        "[remote]",
+        "Player hunger:",
+        Value.ToPercentString(percent),
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") if player.components.hunger then player.components.hunger:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
         { player.userid, percent / 100 }
     )
 
