@@ -14,8 +14,8 @@ describe("#sdk SDK.Remote", function()
 
     teardown(function()
         _G.TheNet = nil
-        _G.TheSim = nil
         _G.ThePlayer = nil
+        _G.TheSim = nil
         _G.TheWorld = nil
     end)
 
@@ -25,19 +25,19 @@ describe("#sdk SDK.Remote", function()
             SendRemoteExecute = Empty,
         })
 
-        _G.TheSim = mock({
-            GetPosition = Empty,
-            ProjectScreenPos = function()
-                return 1, 0, 3
-            end,
-        })
-
         _G.ThePlayer = mock({
             GUID = 1,
             userid = "KU_foobar",
             GetDisplayName = ReturnValueFn("Player"),
             HasTag = function(_, tag)
                 return tag == "player"
+            end,
+        })
+
+        _G.TheSim = mock({
+            GetPosition = Empty,
+            ProjectScreenPos = function()
+                return 1, 0, 3
             end,
         })
 
@@ -303,20 +303,20 @@ describe("#sdk SDK.Remote", function()
                     TestRemoteValid(name, debug, send, 25, _G.ThePlayer)
                 end)
 
-                TestRemotePlayerIsGhost("SetPlayerHealthPercent", _G.ThePlayer, 25)
+                TestRemotePlayerIsGhost(name, _G.ThePlayer, 25)
             end)
         end
-
-        TestSetPlayerAttributePercent(
-            "SetPlayerHealthPercent",
-            { "Player health:", "25.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
-        )
 
         TestSetPlayerAttributePercent(
             "SetPlayerHealthLimitPercent",
             { "Player health limit:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPenalty(0.75) end' -- luacheck: only
+        )
+
+        TestSetPlayerAttributePercent(
+            "SetPlayerHealthPercent",
+            { "Player health:", "25.00%", "(Player)" },
+            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
         )
 
         TestSetPlayerAttributePercent(
