@@ -19,17 +19,19 @@ local Value
 --- Helpers
 -- @section helpers
 
-local function DebugErrorInvalidArg(arg_name, explanation)
+local function DebugErrorInvalidArg(arg_name, explanation, fn_name)
+    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
     SDK.Debug.Error(
-        string.format("SDK.Remote.%s():", debug.getinfo(2).name),
+        string.format("%s.%s():", tostring(Remote), fn_name),
         string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
         explanation and "(" .. explanation .. ")"
     )
 end
 
-local function DebugErrorInvalidWorldType(explanation)
+local function DebugErrorInvalidWorldType(explanation, fn_name)
+    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
     SDK.Debug.Error(
-        string.format("SDK.Remote.%s():", debug.getinfo(2).name),
+        string.format("%s.%s():", tostring(Remote), fn_name),
         "Invalid world type",
         explanation and "(" .. explanation .. ")"
     )
@@ -55,7 +57,7 @@ function Remote.GoNext(entity)
         Remote.Send('c_gonext("%s")', { entity.prefab })
         return true
     end
-    DebugErrorInvalidArg("entity", "must be an entity")
+    DebugErrorInvalidArg("entity", "must be an entity", "GoNext")
     return false
 end
 
@@ -69,7 +71,7 @@ function Remote.Rollback(days)
         Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days })
         return true
     end
-    DebugErrorInvalidArg("days", "must be an unsigned integer")
+    DebugErrorInvalidArg("days", "must be an unsigned integer", "Rollback")
     return false
 end
 
@@ -104,7 +106,11 @@ function Remote.SetSeason(season)
         Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
         return true
     end
-    DebugErrorInvalidArg("season", "must be a season: autumn, winter, spring or summer")
+    DebugErrorInvalidArg(
+        "season",
+        "must be a season: autumn, winter, spring or summer",
+        "SetSeason"
+    )
     return false
 end
 
@@ -127,10 +133,14 @@ function Remote.SetSeasonLength(season, length)
             )
             return true
         else
-            DebugErrorInvalidArg("length", "must be an unsigned integer")
+            DebugErrorInvalidArg("length", "must be an unsigned integer", "SetSeasonLength")
         end
     else
-        DebugErrorInvalidArg("season", "must be a season: autumn, winter, spring or summer")
+        DebugErrorInvalidArg(
+            "season",
+            "must be a season: autumn, winter, spring or summer",
+            "SetSeasonLength"
+        )
     end
     return false
 end
@@ -140,7 +150,7 @@ end
 -- @treturn boolean
 function Remote.SendLightningStrike(pt)
     if TheWorld:HasTag("cave") then
-        DebugErrorInvalidWorldType("must be in a forest")
+        DebugErrorInvalidWorldType("must be in a forest", "SendLightningStrike")
         return false
     end
 
@@ -151,7 +161,7 @@ function Remote.SendLightningStrike(pt)
         return true
     end
 
-    DebugErrorInvalidArg("pt", "must be a point")
+    DebugErrorInvalidArg("pt", "must be a point", "SendLightningStrike")
     return false
 end
 
@@ -162,7 +172,7 @@ function Remote.SetSnowLevel(delta)
     delta = delta ~= nil and delta or 0
 
     if TheWorld:HasTag("cave") then
-        DebugErrorInvalidWorldType("must be in a forest")
+        DebugErrorInvalidWorldType("must be in a forest", "SetSnowLevel")
         return false
     end
 
@@ -172,7 +182,7 @@ function Remote.SetSnowLevel(delta)
         return true
     end
 
-    DebugErrorInvalidArg("delta", "must be a unit interval")
+    DebugErrorInvalidArg("delta", "must be a unit interval", "SetSnowLevel")
     return false
 end
 
@@ -186,7 +196,7 @@ function Remote.SetWorldDeltaMoisture(delta)
         Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
         return true
     end
-    DebugErrorInvalidArg("delta", "must be a number")
+    DebugErrorInvalidArg("delta", "must be a number", "SetWorldDeltaMoisture")
     return false
 end
 
@@ -200,7 +210,7 @@ function Remote.SetWorldDeltaWetness(delta)
         Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
         return true
     end
-    DebugErrorInvalidArg("delta", "must be a number")
+    DebugErrorInvalidArg("delta", "must be a number", "SetWorldDeltaWetness")
     return false
 end
 

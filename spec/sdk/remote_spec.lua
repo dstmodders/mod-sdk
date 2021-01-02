@@ -93,154 +93,128 @@ describe("#sdk SDK.Remote", function()
         end)
     end
 
-    describe("general", function()
-        describe("GatherPlayers()", function()
+    local function TestRemoteInvalidArg(name, arg_name, explanation, ...)
+        local args = { ... }
+        local description = "when no arguments are passed"
+        if #args > 1 then
+            description = "when invalid arguments are passed"
+        elseif #args == 1 then
+            description = "when an invalid argument is passed"
+        end
+
+        describe(description, function()
+            it("should return false", function()
+                assert.is_false(Remote[name](unpack(args)))
+            end)
+
+            TestDebugError(
+                function()
+                    Remote[name](unpack(args))
+                end,
+                string.format("SDK.Remote.%s():", name),
+                string.format(
+                    "Invalid argument%s is passed",
+                    arg_name and ' (' .. arg_name .. ")" or ""
+                ),
+                explanation and "(" .. explanation .. ")"
+            )
+
+            TestSendRemoteExecuteWasNotCalled(function()
+                Remote[name](unpack(args))
+            end)
+        end)
+    end
+
+    local function TestRemoteInvalidWorldType(name, explanation, ...)
+        local args = { ... }
+        local description = "when no arguments are passed"
+        if #args > 1 then
+            description = "when valid arguments are passed"
+        elseif #args == 1 then
+            description = "when a valid argument is passed"
+        end
+
+        describe(description, function()
+            it("should return false", function()
+                assert.is_false(Remote[name](unpack(args)))
+            end)
+
+            TestDebugError(
+                function()
+                    Remote[name](unpack(args))
+                end,
+                string.format("SDK.Remote.%s():", name),
+                "Invalid world type",
+                explanation and "(" .. explanation .. ")"
+            )
+
+            TestSendRemoteExecuteWasNotCalled(function()
+                Remote[name](unpack(args))
+            end)
+        end)
+    end
+
+    local function TestRemoteValid(name, debug, send, ...)
+        local args = { ... }
+        local description = "when no arguments are passed"
+        if #args > 1 then
+            description = "when valid arguments are passed"
+        elseif #args == 1 then
+            description = "when a valid argument is passed"
+        end
+
+        describe(description, function()
             it("should return true", function()
-                assert.is_true(Remote.GatherPlayers())
+                assert.is_true(Remote[name](unpack(args)))
             end)
 
             TestDebugString(function()
-                Remote.GatherPlayers()
-            end, "[remote]", "Gather players")
+                Remote[name](unpack(args))
+            end, "[remote]", unpack(debug))
 
             TestSendRemoteExecuteWasCalled(function()
-                Remote.GatherPlayers()
-            end, "c_gatherplayers()")
+                Remote[name](unpack(args))
+            end, send)
+        end)
+    end
+
+    describe("general", function()
+        describe("GatherPlayers()", function()
+            TestRemoteValid("GatherPlayers", { "Gather players" }, "c_gatherplayers()")
         end)
 
         describe("GoNext()", function()
-            local entity
+            local entity = {
+                GUID = 1,
+                prefab = "foobar",
+                GetDisplayName = ReturnValueFn("Foo Bar"),
+            }
 
-            setup(function()
-                entity = {
-                    GUID = 1,
-                    prefab = "foobar",
-                    GetDisplayName = ReturnValueFn("Foo Bar"),
-                }
-            end)
-
-            describe("when a valid entity is passed", function()
-                describe("(entity)", function()
-                    it("should return true", function()
-                        assert.is_true(Remote.GoNext(entity))
-                    end)
-
-                    TestDebugString(function()
-                        Remote.GoNext(entity)
-                    end, "[remote]", "Go next:", "Foo Bar")
-
-                    TestSendRemoteExecuteWasCalled(function()
-                        Remote.GoNext(entity)
-                    end, 'c_gonext("foobar")')
-                end)
-            end)
-
-            describe("when an invalid entity is passed", function()
-                describe("(foo)", function()
-                    it("should return false", function()
-                        assert.is_false(Remote.GoNext("foo"))
-                    end)
-
-                    TestDebugError(
-                        function()
-                            Remote.GoNext("foo")
-                        end,
-                        "SDK.Remote.GoNext():",
-                        'Invalid argument (entity) is passed',
-                        "(must be an entity)"
-                    )
-
-                    TestSendRemoteExecuteWasNotCalled(function()
-                        Remote.GoNext("foo")
-                    end)
-                end)
-            end)
+            TestRemoteInvalidArg("GoNext", "entity", "must be an entity", "foo")
+            TestRemoteValid("GoNext", {
+                "Go next:",
+                "Foo Bar",
+            }, 'c_gonext("foobar")', entity)
         end)
 
         describe("Rollback()", function()
-            describe("when no days are passed", function()
-                it("should return true", function()
-                    assert.is_true(Remote.Rollback())
-                end)
+            TestRemoteInvalidArg("Rollback", "days", "must be an unsigned integer", -1)
+            TestRemoteInvalidArg("Rollback", "days", "must be an unsigned integer", 0.5)
 
-                TestDebugString(function()
-                    Remote.Rollback()
-                end, "[remote]", "Rollback:", "0 days")
+            TestRemoteValid("Rollback", {
+                "Rollback:",
+                "0 days",
+            }, "TheNet:SendWorldRollbackRequestToServer(0)")
 
-                TestSendRemoteExecuteWasCalled(function()
-                    Remote.Rollback()
-                end, "TheNet:SendWorldRollbackRequestToServer(0)")
-            end)
+            TestRemoteValid("Rollback", {
+                "Rollback:",
+                "1 day",
+            }, "TheNet:SendWorldRollbackRequestToServer(1)", 1)
 
-            describe("when a valid value is passed", function()
-                describe("(1 day)", function()
-                    it("should return true", function()
-                        assert.is_true(Remote.Rollback(1))
-                    end)
-
-                    TestDebugString(function()
-                        Remote.Rollback(1)
-                    end, "[remote]", "Rollback:", "1 day")
-
-                    TestSendRemoteExecuteWasCalled(function()
-                        Remote.Rollback(1)
-                    end, 'TheNet:SendWorldRollbackRequestToServer(1)')
-                end)
-
-                describe("(3 days)", function()
-                    it("should return true", function()
-                        assert.is_true(Remote.Rollback(3))
-                    end)
-
-                    TestDebugString(function()
-                        Remote.Rollback(3)
-                    end, "[remote]", "Rollback:", "3 days")
-
-                    TestSendRemoteExecuteWasCalled(function()
-                        Remote.Rollback(3)
-                    end, "TheNet:SendWorldRollbackRequestToServer(3)")
-                end)
-            end)
-
-            describe("when an invalid value is passed", function()
-                describe("(-1 day)", function()
-                    it("should return false", function()
-                        assert.is_false(Remote.Rollback(-1))
-                    end)
-
-                    TestDebugError(
-                        function()
-                            Remote.Rollback(-1)
-                        end,
-                        "SDK.Remote.Rollback():",
-                        'Invalid argument (days) is passed',
-                        "(must be an unsigned integer)"
-                    )
-
-                    TestSendRemoteExecuteWasNotCalled(function()
-                        Remote.Rollback(-1)
-                    end)
-                end)
-
-                describe("(0.5 days)", function()
-                    it("should return false", function()
-                        assert.is_false(Remote.Rollback(0.5))
-                    end)
-
-                    TestDebugError(
-                        function()
-                            Remote.Rollback(0.5)
-                        end,
-                        "SDK.Remote.Rollback():",
-                        'Invalid argument (days) is passed',
-                        "(must be an unsigned integer)"
-                    )
-
-                    TestSendRemoteExecuteWasNotCalled(function()
-                        Remote.Rollback(0.5)
-                    end)
-                end)
-            end)
+            TestRemoteValid("Rollback", {
+                "Rollback:",
+                "3 days",
+            }, "TheNet:SendWorldRollbackRequestToServer(3)", 3)
         end)
 
         describe("Send()", function()
@@ -272,174 +246,75 @@ describe("#sdk SDK.Remote", function()
 
     describe("world", function()
         describe("ForcePrecipitation()", function()
-            describe("when no bool is passed", function()
-                it("should return true", function()
-                    assert.is_true(Remote.ForcePrecipitation(0.5))
-                end)
+            TestRemoteValid("ForcePrecipitation", {
+                "Force precipitation:",
+                "true",
+            }, 'TheWorld:PushEvent("ms_forceprecipitation", true)')
 
-                TestDebugString(function()
-                    Remote.ForcePrecipitation()
-                end, "[remote]", "Force precipitation:", "true")
+            TestRemoteValid("ForcePrecipitation", {
+                "Force precipitation:",
+                "true",
+            }, 'TheWorld:PushEvent("ms_forceprecipitation", true)', true)
 
-                TestSendRemoteExecuteWasCalled(function()
-                    Remote.ForcePrecipitation()
-                end, 'TheWorld:PushEvent("ms_forceprecipitation", true)')
-            end)
-
-            describe("when true is passed", function()
-                it("should return true", function()
-                    assert.is_true(Remote.ForcePrecipitation(true))
-                end)
-
-                TestDebugString(function()
-                    Remote.ForcePrecipitation(true)
-                end, "[remote]", "Force precipitation:", "true")
-
-                TestSendRemoteExecuteWasCalled(function()
-                    Remote.ForcePrecipitation(true)
-                end, 'TheWorld:PushEvent("ms_forceprecipitation", true)')
-            end)
-
-            describe("when false is passed", function()
-                it("should return true", function()
-                    assert.is_true(Remote.ForcePrecipitation(false))
-                end)
-
-                TestDebugString(function()
-                    Remote.ForcePrecipitation(false)
-                end, "[remote]", "Force precipitation:", "false")
-
-                TestSendRemoteExecuteWasCalled(function()
-                    Remote.ForcePrecipitation(false)
-                end, 'TheWorld:PushEvent("ms_forceprecipitation", false)')
-            end)
+            TestRemoteValid("ForcePrecipitation", {
+                "Force precipitation:",
+                "false",
+            }, 'TheWorld:PushEvent("ms_forceprecipitation", false)', false)
         end)
 
         describe("SetSeason()", function()
-            describe("when a valid value is passed", function()
-                describe("(autumn)", function()
-                    it("should return true", function()
-                        assert.is_true(Remote.SetSeason("autumn"))
-                    end)
+            TestRemoteInvalidArg(
+                "SetSeason",
+                "season",
+                "must be a season: autumn, winter, spring or summer",
+                "foo"
+            )
 
-                    TestDebugString(function()
-                        Remote.SetSeason("autumn")
-                    end, "[remote]", "Season:", "autumn")
-
-                    TestSendRemoteExecuteWasCalled(function()
-                        Remote.SetSeason("autumn")
-                    end, 'TheWorld:PushEvent("ms_setseason", "autumn")')
-                end)
-            end)
-
-            describe("when an invalid value is passed", function()
-                describe("(foo)", function()
-                    it("should return false", function()
-                        assert.is_false(Remote.SetSeason("foo"))
-                    end)
-
-                    TestDebugError(
-                        function()
-                            Remote.SetSeason("foo")
-                        end,
-                        "SDK.Remote.SetSeason():",
-                        'Invalid argument (season) is passed',
-                        "(must be a season: autumn, winter, spring or summer)"
-                    )
-
-                    TestSendRemoteExecuteWasNotCalled(function()
-                        Remote.SetSeason("foo")
-                    end)
-                end)
-            end)
+            TestRemoteValid("SetSeason", {
+                "Season:",
+                "autumn",
+            }, 'TheWorld:PushEvent("ms_setseason", "autumn")', "autumn")
         end)
 
         describe("SetSeasonLength()", function()
-            describe("when a valid season is passed", function()
-                describe("(autumn)", function()
-                    describe("and a invalid length is passed", function()
-                        describe("(-10)", function()
-                            it("should return false", function()
-                                assert.is_false(Remote.SetSeasonLength("autumn", -10))
-                            end)
+            TestRemoteInvalidArg(
+                "SetSeasonLength",
+                "season",
+                "must be a season: autumn, winter, spring or summer",
+                "foo",
+                10
+            )
 
-                            TestDebugError(
-                                function()
-                                    Remote.SetSeasonLength("autumn", -10)
-                                end,
-                                "SDK.Remote.SetSeasonLength():",
-                                'Invalid argument (length) is passed',
-                                "(must be an unsigned integer)"
-                            )
+            TestRemoteInvalidArg(
+                "SetSeasonLength",
+                "length",
+                "must be an unsigned integer",
+                "autumn",
+                -10
+            )
 
-                            TestSendRemoteExecuteWasNotCalled(function()
-                                Remote.SetSeasonLength("autumn", -10)
-                            end)
-                        end)
-                    end)
-
-                    describe("and a valid length is passed", function()
-                        describe("(10)", function()
-                            it("should return true", function()
-                                assert.is_true(Remote.SetSeasonLength("autumn", 10))
-                            end)
-
-                            TestDebugString(function()
-                                Remote.SetSeasonLength("autumn", 10)
-                            end, "[remote]", "Season length:", "autumn", "(10 days)")
-
-                            TestSendRemoteExecuteWasCalled(function()
-                                Remote.SetSeasonLength("autumn", 10)
-                            end, 'TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 10 })') -- luacheck: only
-                        end)
-                    end)
-                end)
-            end)
-
-            describe("when an invalid season is passed", function()
-                describe("(foo)", function()
-                    it("should return false", function()
-                        assert.is_false(Remote.SetSeasonLength("foo", 10))
-                    end)
-
-                    TestDebugError(
-                        function()
-                            Remote.SetSeasonLength("foo", 10)
-                        end,
-                        "SDK.Remote.SetSeasonLength():",
-                        'Invalid argument (season) is passed',
-                        "(must be a season: autumn, winter, spring or summer)"
-                    )
-
-                    TestSendRemoteExecuteWasNotCalled(function()
-                        Remote.SetSeasonLength("foo", 10)
-                    end)
-                end)
-            end)
+            TestRemoteValid(
+                "SetSeasonLength",
+                { "Season length:", "autumn", "(10 days)" },
+                'TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 10 })',
+                "autumn",
+                10
+            )
         end)
 
         describe("SendLightningStrike()", function()
+            local pt
+
+            setup(function()
+                pt = Vector3(1, 0, 3)
+            end)
+
             describe("when not in a forest world", function()
                 before_each(function()
                     _G.TheWorld.HasTag = ReturnValueFn(true)
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Remote.SendLightningStrike(Vector3(1, 0, 3)))
-                end)
-
-                TestDebugError(
-                    function()
-                        Remote.SendLightningStrike(Vector3(1, 0, 3))
-                    end,
-                    "SDK.Remote.SendLightningStrike():",
-                    'Invalid world type',
-                    "(must be in a forest)"
-                )
-
-                TestSendRemoteExecuteWasNotCalled(function()
-                    Remote.SendLightningStrike(Vector3(1, 0, 3))
-                end)
+                TestRemoteInvalidWorldType("SendLightningStrike", "must be in a forest", pt)
             end)
 
             describe("when in a forest world", function()
@@ -447,42 +322,14 @@ describe("#sdk SDK.Remote", function()
                     _G.TheWorld.HasTag = ReturnValueFn(false)
                 end)
 
-                describe("and an invalid delta is passed", function()
-                    describe("(foo)", function()
-                        it("should return false", function()
-                            assert.is_false(Remote.SendLightningStrike("foo"))
-                        end)
+                TestRemoteInvalidArg("SendLightningStrike", "pt", "must be a point", "foo")
 
-                        TestDebugError(
-                            function()
-                                Remote.SendLightningStrike("foo")
-                            end,
-                            "SDK.Remote.SendLightningStrike():",
-                            'Invalid argument (pt) is passed',
-                            "(must be a point)"
-                        )
-
-                        TestSendRemoteExecuteWasNotCalled(function()
-                            Remote.SendLightningStrike("foo")
-                        end)
-                    end)
-                end)
-
-                describe("and a valid delta is passed", function()
-                    describe("(point)", function()
-                        it("should return true", function()
-                            assert.is_true(Remote.SendLightningStrike(Vector3(1, 0, 3)))
-                        end)
-
-                        TestDebugString(function()
-                            Remote.SendLightningStrike(Vector3(1, 0, 3))
-                        end, "[remote]", "Send lighting strike:", "(1.00, 0.00, 3.00)")
-
-                        TestSendRemoteExecuteWasCalled(function()
-                            Remote.SendLightningStrike(Vector3(1, 0, 3))
-                        end, 'TheWorld:PushEvent("ms_sendlightningstrike", Vector3(1.00, 0.00, 3.00))') -- luacheck: only
-                    end)
-                end)
+                TestRemoteValid(
+                    "SendLightningStrike",
+                    { "Send lighting strike:", "(1.00, 0.00, 3.00)" },
+                    'TheWorld:PushEvent("ms_sendlightningstrike", Vector3(1.00, 0.00, 3.00))',
+                    pt
+                )
             end)
         end)
 
@@ -492,22 +339,7 @@ describe("#sdk SDK.Remote", function()
                     _G.TheWorld.HasTag = ReturnValueFn(true)
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Remote.SetSnowLevel(1))
-                end)
-
-                TestDebugError(
-                    function()
-                        Remote.SetSnowLevel(1)
-                    end,
-                    "SDK.Remote.SetSnowLevel():",
-                    'Invalid world type',
-                    "(must be in a forest)"
-                )
-
-                TestSendRemoteExecuteWasNotCalled(function()
-                    Remote.SetSnowLevel(1)
-                end)
+                TestRemoteInvalidWorldType("SetSnowLevel", "must be in a forest", 1)
             end)
 
             describe("when in a forest world", function()
@@ -515,163 +347,46 @@ describe("#sdk SDK.Remote", function()
                     _G.TheWorld.HasTag = ReturnValueFn(false)
                 end)
 
-                describe("and an invalid delta is passed", function()
-                    describe("(2)", function()
-                        it("should return false", function()
-                            assert.is_false(Remote.SetSnowLevel(2))
-                        end)
+                TestRemoteInvalidArg("SetSnowLevel", "delta", "must be a unit interval", 2)
 
-                        TestDebugError(
-                            function()
-                                Remote.SetSnowLevel(2)
-                            end,
-                            "SDK.Remote.SetSnowLevel():",
-                            'Invalid argument (delta) is passed',
-                            "(must be a unit interval)"
-                        )
+                TestRemoteValid("SetSnowLevel", {
+                    "Snow level:",
+                    "0",
+                }, 'TheWorld:PushEvent("ms_setsnowlevel", 0.00)')
 
-                        TestSendRemoteExecuteWasNotCalled(function()
-                            Remote.SetSnowLevel(2)
-                        end)
-                    end)
-                end)
-
-                describe("and no delta is passed", function()
-                    it("should return true", function()
-                        assert.is_true(Remote.SetSnowLevel())
-                    end)
-
-                    TestDebugString(function()
-                        Remote.SetSnowLevel()
-                    end, "[remote]", "Snow level:", "0")
-
-                    TestSendRemoteExecuteWasCalled(function()
-                        Remote.SetSnowLevel()
-                    end, 'TheWorld:PushEvent("ms_setsnowlevel", 0.00)')
-                end)
-
-                describe("and a valid delta is passed", function()
-                    describe("(1)", function()
-                        it("should return true", function()
-                            assert.is_true(Remote.SetSnowLevel(1))
-                        end)
-
-                        TestDebugString(function()
-                            Remote.SetSnowLevel(1)
-                        end, "[remote]", "Snow level:", "1")
-
-                        TestSendRemoteExecuteWasCalled(function()
-                            Remote.SetSnowLevel(1)
-                        end, 'TheWorld:PushEvent("ms_setsnowlevel", 1.00)')
-                    end)
-                end)
+                TestRemoteValid("SetSnowLevel", {
+                    "Snow level:",
+                    "1",
+                }, 'TheWorld:PushEvent("ms_setsnowlevel", 1.00)', 1)
             end)
         end)
 
         describe("SetWorldDeltaMoisture()", function()
-            describe("when an invalid delta is passed", function()
-                describe("(foo)", function()
-                    it("should return false", function()
-                        assert.is_false(Remote.SetWorldDeltaMoisture("foo"))
-                    end)
+            TestRemoteInvalidArg("SetWorldDeltaMoisture", "delta", "must be a number", "foo")
 
-                    TestDebugError(
-                        function()
-                            Remote.SetWorldDeltaMoisture("foo")
-                        end,
-                        "SDK.Remote.SetWorldDeltaMoisture():",
-                        'Invalid argument (delta) is passed',
-                        "(must be a number)"
-                    )
+            TestRemoteValid("SetWorldDeltaMoisture", {
+                "World delta moisture:",
+                "0",
+            }, 'TheWorld:PushEvent("ms_deltamoisture", 0)')
 
-                    TestSendRemoteExecuteWasNotCalled(function()
-                        Remote.SetWorldDeltaMoisture("foo")
-                    end)
-                end)
-            end)
-
-            describe("when no delta is passed", function()
-                it("should return true", function()
-                    assert.is_true(Remote.SetWorldDeltaMoisture())
-                end)
-
-                TestDebugString(function()
-                    Remote.SetWorldDeltaMoisture()
-                end, "[remote]", "World delta moisture:", "0")
-
-                TestSendRemoteExecuteWasCalled(function()
-                    Remote.SetWorldDeltaMoisture()
-                end, 'TheWorld:PushEvent("ms_deltamoisture", 0)')
-            end)
-
-            describe("when a valid delta is passed", function()
-                describe("(1)", function()
-                    it("should return true", function()
-                        assert.is_true(Remote.SetWorldDeltaMoisture(1))
-                    end)
-
-                    TestDebugString(function()
-                        Remote.SetWorldDeltaMoisture(1)
-                    end, "[remote]", "World delta moisture:", "1")
-
-                    TestSendRemoteExecuteWasCalled(function()
-                        Remote.SetWorldDeltaMoisture(1)
-                    end, 'TheWorld:PushEvent("ms_deltamoisture", 1)')
-                end)
-            end)
+            TestRemoteValid("SetWorldDeltaMoisture", {
+                "World delta moisture:",
+                "1",
+            }, 'TheWorld:PushEvent("ms_deltamoisture", 1)', 1)
         end)
 
         describe("SetWorldDeltaWetness()", function()
-            describe("when an invalid delta is passed", function()
-                describe("(foo)", function()
-                    it("should return false", function()
-                        assert.is_false(Remote.SetWorldDeltaWetness("foo"))
-                    end)
+            TestRemoteInvalidArg("SetWorldDeltaWetness", "delta", "must be a number", "foo")
 
-                    TestDebugError(
-                        function()
-                            Remote.SetWorldDeltaWetness("foo")
-                        end,
-                        "SDK.Remote.SetWorldDeltaWetness():",
-                        'Invalid argument (delta) is passed',
-                        "(must be a number)"
-                    )
+            TestRemoteValid("SetWorldDeltaWetness", {
+                "World delta wetness:",
+                "0",
+            }, 'TheWorld:PushEvent("ms_deltawetness", 0)')
 
-                    TestSendRemoteExecuteWasNotCalled(function()
-                        Remote.SetWorldDeltaWetness("foo")
-                    end)
-                end)
-            end)
-
-            describe("when no delta is passed", function()
-                it("should return true", function()
-                    assert.is_true(Remote.SetWorldDeltaWetness())
-                end)
-
-                TestDebugString(function()
-                    Remote.SetWorldDeltaWetness()
-                end, "[remote]", "World delta wetness:", "0")
-
-                TestSendRemoteExecuteWasCalled(function()
-                    Remote.SetWorldDeltaWetness()
-                end, 'TheWorld:PushEvent("ms_deltawetness", 0)')
-            end)
-
-            describe("when delta is passed", function()
-                describe("(1)", function()
-                    it("should return true", function()
-                        assert.is_true(Remote.SetWorldDeltaWetness(1))
-                    end)
-
-                    TestDebugString(function()
-                        Remote.SetWorldDeltaWetness(1)
-                    end, "[remote]", "World delta wetness:", "1")
-
-                    TestSendRemoteExecuteWasCalled(function()
-                        Remote.SetWorldDeltaWetness(1)
-                    end, 'TheWorld:PushEvent("ms_deltawetness", 1)')
-                end)
-            end)
+            TestRemoteValid("SetWorldDeltaWetness", {
+                "World delta wetness:",
+                "1",
+            }, 'TheWorld:PushEvent("ms_deltawetness", 1)', 1)
         end)
     end)
 end)
