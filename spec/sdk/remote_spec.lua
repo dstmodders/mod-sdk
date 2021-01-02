@@ -109,6 +109,35 @@ describe("#sdk SDK.Remote", function()
         end)
     end
 
+    local function TestRemoteInvalid(name, msg, explanation, ...)
+        local args = { ... }
+        local description = "when no arguments are passed"
+        if #args > 1 then
+            description = "when valid arguments are passed"
+        elseif #args == 1 then
+            description = "when a valid argument is passed"
+        end
+
+        describe(description, function()
+            it("should return false", function()
+                assert.is_false(Remote[name](unpack(args)))
+            end)
+
+            TestDebugError(
+                function()
+                    Remote[name](unpack(args))
+                end,
+                string.format("SDK.Remote.%s():", name),
+                msg,
+                explanation and "(" .. explanation .. ")"
+            )
+
+            TestSendRemoteExecuteWasNotCalled(function()
+                Remote[name](unpack(args))
+            end)
+        end)
+    end
+
     local function TestRemoteInvalidArg(name, arg_name, explanation, ...)
         local args = { ... }
         local description = "when no arguments are passed"
@@ -141,6 +170,10 @@ describe("#sdk SDK.Remote", function()
         end)
     end
 
+    local function TestRemoteInvalidWorldType(name, explanation, ...)
+        TestRemoteInvalid(name, "Invalid world type", explanation, ...)
+    end
+
     local function TestRemotePlayerIsGhost(name, player, ...)
         local args = { ..., player }
         describe("when a player is a ghost", function()
@@ -167,35 +200,6 @@ describe("#sdk SDK.Remote", function()
                 end,
                 string.format("SDK.Remote.%s():", name),
                 "Player shouldn't be a ghost"
-            )
-
-            TestSendRemoteExecuteWasNotCalled(function()
-                Remote[name](unpack(args))
-            end)
-        end)
-    end
-
-    local function TestRemoteInvalidWorldType(name, explanation, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when valid arguments are passed"
-        elseif #args == 1 then
-            description = "when a valid argument is passed"
-        end
-
-        describe(description, function()
-            it("should return false", function()
-                assert.is_false(Remote[name](unpack(args)))
-            end)
-
-            TestDebugError(
-                function()
-                    Remote[name](unpack(args))
-                end,
-                string.format("SDK.Remote.%s():", name),
-                "Invalid world type",
-                explanation and "(" .. explanation .. ")"
             )
 
             TestSendRemoteExecuteWasNotCalled(function()
@@ -304,7 +308,7 @@ describe("#sdk SDK.Remote", function()
                         end)
                     end)
 
-                    TestRemoteInvalidArg(name, "value", "must be a percent", "foo")
+                    TestRemoteInvalidArg(name, "percent", "must be a percent", "foo")
                     TestRemoteInvalidArg(name, "player", "must be a player", 25, "foo")
                     TestRemoteValid(name, debug, send, 25, _G.ThePlayer)
                 end)

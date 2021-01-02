@@ -61,7 +61,7 @@ end
 
 local function IsValidSetPlayerAttributePercent(percent, player, fn_name)
     if not Value.IsPercent(percent) then
-        DebugErrorInvalidArg("value", "must be a percent", fn_name)
+        DebugErrorInvalidArg("percent", "must be a percent", fn_name)
         return false
     end
 
