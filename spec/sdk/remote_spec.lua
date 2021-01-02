@@ -135,6 +135,40 @@ describe("#sdk SDK.Remote", function()
         end)
     end
 
+    local function TestRemotePlayerIsGhost(name, player, ...)
+        local args = { ..., player }
+        describe("when a player is a ghost", function()
+            local _HasTag
+
+            before_each(function()
+                _HasTag = player.HasTag
+                player.HasTag = spy.new(function(_, tag)
+                    return tag == "player" or tag == "playerghost"
+                end)
+            end)
+
+            after_each(function()
+                player.HasTag = _HasTag
+            end)
+
+            it("should return false", function()
+                assert.is_false(Remote[name](unpack(args)))
+            end)
+
+            TestDebugError(
+                function()
+                    Remote[name](unpack(args))
+                end,
+                string.format("SDK.Remote.%s():", name),
+                "Player shouldn't be a ghost"
+            )
+
+            TestSendRemoteExecuteWasNotCalled(function()
+                Remote[name](unpack(args))
+            end)
+        end)
+    end
+
     local function TestRemoteInvalidWorldType(name, explanation, ...)
         local args = { ... }
         local description = "when no arguments are passed"
@@ -252,6 +286,32 @@ describe("#sdk SDK.Remote", function()
                 Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { "autumn" })
             end, 'TheWorld:PushEvent("ms_setseason", "autumn")')
         end)
+    end)
+
+    describe("player", function()
+        local function TestSetPlayerAttributePercent(name, debug, send)
+            describe(name .. "()", function()
+                describe("when a player is not a ghost", function()
+                    before_each(function()
+                        _G.ThePlayer.HasTag = spy.new(function(_, tag)
+                            return tag ~= "playerghost"
+                        end)
+                    end)
+
+                    TestRemoteInvalidArg(name, "value", "must be a percent", "foo")
+                    TestRemoteInvalidArg(name, "player", "must be a player", 50, "foo")
+                    TestRemoteValid(name, debug, send, 50, _G.ThePlayer)
+                end)
+
+                TestRemotePlayerIsGhost("SetPlayerHealthPercent", _G.ThePlayer, 50)
+            end)
+        end
+
+        TestSetPlayerAttributePercent(
+            "SetPlayerHealthPercent",
+            { "Player health:", "50.00%", "(Player)" },
+            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPercent(math.min(0.50, 1)) end' -- luacheck: only
+        )
     end)
 
     describe("world", function()

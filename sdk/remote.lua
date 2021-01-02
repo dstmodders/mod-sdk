@@ -37,6 +37,14 @@ local function DebugErrorInvalidWorldType(explanation, fn_name)
     )
 end
 
+local function DebugErrorPlayerIsGhost(fn_name)
+    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
+    SDK.Debug.Error(
+        string.format("%s.%s():", tostring(Remote), fn_name),
+        "Player shouldn't be a ghost"
+    )
+end
+
 --- General
 -- @section general
 
@@ -85,6 +93,46 @@ end
 function Remote.Send(cmd, data)
     local x, _, z = TheSim:ProjectScreenPos(TheSim:GetPosition())
     TheNet:SendRemoteExecute(string.format(cmd, unpack(data or {})), x, z)
+end
+
+--- Player
+-- @section player
+
+--- Sends a request to set a player health percent.
+-- @tparam number percent Health percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Remote.SetPlayerHealthPercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not Value.IsPercent(percent) then
+        DebugErrorInvalidArg("value", "must be a percent", "SetPlayerHealthPercent")
+        return false
+    end
+
+    if not Value.IsEntity(player) or not player:HasTag("player") or not player.userid then
+        DebugErrorInvalidArg("player", "must be a player", "SetPlayerHealthPercent")
+        return false
+    end
+
+    if player:HasTag("playerghost") then
+        DebugErrorPlayerIsGhost("SetPlayerHealthPercent")
+        return false
+    end
+
+    SDK.Debug.String(
+        "[remote]",
+        "Player health:",
+        Value.ToPercentString(percent),
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") if player.components.health then player.components.health:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
+        { player.userid, percent / 100 }
+    )
+
+    return true
 end
 
 --- World
