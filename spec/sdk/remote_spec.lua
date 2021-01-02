@@ -68,45 +68,47 @@ describe("#sdk SDK.Remote", function()
         SDK.Debug.String = spy.on(SDK.Debug, "String")
     end)
 
-    local function TestDebugError(fn, ...)
-        local args = { ... }
-        it("should debug error string", function()
-            assert.spy(SDK.Debug.Error).was_not_called()
-            fn()
-            assert.spy(SDK.Debug.Error).was_called(1)
-            assert.spy(SDK.Debug.Error).was_called_with(unpack(args))
-        end)
+    local function AssertDebugError(fn, ...)
+        assert.spy(SDK.Debug.Error).was_not_called()
+        fn()
+        assert.spy(SDK.Debug.Error).was_called(1)
+        assert.spy(SDK.Debug.Error).was_called_with(...)
     end
 
-    local function TestDebugString(fn, ...)
-        local args = { ... }
-        it("should debug string", function()
-            assert.spy(SDK.Debug.String).was_not_called()
-            fn()
-            assert.spy(SDK.Debug.String).was_called(1)
-            assert.spy(SDK.Debug.String).was_called_with(unpack(args))
-        end)
+    local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
+        AssertDebugError(
+            fn,
+            string.format("SDK.Remote.%s():", fn_name),
+            string.format(
+                "Invalid argument%s is passed",
+                arg_name and ' (' .. arg_name .. ")" or ""
+            ),
+            explanation and "(" .. explanation .. ")"
+        )
     end
 
-    local function TestSendRemoteExecuteWasCalled(fn, ...)
+    local function AssertDebugString(fn, ...)
+        assert.spy(SDK.Debug.String).was_not_called()
+        fn()
+        assert.spy(SDK.Debug.String).was_called(1)
+        assert.spy(SDK.Debug.String).was_called_with(...)
+    end
+
+    local function AssertSendWasCalled(fn, ...)
         local args = { ..., 1, 3 }
-        it("should call TheSim:SendRemoteExecute()", function()
-            assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-            fn()
-            assert.spy(_G.TheNet.SendRemoteExecute).was_called(1)
-            assert.spy(_G.TheNet.SendRemoteExecute).was_called_with(
-                match.is_ref(_G.TheNet),
-                unpack(args)
-            )
-        end)
+        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
+        fn()
+        assert.spy(_G.TheNet.SendRemoteExecute).was_called(1)
+        assert.spy(_G.TheNet.SendRemoteExecute).was_called_with(
+            match.is_ref(_G.TheNet),
+            unpack(args)
+        )
     end
 
-    local function TestSendRemoteExecuteWasNotCalled(fn)
-        it("shouldn't call TheSim:SendRemoteExecute()", function()
-            assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-            fn()
-            assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-        end)
+    local function AssertSendWasNotCalled(fn)
+        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
+        fn()
+        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
     end
 
     local function TestRemoteInvalid(name, msg, explanation, ...)
@@ -119,21 +121,25 @@ describe("#sdk SDK.Remote", function()
         end
 
         describe(description, function()
-            it("should return false", function()
-                assert.is_false(Remote[name](unpack(args)))
+            it("should debug error string", function()
+                AssertDebugError(
+                    function()
+                        Remote[name](unpack(args))
+                    end,
+                    string.format("SDK.Remote.%s():", name),
+                    msg,
+                    explanation and "(" .. explanation .. ")"
+                )
             end)
 
-            TestDebugError(
-                function()
+            it("shouldn't call TheSim:SendRemoteExecute()", function()
+                AssertSendWasNotCalled(function()
                     Remote[name](unpack(args))
-                end,
-                string.format("SDK.Remote.%s():", name),
-                msg,
-                explanation and "(" .. explanation .. ")"
-            )
+                end)
+            end)
 
-            TestSendRemoteExecuteWasNotCalled(function()
-                Remote[name](unpack(args))
+            it("should return false", function()
+                assert.is_false(Remote[name](unpack(args)))
             end)
         end)
     end
@@ -148,24 +154,20 @@ describe("#sdk SDK.Remote", function()
         end
 
         describe(description, function()
-            it("should return false", function()
-                assert.is_false(Remote[name](unpack(args)))
+            it("should debug error string", function()
+                AssertDebugErrorInvalidArg(function()
+                    Remote[name](unpack(args))
+                end, name, arg_name, explanation)
             end)
 
-            TestDebugError(
-                function()
+            it("shouldn't call TheSim:SendRemoteExecute()", function()
+                AssertSendWasNotCalled(function()
                     Remote[name](unpack(args))
-                end,
-                string.format("SDK.Remote.%s():", name),
-                string.format(
-                    "Invalid argument%s is passed",
-                    arg_name and ' (' .. arg_name .. ")" or ""
-                ),
-                explanation and "(" .. explanation .. ")"
-            )
+                end)
+            end)
 
-            TestSendRemoteExecuteWasNotCalled(function()
-                Remote[name](unpack(args))
+            it("should return false", function()
+                assert.is_false(Remote[name](unpack(args)))
             end)
         end)
     end
@@ -190,20 +192,24 @@ describe("#sdk SDK.Remote", function()
                 player.HasTag = _HasTag
             end)
 
-            it("should return false", function()
-                assert.is_false(Remote[name](unpack(args)))
+            it("should debug error string", function()
+                AssertDebugError(
+                    function()
+                        Remote[name](unpack(args))
+                    end,
+                    string.format("SDK.Remote.%s():", name),
+                    "Player shouldn't be a ghost"
+                )
             end)
 
-            TestDebugError(
-                function()
+            it("shouldn't call TheSim:SendRemoteExecute()", function()
+                AssertSendWasNotCalled(function()
                     Remote[name](unpack(args))
-                end,
-                string.format("SDK.Remote.%s():", name),
-                "Player shouldn't be a ghost"
-            )
+                end)
+            end)
 
-            TestSendRemoteExecuteWasNotCalled(function()
-                Remote[name](unpack(args))
+            it("should return false", function()
+                assert.is_false(Remote[name](unpack(args)))
             end)
         end)
     end
@@ -218,17 +224,21 @@ describe("#sdk SDK.Remote", function()
         end
 
         describe(description, function()
+            it("should debug string", function()
+                AssertDebugString(function()
+                    Remote[name](unpack(args))
+                end, "[remote]", unpack(debug))
+            end)
+
+            it("should call TheSim:SendRemoteExecute()", function()
+                AssertSendWasCalled(function()
+                    Remote[name](unpack(args))
+                end, send)
+            end)
+
             it("should return true", function()
                 assert.is_true(Remote[name](unpack(args)))
             end)
-
-            TestDebugString(function()
-                Remote[name](unpack(args))
-            end, "[remote]", unpack(debug))
-
-            TestSendRemoteExecuteWasCalled(function()
-                Remote[name](unpack(args))
-            end, send)
         end)
     end
 
@@ -273,9 +283,11 @@ describe("#sdk SDK.Remote", function()
 
         describe("Send()", function()
             describe("when different data types are passed", function()
-                TestSendRemoteExecuteWasCalled(function()
-                    Remote.Send('%d, %0.2f, "%s"', { 1, .12345, "test" })
-                end, '1, 0.12, "test"')
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Remote.Send('%d, %0.2f, "%s"', { 1, .12345, "test" })
+                    end, '1, 0.12, "test"')
+                end)
             end)
 
             it("should call TheSim:GetPosition()", function()
@@ -292,9 +304,11 @@ describe("#sdk SDK.Remote", function()
                 assert.spy(_G.TheSim.ProjectScreenPos).was_called_with(match.is_ref(_G.TheSim))
             end)
 
-            TestSendRemoteExecuteWasCalled(function()
-                Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { "autumn" })
-            end, 'TheWorld:PushEvent("ms_setseason", "autumn")')
+            it("should call TheSim:SendRemoteExecute()", function()
+                AssertSendWasCalled(function()
+                    Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { "autumn" })
+                end, 'TheWorld:PushEvent("ms_setseason", "autumn")')
+            end)
         end)
     end)
 
@@ -392,17 +406,21 @@ describe("#sdk SDK.Remote", function()
                     end)
 
                     describe("when valid arguments are passed", function()
+                        it("should debug string", function()
+                            AssertDebugString(function()
+                                Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
+                            end, "[remote]", "Player wereness:", "25.00%", "(Player)")
+                        end)
+
+                        it("should call TheSim:SendRemoteExecute()", function()
+                            AssertSendWasCalled(function()
+                                Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
+                            end, 'player = LookupPlayerInstByUserID("KU_foobar") if player.components.wereness then player.components.wereness:SetPercent(math.min(0.25, 1)) end') -- luacheck: only
+                        end)
+
                         it("should return true", function()
                             assert.is_true(Remote.SetPlayerWerenessPercent(25, _G.ThePlayer))
                         end)
-
-                        TestDebugString(function()
-                            Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
-                        end, "[remote]", "Player wereness:", "25.00%", "(Player)")
-
-                        TestSendRemoteExecuteWasCalled(function()
-                            Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
-                        end, 'player = LookupPlayerInstByUserID("KU_foobar") if player.components.wereness then player.components.wereness:SetPercent(math.min(0.25, 1)) end') -- luacheck: only
                     end)
 
                     TestRemoteInvalidArg(
@@ -429,20 +447,24 @@ describe("#sdk SDK.Remote", function()
                     end)
 
                     describe("when valid arguments are passed", function()
-                        it("should return false", function()
-                            assert.is_false(Remote.SetPlayerWerenessPercent(25, _G.ThePlayer))
+                        it("should debug error string", function()
+                            AssertDebugError(
+                                function()
+                                    Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
+                                end,
+                                "SDK.Remote.SetPlayerWerenessPercent():",
+                                "Player should be a Woodie"
+                            )
                         end)
 
-                        TestDebugError(
-                            function()
+                        it("shouldn't call TheSim:SendRemoteExecute()", function()
+                            AssertSendWasNotCalled(function()
                                 Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
-                            end,
-                            "SDK.Remote.SetPlayerWerenessPercent():",
-                            "Player should be a Woodie"
-                        )
+                            end)
+                        end)
 
-                        TestSendRemoteExecuteWasNotCalled(function()
-                            Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
+                        it("should return false", function()
+                            assert.is_false(Remote.SetPlayerWerenessPercent(25, _G.ThePlayer))
                         end)
                     end)
 
