@@ -195,6 +195,32 @@ function Remote.SetPlayerHungerPercent(percent, player)
     return true
 end
 
+--- Sends a request to set a player moisture percent.
+-- @tparam number percent Moisture percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Remote.SetPlayerMoisturePercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerMoisturePercent") then
+        return false
+    end
+
+    SDK.Debug.String(
+        "[remote]",
+        "Player moisture:",
+        Value.ToPercentString(percent),
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") if player.components.moisture then player.components.moisture:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
+        { player.userid, percent / 100 }
+    )
+
+    return true
+end
+
 --- Sends a request to set a player sanity percent.
 -- @tparam number percent Sanity percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)

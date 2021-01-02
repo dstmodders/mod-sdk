@@ -326,6 +326,12 @@ describe("#sdk SDK.Remote", function()
         )
 
         TestSetPlayerAttributePercent(
+            "SetPlayerMoisturePercent",
+            { "Player moisture:", "25.00%", "(Player)" },
+            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.moisture then player.components.moisture:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
+        )
+
+        TestSetPlayerAttributePercent(
             "SetPlayerSanityPercent",
             { "Player sanity:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.sanity then player.components.sanity:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
