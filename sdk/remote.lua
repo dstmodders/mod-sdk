@@ -46,7 +46,7 @@ local function DebugErrorPlayerIsGhost(fn_name)
 end
 
 local function IsValidPlayerAlive(player, fn_name)
-    if not Value.IsEntity(player) or not player:HasTag("player") or not player.userid then
+    if not Value.IsPlayer(player) then
         DebugErrorInvalidArg("player", "must be a player", fn_name)
         return false
     end
@@ -370,7 +370,7 @@ function Remote.SendMiniEarthquake(player, radius, amount, duration)
         return false
     end
 
-    if not Value.IsEntity(player) or not player:HasTag("player") or not player.userid then
+    if not Value.IsPlayer(player) then
         DebugErrorInvalidArg("player", "must be a player", "SendMiniEarthquake")
         return false
     end

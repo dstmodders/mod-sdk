@@ -60,6 +60,13 @@ function Value.IsPercent(value)
     return Value.IsNumber(value) and value >= 0 and value <= 100
 end
 
+--- Checks if a value is a player.
+-- @tparam any value
+-- @treturn boolean
+function Value.IsPlayer(value)
+    return Value.IsEntity(value) and value:HasTag("player") and value.userid and true or false
+end
+
 --- Checks if a value is a point.
 -- @tparam any value
 -- @treturn boolean

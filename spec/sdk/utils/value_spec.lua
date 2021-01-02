@@ -60,6 +60,16 @@ describe("#sdk SDK.Utils.Value", function()
         TestChecker("IsNumber", { 0, -1, 1 }, { "string", false, true, {} })
         TestChecker("IsPercent", { 0, 50, 100 }, { "string", -1, 101, false, true, {} })
 
+        TestChecker("IsPlayer", {
+            {
+                GUID = 1,
+                userid = "KU_foobar",
+                HasTag = function(_, tag)
+                    return tag == "player"
+                end,
+            }
+        }, { "string", 0, false, true, {} })
+
         TestChecker("IsPoint", {
             Vector3(1, 0, 3),
             { x = 1, y = 0, z = 3 },
