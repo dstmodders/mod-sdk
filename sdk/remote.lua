@@ -286,6 +286,40 @@ function Remote.SetPlayerTemperature(temperature, player)
     return true
 end
 
+--- Sends a request to set a player wereness percent.
+-- @tparam number percent Wereness percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Remote.SetPlayerWerenessPercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerWerenessPercent") then
+        return false
+    end
+
+    if not player:HasTag("werehuman") then
+        SDK.Debug.Error(
+            string.format("%s.%s():", tostring(Remote), "SetPlayerWerenessPercent"),
+            "Player should be a Woodie"
+        )
+        return false
+    end
+
+    SDK.Debug.String(
+        "[remote]",
+        "Player wereness:",
+        Value.ToPercentString(percent),
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") if player.components.wereness then player.components.wereness:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
+        { player.userid, percent / 100 }
+    )
+
+    return true
+end
+
 --- World
 -- @section world
 

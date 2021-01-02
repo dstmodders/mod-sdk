@@ -381,6 +381,90 @@ describe("#sdk SDK.Remote", function()
 
             TestRemotePlayerIsGhost("SetPlayerTemperature", _G.ThePlayer, 25)
         end)
+
+        describe("SetPlayerWerenessPercent()", function()
+            describe("when a player is not a ghost", function()
+                describe("and a player is a Woodie", function()
+                    before_each(function()
+                        _G.ThePlayer.HasTag = spy.new(function(_, tag)
+                            return tag == "player" or tag == "werehuman"
+                        end)
+                    end)
+
+                    describe("when valid arguments are passed", function()
+                        it("should return true", function()
+                            assert.is_true(Remote.SetPlayerWerenessPercent(25, _G.ThePlayer))
+                        end)
+
+                        TestDebugString(function()
+                            Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
+                        end, "[remote]", "Player wereness:", "25.00%", "(Player)")
+
+                        TestSendRemoteExecuteWasCalled(function()
+                            Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
+                        end, 'player = LookupPlayerInstByUserID("KU_foobar") if player.components.wereness then player.components.wereness:SetPercent(math.min(0.25, 1)) end') -- luacheck: only
+                    end)
+
+                    TestRemoteInvalidArg(
+                        "SetPlayerWerenessPercent",
+                        "percent",
+                        "must be a percent",
+                        "foo"
+                    )
+
+                    TestRemoteInvalidArg(
+                        "SetPlayerWerenessPercent",
+                        "player",
+                        "must be a player",
+                        25,
+                        "foo"
+                    )
+                end)
+
+                describe("and a player is not a Woodie", function()
+                    before_each(function()
+                        _G.ThePlayer.HasTag = spy.new(function(_, tag)
+                            return tag == "player"
+                        end)
+                    end)
+
+                    describe("when valid arguments are passed", function()
+                        it("should return false", function()
+                            assert.is_false(Remote.SetPlayerWerenessPercent(25, _G.ThePlayer))
+                        end)
+
+                        TestDebugError(
+                            function()
+                                Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
+                            end,
+                            "SDK.Remote.SetPlayerWerenessPercent():",
+                            "Player should be a Woodie"
+                        )
+
+                        TestSendRemoteExecuteWasNotCalled(function()
+                            Remote.SetPlayerWerenessPercent(25, _G.ThePlayer)
+                        end)
+                    end)
+
+                    TestRemoteInvalidArg(
+                        "SetPlayerWerenessPercent",
+                        "percent",
+                        "must be a percent",
+                        "foo"
+                    )
+
+                    TestRemoteInvalidArg(
+                        "SetPlayerWerenessPercent",
+                        "player",
+                        "must be a player",
+                        25,
+                        "foo"
+                    )
+                end)
+            end)
+
+            TestRemotePlayerIsGhost("SetPlayerWerenessPercent", _G.ThePlayer, 25)
+        end)
     end)
 
     describe("world", function()
