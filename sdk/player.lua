@@ -258,15 +258,6 @@ end
 --- Attributes
 -- @section attributes
 
---- Gets a health value.
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn number
-function Player.GetHealthPercent(player)
-    player = player ~= nil and player or ThePlayer
-    local health = SDK.Utils.Chain.Get(player, "replica", "health", "GetPercent", true)
-    return health and health * 100
-end
-
 --- Gets a health limit value.
 --
 -- Maximum health when the penalty has been applied.
@@ -286,6 +277,15 @@ function Player.GetHealthPenaltyPercent(player)
     player = player ~= nil and player or ThePlayer
     local penalty = SDK.Utils.Chain.Get(player, "replica", "health", "GetPenaltyPercent", true)
     return penalty and penalty * 100
+end
+
+--- Gets a health value.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.GetHealthPercent(player)
+    player = player ~= nil and player or ThePlayer
+    local health = SDK.Utils.Chain.Get(player, "replica", "health", "GetPercent", true)
+    return health and health * 100
 end
 
 --- Gets a hunger value.
