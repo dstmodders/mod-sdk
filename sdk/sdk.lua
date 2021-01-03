@@ -128,6 +128,16 @@ local function AddWorldPostInit()
     SDK._Info("Added world post initializer")
 end
 
+local function RemoveTrailingSlashes(str)
+    return str:gsub("(.)/*$", "%1")
+end
+
+local function SanitizePath(path)
+    path = RemoveTrailingSlashes(path)
+    path = (path:len() > 0 and path ~= "/") and path .. "/" or path
+    return path
+end
+
 --- Internal
 -- @section internal
 
@@ -255,10 +265,12 @@ function SDK.Load(env, path, modules)
         return false
     end
 
-    if not path then
+    if type(path) ~= "string" then
         SDK._Error("SDK.Load():", "required path not passed")
         return false
     end
+
+    path = SanitizePath(path)
 
     if package.loaded.busted then
         if not _G.MODS_ROOT then
@@ -271,31 +283,31 @@ function SDK.Load(env, path, modules)
             end
         end
 
-        require(path .. "/spec/class")
-        require(path .. "/spec/vector3")
+        require(path .. "spec/class")
+        require(path .. "spec/vector3")
     end
 
     SDK.env = env
     SDK.modname = env.modname
     SDK.path = path
-    SDK.path_full = MODS_ROOT .. SDK.modname .. "/scripts/" .. path
+    SDK.path_full = SanitizePath(MODS_ROOT .. SDK.modname .. "/scripts/" .. path)
 
     SDK._Info("Loading SDK:", SDK.path_full)
 
     if softresolvefilepath(SDK.path_full .. "/sdk/sdk.lua") then
         package.path = SDK.path_full .. "/?.lua;" .. package.path
-        SDK.LoadModule("Utils", path .. "/sdk/utils")
+        SDK.LoadModule("Utils", path .. "sdk/utils")
         if type(modules) == "table" and SDK.Utils.Table.Count(modules) > 0 then
             for k, v in pairs(modules) do
                 if type(k) == "number" then
-                    SDK.LoadModule(v, path .. "/" .. _MODULES[v])
+                    SDK.LoadModule(v, path .. _MODULES[v])
                 else
                     SDK.LoadModule(k, v)
                 end
             end
         else
             for k, v in pairs(_MODULES) do
-                SDK.LoadModule(k, path .. "/" .. v)
+                SDK.LoadModule(k, path .. v)
             end
         end
 
@@ -338,7 +350,9 @@ function SDK.LoadSubmodule(parent, name, path, global)
         return false
     end
 
-    local module = require(SDK.path .. "/" ..  path)
+    path = RemoveTrailingSlashes(path)
+
+    local module = require(SDK.path .. path)
     if type(module) ~= "table" then
         return false
     end
