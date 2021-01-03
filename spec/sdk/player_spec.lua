@@ -90,6 +90,11 @@ describe("#sdk SDK.Player", function()
                 IsConsoleScreenOpen = ReturnValueFn(false),
             },
             name = name,
+            player_classified = {
+                currentwereness = {
+                    value = ReturnValueFn(1),
+                },
+            },
             replica = {
                 health = {
                     GetPercent = ReturnValueFn(1),
@@ -1253,7 +1258,7 @@ describe("#sdk SDK.Player", function()
 
         describe("GetMoisturePercent()", function()
             it("should return [player].GetMoisture() value", function()
-                assert.is_equal(_G.ThePlayer.GetMoisture(), Player.GetMoisturePercent())
+                assert.is_equal(_G.ThePlayer:GetMoisture(), Player.GetMoisturePercent())
             end)
 
             it("should call [player].GetMoisture()", function()
@@ -1280,7 +1285,7 @@ describe("#sdk SDK.Player", function()
 
         describe("GetTemperature()", function()
             it("should return [player].GetTemperature() value", function()
-                assert.is_equal(_G.ThePlayer.GetTemperature(), Player.GetTemperature())
+                assert.is_equal(_G.ThePlayer:GetTemperature(), Player.GetTemperature())
             end)
 
             it("should call [player].GetTemperature()", function()
@@ -1297,6 +1302,32 @@ describe("#sdk SDK.Player", function()
                     AssertChainNil(function()
                         assert.is_nil(Player.GetTemperature())
                     end, _G.ThePlayer, "GetTemperature")
+                end)
+            end)
+        end)
+
+        describe("GetWerenessPercent()", function()
+            it("should return [player].player_classified.currentwereness:value() value", function()
+                assert.is_equal(
+                    _G.ThePlayer.player_classified.currentwereness:value(),
+                    Player.GetWerenessPercent()
+                )
+            end)
+
+            it("should call [player].player_classified.currentwereness:value()", function()
+                assert.spy(_G.ThePlayer.player_classified.currentwereness.value).was_not_called()
+                Player.GetWerenessPercent()
+                assert.spy(_G.ThePlayer.player_classified.currentwereness.value).was_called(1)
+                assert.spy(_G.ThePlayer.player_classified.currentwereness.value).was_called_with(
+                    match.is_ref(_G.ThePlayer.player_classified.currentwereness)
+                )
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.GetWerenessPercent())
+                    end, _G.ThePlayer, "player_classified", "currentwereness", "value")
                 end)
             end)
         end)

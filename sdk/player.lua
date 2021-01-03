@@ -322,6 +322,14 @@ function Player.GetTemperature(player)
     return SDK.Utils.Chain.Get(player, "GetTemperature", true)
 end
 
+--- Gets a wereness value.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.GetWerenessPercent(player)
+    player = player ~= nil and player or ThePlayer
+    return SDK.Utils.Chain.Get(player, "player_classified", "currentwereness", "value", true)
+end
+
 --- Light Watcher
 -- @section light-watcher
 
