@@ -502,7 +502,7 @@ end
 function Remote._DoInit(sdk)
     SDK = sdk
     Value = SDK.Utils.Value
-    return SDK._DoInitModule(SDK, Remote, "Remote", TheWorld)
+    return SDK._DoInitModule(SDK, Remote, "Remote", "TheWorld")
 end
 
 return Remote
