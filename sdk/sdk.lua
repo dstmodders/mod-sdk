@@ -320,6 +320,7 @@ function SDK.Load(env, path, modules)
 end
 
 --- Loads a single module.
+-- @see SDK.UnloadModule
 -- @tparam string name
 -- @tparam[opt] string path
 -- @treturn boolean
@@ -327,6 +328,8 @@ function SDK.LoadModule(name, path)
     if not name or not path then
         return false
     end
+
+    SDK.UnloadModule(name)
 
     local module = require(path)
     if type(module) ~= "table" then
@@ -363,6 +366,23 @@ function SDK.LoadSubmodule(parent, name, path, global)
     SDK._Info("Loaded", tostring(module))
 
     parent[name] = module
+
+    return true
+end
+
+--- Unloads a single module.
+-- @see SDK.LoadModule
+-- @tparam string name
+-- @treturn boolean
+function SDK.UnloadModule(name)
+    if not name or not rawget(SDK, name) or not _MODULES[name] then
+        return false
+    end
+
+    --local module_name = tostring(SDK[name])
+    package.loaded[SDK.path .. _MODULES[name]] = nil
+    SDK[name] = nil
+    --SDK._Info("Unloaded", module_name)
 
     return true
 end
