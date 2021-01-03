@@ -10,6 +10,7 @@ require "spec/class"
 require "spec/vector3"
 
 local preloads = {
+    ["yoursubdirectory/sdk/sdk/sdk"] = "sdk/sdk",
     ["yoursubdirectory/sdk/sdk/config"] = "sdk/config",
     ["yoursubdirectory/sdk/sdk/console"] = "sdk/console",
     ["yoursubdirectory/sdk/sdk/constant"] = "sdk/constant",
@@ -47,13 +48,18 @@ end
 -- SDK
 --
 
-local SDK
-
-SDK = require "sdk/sdk"
-SDK.SetIsSilent(true).Load({
+-- We load SDK just to use the "Test" module globals. Within tests themselves we will load it
+-- separately and use a different path (yoursubdirectory/sdk) to avoid conflicting with an existing
+-- one.
+--
+-- By default, Busted unit testing framework isolates tests, so we don't need to unload packages
+-- manually after initializing them. However, if the package has been loaded outside tests we have
+-- to make sure that we either use a different path when loading an SDK or unload it first before
+-- requiring the same package.
+require("sdk/sdk").SetIsSilent(true).Load({
     modname = "dst-mod-sdk",
     AddPrefabPostInit = function() end
-}, ".", {
+}, "", {
     "Dump",
     "Test",
 })

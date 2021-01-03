@@ -52,20 +52,21 @@ describe("#sdk SDK.Remote", function()
         }
 
         -- initialization
-        SDK = require "sdk/sdk"
-        SDK.path = "./"
-        SDK.SetIsSilent(true)
-
-        SDK.Utils = require "sdk/utils"
-        SDK.Utils._DoInit(SDK)
-
-        Remote = require "sdk/remote"
-        Remote._DoInit(SDK)
+        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK.SetPath("yoursubdirectory/sdk")
+        SDK.LoadModule("Utils")
+        SDK.LoadModule("Debug")
+        SDK.LoadModule("Remote")
+        Remote = require "yoursubdirectory/sdk/sdk/remote"
 
         -- spies
         Remote.Send = spy.on(Remote, "Send")
         SDK.Debug.Error = spy.on(SDK.Debug, "Error")
         SDK.Debug.String = spy.on(SDK.Debug, "String")
+    end)
+
+    after_each(function()
+        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
     end)
 
     local function AssertDebugError(fn, ...)

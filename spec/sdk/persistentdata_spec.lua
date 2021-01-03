@@ -47,23 +47,20 @@ describe("#sdk SDK.PersistentData", function()
         })
 
         -- initialization
-        SDK = require "sdk/sdk"
-        SDK.env = { modname = "dst-mod-sdk" }
-        SDK.path = "./"
-        SDK.SetIsSilent(true)
+        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK.SetPath("yoursubdirectory/sdk")
+        SDK.LoadModule("Utils")
+        SDK.LoadModule("Debug")
+        SDK.LoadModule("PersistentData")
+        PersistentData = require "yoursubdirectory/sdk/sdk/persistentdata"
 
-        SDK.Debug = require "sdk/debug"
-        SDK.Debug._DoInit(SDK)
-
-        SDK.Utils = require "sdk/utils"
-        SDK.Utils._DoInit(SDK)
-
-        PersistentData = require "sdk/persistentdata"
-        PersistentData._DoInit(SDK)
-
-        -- debug
+        -- spies
         SDK.Debug.Error = spy.on(SDK.Debug, "Error")
         SDK.Debug.String = spy.on(SDK.Debug, "String")
+    end)
+
+    after_each(function()
+        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
     end)
 
     local function TestDebugErrorNoServerData(fn_name, ...)

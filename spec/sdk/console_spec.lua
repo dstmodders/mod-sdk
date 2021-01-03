@@ -3,17 +3,13 @@ require "busted.runner"()
 describe("#sdk SDK.Console", function()
     -- before_each initialization
     local SDK
-    local Console
+    local Console -- luacheck: only
 
-    before_each(function()
-        SDK = require "sdk/sdk"
-        SDK.path = "./"
-        SDK.SetIsSilent(true)
-
-        SDK.Utils = require "sdk/utils"
-        SDK.Utils._DoInit(SDK)
-
-        Console = require "sdk/console"
-        Console._DoInit(SDK)
+    setup(function()
+        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK.SetPath("yoursubdirectory/sdk")
+        SDK.LoadModule("Utils")
+        SDK.LoadModule("Console")
+        Console = require "yoursubdirectory/sdk/sdk/console"
     end)
 end)

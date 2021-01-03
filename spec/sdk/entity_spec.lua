@@ -49,15 +49,15 @@ describe("#sdk SDK.Entity", function()
     end)
 
     before_each(function()
-        SDK = require "sdk/sdk"
-        SDK.path = "./"
-        SDK.SetIsSilent(true)
+        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK.SetPath("yoursubdirectory/sdk")
+        SDK.LoadModule("Utils")
+        SDK.LoadModule("Entity")
+        Entity = require "yoursubdirectory/sdk/sdk/entity"
+    end)
 
-        SDK.Utils = require "sdk/utils"
-        SDK.Utils._DoInit(SDK)
-
-        Entity = require "sdk/entity"
-        Entity._DoInit(SDK)
+    after_each(function()
+        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
     end)
 
     describe("general", function()

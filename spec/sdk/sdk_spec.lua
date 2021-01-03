@@ -5,8 +5,11 @@ describe("#sdk SDK", function()
     local SDK
 
     before_each(function()
-        SDK = require "sdk/sdk"
-        SDK.SetIsSilent(true)
+        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+    end)
+
+    after_each(function()
+        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
     end)
 
     describe("internal", function()
@@ -16,14 +19,14 @@ describe("#sdk SDK", function()
             _print = _G.print
         end)
 
-        before_each(function()
-            _G.print = spy.new(Empty)
-            SDK.SetIsSilent(false)
-        end)
-
         teardown(function()
             _G.print = _print
             SDK.SetIsSilent(true)
+        end)
+
+        before_each(function()
+            _G.print = spy.new(Empty)
+            SDK.SetIsSilent(false)
         end)
 
         describe("Info()", function()
@@ -151,6 +154,10 @@ describe("#sdk SDK", function()
                     _G.softresolvefilepath = spy.new(ReturnValueFn(false))
                 end)
 
+                teardown(function()
+                    _G.softresolvefilepath = nil
+                end)
+
                 before_each(function()
                     env = mock({
                         modname = "dst-mod-sdk",
@@ -160,10 +167,6 @@ describe("#sdk SDK", function()
                     SDK.env = nil
                     SDK.path = nil
                     SDK.path_full = nil
-                end)
-
-                teardown(function()
-                    _G.softresolvefilepath = nil
                 end)
 
                 it("should add SDK.env", function()
@@ -194,28 +197,28 @@ describe("#sdk SDK", function()
                         SDK.Load(env, "yoursubdirectory/sdk")
                         assert.spy(SDK._Info).was_called(24)
                         assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils")
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Chain")
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Value")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Inventory")
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.ModMain")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Thread")
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Constant")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Entity")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.RPC")
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Debug")
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.DebugUpvalue")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Dump")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Entity")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Input")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Inventory")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Method")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.ModMain")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.PersistentData")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player")
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.RPC")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.PersistentData")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
                         assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Test")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Thread")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Input")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Method")
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Dump")
                         assert.spy(SDK._Info).was_called_with("Added world post initializer")
                     end)
 

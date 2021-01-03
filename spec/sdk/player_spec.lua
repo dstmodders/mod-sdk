@@ -222,18 +222,16 @@ describe("#sdk SDK.Player", function()
         })
 
         -- initialization
-        SDK = require "sdk/sdk"
-        SDK.path = "./"
-        SDK.SetIsSilent(true)
+        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK.SetPath("yoursubdirectory/sdk")
+        SDK.LoadModule("Utils")
+        SDK.LoadModule("Debug")
+        SDK.LoadModule("Player")
+        Player = require "yoursubdirectory/sdk/sdk/player"
+    end)
 
-        SDK.Debug = require "sdk/debug"
-        SDK.Debug._DoInit(SDK)
-
-        SDK.Utils = require "sdk/utils"
-        SDK.Utils._DoInit(SDK)
-
-        Player = require "sdk/player"
-        Player._DoInit(SDK)
+    after_each(function()
+        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
     end)
 
     describe("general", function()

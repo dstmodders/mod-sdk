@@ -27,18 +27,21 @@ describe("#sdk SDK.World", function()
                 components = {},
             },
             state = {},
+            HasTag = function(_, tag)
+                return tag == "forest"
+            end
         }
 
         -- initialization
-        SDK = require "sdk/sdk"
-        SDK.path = "./"
-        SDK.SetIsSilent(true)
+        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK.SetPath("yoursubdirectory/sdk")
+        SDK.LoadModule("Utils")
+        SDK.LoadModule("World")
+        World = require "yoursubdirectory/sdk/sdk/world"
+    end)
 
-        SDK.Utils = require "sdk/utils"
-        SDK.Utils._DoInit(SDK)
-
-        World = require "sdk/world"
-        World._DoInit(SDK)
+    after_each(function()
+        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
     end)
 
     describe("general", function()
@@ -139,7 +142,6 @@ describe("#sdk SDK.World", function()
             before_each(function()
                 _G.TheWorld.state.cavephase = "dusk"
                 _G.TheWorld.state.phase = "day"
-                World.IsCave = ReturnValueFn(true)
             end)
 
             describe("when in the cave", function()

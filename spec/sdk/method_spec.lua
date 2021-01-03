@@ -4,13 +4,14 @@ describe("#sdk SDK.Method", function()
     -- setup
     local Dest, Src
 
-    -- before_each initialization
-    local Method
+    -- before_each instances
     local src, dest
 
-    before_each(function()
-        Method = require "sdk/method"
+    -- before_each initialization
+    local SDK
+    local Method
 
+    before_each(function()
         -- destination
         Dest = Class(function()
         end)
@@ -37,6 +38,17 @@ describe("#sdk SDK.Method", function()
         end
 
         src = Src()
+
+        -- initialization
+        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK.SetPath("yoursubdirectory/sdk")
+        SDK.LoadModule("Utils")
+        SDK.LoadModule("Method")
+        Method = require "yoursubdirectory/sdk/sdk/method"
+    end)
+
+    after_each(function()
+        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
     end)
 
     local function TestReturnSelf(fn_name, ...)
