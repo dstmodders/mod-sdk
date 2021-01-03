@@ -63,6 +63,7 @@ local _MODULES = {
     RPC = "sdk/rpc",
     Test = "sdk/test",
     Thread = "sdk/thread",
+    Utils = "sdk/utils",
     World = "sdk/world",
 }
 
@@ -296,18 +297,22 @@ function SDK.Load(env, path, modules)
 
     if softresolvefilepath(SDK.path_full .. "/sdk/sdk.lua") then
         package.path = SDK.path_full .. "/?.lua;" .. package.path
-        SDK.LoadModule("Utils", path .. "sdk/utils")
+        SDK.LoadModule("Utils", path .. _MODULES.Utils)
         if type(modules) == "table" and SDK.Utils.Table.Count(modules) > 0 then
             for k, v in pairs(modules) do
-                if type(k) == "number" then
-                    SDK.LoadModule(v, path .. _MODULES[v])
-                else
-                    SDK.LoadModule(k, v)
+                if k ~= "Utils" then
+                    if type(k) == "number" then
+                        SDK.LoadModule(v, path .. _MODULES[v])
+                    else
+                        SDK.LoadModule(k, v)
+                    end
                 end
             end
         else
             for k, v in pairs(_MODULES) do
-                SDK.LoadModule(k, path .. v)
+                if k ~= "Utils" then
+                    SDK.LoadModule(k, path .. v)
+                end
             end
         end
 
@@ -325,13 +330,23 @@ end
 -- @tparam[opt] string path
 -- @treturn boolean
 function SDK.LoadModule(name, path)
-    if not name or not path then
+    if not name or (not path and not SDK.path) then
         return false
     end
 
+    SDK.path = SanitizePath(SDK.path)
+    SDK.path_full = SanitizePath(SDK.path_full)
+
+    local module
+
     SDK.UnloadModule(name)
 
-    local module = require(path)
+    if path then
+        module = require(path)
+    elseif _MODULES[name] then
+        module = require(SDK.path .. _MODULES[name])
+    end
+
     if type(module) ~= "table" then
         return false
     end
