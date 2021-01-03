@@ -274,10 +274,6 @@ function SDK.Load(env, path, modules)
     path = SanitizePath(path)
 
     if package.loaded.busted then
-        if not _G.MODS_ROOT then
-            _G.MODS_ROOT = ""
-        end
-
         if not _G.softresolvefilepath then
             _G.softresolvefilepath = function(filepath)
                 return _G.MODS_ROOT .. filepath
@@ -290,9 +286,8 @@ function SDK.Load(env, path, modules)
 
     SDK.env = env
     SDK.modname = env.modname
-    SDK.path = path
-    SDK.path_full = SanitizePath(MODS_ROOT .. SDK.modname .. "/scripts/" .. path)
 
+    SDK.SetPath(path)
     SDK._Info("Loading SDK:", SDK.path_full)
 
     if softresolvefilepath(SDK.path_full .. "/sdk/sdk.lua") then
@@ -334,11 +329,9 @@ function SDK.LoadModule(name, path)
         return false
     end
 
-    SDK.path = SanitizePath(SDK.path)
-    SDK.path_full = SanitizePath(SDK.path_full)
-
     local module
 
+    SDK.SetPath(SDK.path)
     SDK.UnloadModule(name)
 
     if path then
@@ -385,6 +378,32 @@ function SDK.LoadSubmodule(parent, name, path, global)
     return true
 end
 
+--- Sets a silent state.
+-- @tparam boolean is_silent
+-- @treturn SDK
+function SDK.SetIsSilent(is_silent)
+    SDK.is_silent = is_silent
+    return SDK
+end
+
+--- Sets both path and full path.
+-- @tparam string path
+-- @treturn SDK
+function SDK.SetPath(path)
+    SDK.path = SanitizePath(path)
+
+    if package.loaded.busted then
+        if not _G.MODS_ROOT then
+            _G.MODS_ROOT = ""
+        end
+    end
+
+    if _G.MODS_ROOT and SDK.modname then
+        SDK.path_full = SanitizePath(_G.MODS_ROOT .. SDK.modname .. "/scripts/" .. SDK.path)
+    end
+    return SDK
+end
+
 --- Unloads a single module.
 -- @see SDK.LoadModule
 -- @tparam string name
@@ -400,14 +419,6 @@ function SDK.UnloadModule(name)
     --SDK._Info("Unloaded", module_name)
 
     return true
-end
-
---- Sets a silent state.
--- @tparam boolean is_silent
--- @treturn SDK
-function SDK.SetIsSilent(is_silent)
-    SDK.is_silent = is_silent
-    return SDK
 end
 
 --- Post Initializers
