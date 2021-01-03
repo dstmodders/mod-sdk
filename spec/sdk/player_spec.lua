@@ -86,6 +86,7 @@ describe("#sdk SDK.Player", function()
                 },
             },
             HUD = {
+                HasInputFocus = ReturnValueFn(false),
                 IsChatInputScreenOpen = ReturnValueFn(false),
                 IsConsoleScreenOpen = ReturnValueFn(false),
             },
@@ -566,6 +567,29 @@ describe("#sdk SDK.Player", function()
                     AssertChainNil(function()
                         assert.is_nil(Player.IsHUDConsoleScreenOpen())
                     end, _G.ThePlayer, "HUD", "IsConsoleScreenOpen")
+                end)
+            end)
+        end)
+
+        describe("IsHUDHasInputFocus()", function()
+            it("should return [player].HUD.HasInputFocus() value", function()
+                assert.is_equal(_G.ThePlayer.HUD.HasInputFocus(), Player.IsHUDHasInputFocus())
+            end)
+
+            it("should call [player].HUD.HasInputFocus()", function()
+                assert.spy(_G.ThePlayer.HUD.HasInputFocus).was_not_called()
+                Player.IsHUDHasInputFocus()
+                assert.spy(_G.ThePlayer.HUD.HasInputFocus).was_called(1)
+                assert.spy(_G.ThePlayer.HUD.HasInputFocus).was_called_with(
+                    match.is_ref(_G.ThePlayer.HUD)
+                )
+            end)
+
+            describe("when some chain fields are missing", function()
+                it("should return nil", function()
+                    AssertChainNil(function()
+                        assert.is_nil(Player.IsHUDHasInputFocus())
+                    end, _G.ThePlayer, "HUD", "HasInputFocus")
                 end)
             end)
         end)

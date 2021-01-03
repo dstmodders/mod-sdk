@@ -123,7 +123,7 @@ end
 -- @treturn boolean
 function Player.IsHUDHasInputFocus(player)
     player = player ~= nil and player or ThePlayer
-    return not SDK.Utils.Chain.Get(player, "HUD", "HasInputFocus", true)
+    return SDK.Utils.Chain.Get(player, "HUD", "HasInputFocus", true)
 end
 
 --- Checks if a HUD writable screen is active.
