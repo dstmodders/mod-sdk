@@ -413,10 +413,12 @@ function SDK.UnloadModule(name)
         return false
     end
 
-    --local module_name = tostring(SDK[name])
-    package.loaded[SDK.path .. _MODULES[name]] = nil
-    SDK[name] = nil
-    --SDK._Info("Unloaded", module_name)
+    local module_name = tostring(SDK[name])
+    if package.loaded[SDK.path .. _MODULES[name]] then
+        package.loaded[SDK.path .. _MODULES[name]] = nil
+        SDK[name] = nil
+        SDK._Info("Unloaded", module_name)
+    end
 
     return true
 end
