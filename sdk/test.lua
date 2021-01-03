@@ -57,6 +57,17 @@ function Test.shallowcopy(src, dest)
     return copy
 end
 
+--- Creates a userdata from table.
+-- @tparam table t
+-- @treturn table
+function Test.userdata(t)
+    local proxy = newproxy(true)
+    getmetatable(proxy).__index = function(_, key)
+        return t[key]
+    end
+    return proxy
+end
+
 --- Asserts
 -- @section asserts
 
@@ -424,6 +435,7 @@ function Test._DoInit(sdk)
         _G.shallowcopy = Test.shallowcopy
         _G.TableCount = Test.TableCount
         _G.TableHasValue = Test.TableHasValue
+        _G.userdata = Test.userdata
     end
 
     return module

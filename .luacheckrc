@@ -69,6 +69,7 @@ files["**/*.lua"] = {
         "InGamePlay",
         "KillThreadsWithID",
         "MODS_ROOT",
+        "newproxy",
         "PREFAB_SKINS_IDS",
         "ReturnValueFn",
         "ReturnValuesFn",
