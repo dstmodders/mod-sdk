@@ -19,10 +19,16 @@ local Value
 --- Helpers
 -- @section helpers
 
+local function DebugError(fn_name, ...)
+    if SDK.Debug then
+        SDK.Debug.Error(string.format("%s.%s():", tostring(Remote), fn_name), ...)
+    end
+end
+
 local function DebugErrorInvalidArg(arg_name, explanation, fn_name)
     fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    SDK.Debug.Error(
-        string.format("%s.%s():", tostring(Remote), fn_name),
+    DebugError(
+        fn_name,
         string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
         explanation and "(" .. explanation .. ")"
     )
@@ -30,19 +36,18 @@ end
 
 local function DebugErrorInvalidWorldType(explanation, fn_name)
     fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    SDK.Debug.Error(
-        string.format("%s.%s():", tostring(Remote), fn_name),
-        "Invalid world type",
-        explanation and "(" .. explanation .. ")"
-    )
+    DebugError(fn_name, "Invalid world type", explanation and "(" .. explanation .. ")")
 end
 
 local function DebugErrorPlayerIsGhost(fn_name)
     fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    SDK.Debug.Error(
-        string.format("%s.%s():", tostring(Remote), fn_name),
-        "Player shouldn't be a ghost"
-    )
+    DebugError(fn_name, "Player shouldn't be a ghost")
+end
+
+local function DebugString(...)
+    if SDK.Debug then
+        SDK.Debug.String("[remote]", ...)
+    end
 end
 
 local function IsValidPlayerAlive(player, fn_name)
@@ -78,7 +83,7 @@ end
 --- Sends a request to gather players.
 -- @treturn boolean
 function Remote.GatherPlayers()
-    SDK.Debug.String("[remote]", "Gather players")
+    DebugString("Gather players")
     Remote.Send("c_gatherplayers()")
     return true
 end
@@ -92,7 +97,7 @@ function Remote.GoNext(entity)
         return false
     end
 
-    SDK.Debug.String("[remote]", "Go next:", entity:GetDisplayName())
+    DebugString("Go next:", entity:GetDisplayName())
     Remote.Send('c_gonext("%s")', { entity.prefab })
     return true
 end
@@ -108,7 +113,7 @@ function Remote.Rollback(days)
         return false
     end
 
-    SDK.Debug.String("[remote]", "Rollback:", Value.ToDaysString(days))
+    DebugString("Rollback:", Value.ToDaysString(days))
     Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days })
     return true
 end
@@ -136,8 +141,7 @@ function Remote.SetPlayerHealthLimitPercent(percent, player)
         return false
     end
 
-    SDK.Debug.String(
-        "[remote]",
+    DebugString(
         "Player health limit:",
         Value.ToPercentString(percent),
         "(" .. player:GetDisplayName() .. ")"
@@ -162,8 +166,7 @@ function Remote.SetPlayerHealthPercent(percent, player)
         return false
     end
 
-    SDK.Debug.String(
-        "[remote]",
+    DebugString(
         "Player health:",
         Value.ToPercentString(percent),
         "(" .. player:GetDisplayName() .. ")"
@@ -188,8 +191,7 @@ function Remote.SetPlayerHungerPercent(percent, player)
         return false
     end
 
-    SDK.Debug.String(
-        "[remote]",
+    DebugString(
         "Player hunger:",
         Value.ToPercentString(percent),
         "(" .. player:GetDisplayName() .. ")"
@@ -214,8 +216,7 @@ function Remote.SetPlayerMoisturePercent(percent, player)
         return false
     end
 
-    SDK.Debug.String(
-        "[remote]",
+    DebugString(
         "Player moisture:",
         Value.ToPercentString(percent),
         "(" .. player:GetDisplayName() .. ")"
@@ -240,8 +241,7 @@ function Remote.SetPlayerSanityPercent(percent, player)
         return false
     end
 
-    SDK.Debug.String(
-        "[remote]",
+    DebugString(
         "Player sanity:",
         Value.ToPercentString(percent),
         "(" .. player:GetDisplayName() .. ")"
@@ -271,8 +271,7 @@ function Remote.SetPlayerTemperature(temperature, player)
         return false
     end
 
-    SDK.Debug.String(
-        "[remote]",
+    DebugString(
         "Player temperature:",
         Value.ToDegreeString(temperature),
         "(" .. player:GetDisplayName() .. ")"
@@ -298,15 +297,11 @@ function Remote.SetPlayerWerenessPercent(percent, player)
     end
 
     if not player:HasTag("werehuman") then
-        SDK.Debug.Error(
-            string.format("%s.%s():", tostring(Remote), "SetPlayerWerenessPercent"),
-            "Player should be a Woodie"
-        )
+        DebugError("SetPlayerWerenessPercent", "Player should be a Woodie")
         return false
     end
 
-    SDK.Debug.String(
-        "[remote]",
+    DebugString(
         "Player wereness:",
         Value.ToPercentString(percent),
         "(" .. player:GetDisplayName() .. ")"
@@ -328,7 +323,7 @@ end
 -- @treturn boolean
 function Remote.ForcePrecipitation(bool)
     bool = bool ~= false and true or false
-    SDK.Debug.String("[remote]", "Force precipitation:", tostring(bool))
+    DebugString("Force precipitation:", tostring(bool))
     Remote.Send('TheWorld:PushEvent("ms_forceprecipitation", %s)', { tostring(bool) })
     return true
 end
@@ -348,7 +343,7 @@ function Remote.SendLightningStrike(pt)
     end
 
     local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
-    SDK.Debug.String("[remote]", "Send lighting strike:", tostring(pt))
+    DebugString("Send lighting strike:", tostring(pt))
     Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
     return true
 end
@@ -390,7 +385,7 @@ function Remote.SendMiniEarthquake(player, radius, amount, duration)
         return false
     end
 
-    SDK.Debug.String("[remote]", "Send mini earthquake:", player:GetDisplayName())
+    DebugString("Send mini earthquake:", player:GetDisplayName())
     Remote.Send(
         'TheWorld:PushEvent("ms_miniquake", { target = LookupPlayerInstByUserID("%s"), rad = %d, num = %d, duration = %0.2f })', -- luacheck: only
         { player.userid, radius, amount, duration }
@@ -412,7 +407,7 @@ function Remote.SetSeason(season)
         return false
     end
 
-    SDK.Debug.String("[remote]", "Season:", tostring(season))
+    DebugString("Season:", tostring(season))
     Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
     return true
 end
@@ -436,7 +431,7 @@ function Remote.SetSeasonLength(season, length)
         return false
     end
 
-    SDK.Debug.String("[remote]", "Season length:", season, "(" .. Value.ToDaysString(length) .. ")")
+    DebugString("Season length:", season, "(" .. Value.ToDaysString(length) .. ")")
     Remote.Send(
         'TheWorld:PushEvent("ms_setseasonlength", { season = "%s", length = %d })',
         { season, length }
@@ -457,7 +452,7 @@ function Remote.SetSnowLevel(delta)
     end
 
     if Value.IsUnitInterval(delta) then
-        SDK.Debug.String("[remote]", "Snow level:", tostring(delta))
+        DebugString("Snow level:", tostring(delta))
         Remote.Send('TheWorld:PushEvent("ms_setsnowlevel", %0.2f)', { delta })
         return true
     end
@@ -477,7 +472,7 @@ function Remote.SetWorldDeltaMoisture(delta)
         return false
     end
 
-    SDK.Debug.String("[remote]", "World delta moisture:", tostring(delta))
+    DebugString("World delta moisture:", tostring(delta))
     Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
     return true
 end
@@ -493,7 +488,7 @@ function Remote.SetWorldDeltaWetness(delta)
         return false
     end
 
-    SDK.Debug.String("[remote]", "World delta wetness:", tostring(delta))
+    DebugString("World delta wetness:", tostring(delta))
     Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
     return true
 end
