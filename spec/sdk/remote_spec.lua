@@ -13,11 +13,15 @@ describe("#sdk SDK.Remote", function()
     end)
 
     teardown(function()
+        -- globals
         _G.TheNet = nil
         _G.ThePlayer = nil
         _G.TheSim = nil
         _G.TheWorld = nil
         _G.TUNING = nil
+
+        -- sdk
+        LoadSDK()
     end)
 
     before_each(function()

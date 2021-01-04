@@ -147,11 +147,15 @@ describe("#sdk SDK.Player", function()
     end)
 
     teardown(function()
+        -- globals
         _G.ACTIONS = nil
         _G.RPC = nil
         _G.TheFrontEnd = nil
         _G.TheNet = nil
         _G.ThePlayer = nil
+
+        -- sdk
+        LoadSDK()
     end)
 
     before_each(function()

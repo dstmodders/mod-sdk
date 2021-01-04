@@ -11,6 +11,10 @@ describe("#sdk SDK.Method", function()
     local SDK
     local Method
 
+    teardown(function()
+        LoadSDK()
+    end)
+
     before_each(function()
         -- destination
         Dest = Class(function()

@@ -48,18 +48,14 @@ end
 -- SDK
 --
 
--- We load SDK just to use the "Test" module globals. Within tests themselves we will load it
--- separately and use a different path (yoursubdirectory/sdk) to avoid conflicting with an existing
--- one.
---
--- By default, Busted unit testing framework isolates tests, so we don't need to unload packages
--- manually after initializing them. However, if the package has been loaded outside tests we have
--- to make sure that we either use a different path when loading an SDK or unload it first before
--- requiring the same package.
-require("sdk/sdk").SetIsSilent(true).Load({
-    modname = "dst-mod-sdk",
-    AddPrefabPostInit = function() end
-}, "", {
-    "Dump",
-    "Test",
-})
+function LoadSDK()
+    require("sdk/sdk").UnloadAllModules().SetIsSilent(true).Load({
+        modname = "dst-mod-sdk",
+        AddPrefabPostInit = function() end
+    }, "", {
+        "Dump",
+        "Test",
+    })
+end
+
+LoadSDK()

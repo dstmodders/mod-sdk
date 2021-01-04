@@ -44,6 +44,7 @@ files["**/*.lua"] = {
     globals = {
         "ClassRegistry",
         "KnownModIndex",
+        "LoadSDK",
         "SendRPCToServer",
         "ToVector3",
         "Vector3",

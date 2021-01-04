@@ -13,7 +13,11 @@ describe("#sdk SDK.World", function()
     end)
 
     teardown(function()
+        -- globals
         _G.TheWorld = nil
+
+        -- sdk
+        LoadSDK()
     end)
 
     before_each(function()

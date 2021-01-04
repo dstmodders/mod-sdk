@@ -12,4 +12,8 @@ describe("#sdk SDK.Console", function()
         SDK.LoadModule("Console")
         Console = require "yoursubdirectory/sdk/sdk/console"
     end)
+
+    teardown(function()
+        LoadSDK()
+    end)
 end)

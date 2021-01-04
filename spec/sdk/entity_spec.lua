@@ -45,7 +45,11 @@ describe("#sdk SDK.Entity", function()
     end)
 
     teardown(function()
+        -- globals
         _G.AllPlayers = nil
+
+        -- sdk
+        LoadSDK()
     end)
 
     before_each(function()
