@@ -81,6 +81,14 @@ end
 --- General
 -- @section general
 
+--- Sends a request to gather players.
+-- @treturn boolean
+function Player.GatherPlayers()
+    DebugString("Gather players")
+    SDK.Remote.Send("c_gatherplayers()")
+    return true
+end
+
 --- Sends a request to send a mini earthquake.
 -- @tparam[opt] number radius Default: 20
 -- @tparam[opt] number amount Default: 20

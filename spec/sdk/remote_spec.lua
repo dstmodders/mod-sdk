@@ -173,10 +173,6 @@ describe("#sdk SDK.Remote", function()
     end
 
     describe("general", function()
-        describe("GatherPlayers()", function()
-            TestRemoteValid("GatherPlayers", { "Gather players" }, "c_gatherplayers()")
-        end)
-
         describe("GoNext()", function()
             local entity = {
                 GUID = 1,

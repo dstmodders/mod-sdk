@@ -243,6 +243,10 @@ describe("#sdk SDK.Remote.Player", function()
     end
 
     describe("general", function()
+        describe("GatherPlayers()", function()
+            TestRemoteValid("GatherPlayers", { "Gather players" }, "c_gatherplayers()")
+        end)
+
         describe("SendMiniEarthquake()", function()
             describe("when in a forest world", function()
                 before_each(function()

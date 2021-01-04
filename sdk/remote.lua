@@ -45,14 +45,6 @@ end
 --- General
 -- @section general
 
---- Sends a request to gather players.
--- @treturn boolean
-function Remote.GatherPlayers()
-    DebugString("Gather players")
-    Remote.Send("c_gatherplayers()")
-    return true
-end
-
 --- Sends a request to go next to a certain prefab.
 -- @tparam EntityScript entity
 -- @treturn boolean
