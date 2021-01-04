@@ -461,6 +461,20 @@ function SDK.UnloadModule(name)
     return true
 end
 
+--- Unloads a single module.
+-- @see SDK.LoadModule
+-- @tparam string name
+-- @treturn SDK
+function SDK.UnloadAllModules()
+    for k, v in pairs(SDK.loaded) do
+        package.loaded[v] = nil
+        SDK._Info("Unloaded", tostring(SDK[k]))
+        SDK[k] = nil
+        SDK.loaded[k] = nil
+    end
+    return SDK
+end
+
 --- Post Initializers
 -- @section post-initializers
 
