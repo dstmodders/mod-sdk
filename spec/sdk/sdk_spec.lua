@@ -13,6 +13,89 @@ describe("#sdk SDK", function()
         LoadSDK()
     end)
 
+    describe("lifecycle", function()
+        local Module
+
+        before_each(function()
+            -- initialization
+            SDK.LoadModule("Debug")
+            SDK.LoadModule("Module", "spec/module")
+            Module = require("spec/module")
+
+            -- spies
+            SDK.Debug.Error = spy.new(Empty)
+        end)
+
+        after_each(function()
+            SDK.UnloadModule("Module")
+            SDK.UnloadModule("Debug")
+        end)
+
+        describe("when calling a module through SDK", function()
+            it("should have a module field pointing to the module itself", function()
+                assert.is_equal(Module, SDK.Module.module)
+            end)
+
+            it("should have Has() which returns if a field/function exists", function()
+                assert.is_function(SDK.Module.Has)
+                assert.is_true(SDK.Module.Has("_DoInit"))
+                assert.is_false(SDK.Module.Has("FooBar"))
+            end)
+
+            describe("and referencing a non-existent function", function()
+                it("should debug error string", function()
+                    assert.spy(SDK.Debug.Error).was_not_called()
+                    SDK.Module.FooBar()
+                    assert.spy(SDK.Debug.Error).was_called(1)
+                    assert.spy(SDK.Debug.Error).was_called_with(
+                        "Function or field SDK.Module.FooBar doesn't exist"
+                    )
+                end)
+
+                it("should return a function that returns nil", function()
+                    assert.is_function(SDK.Module.FooBar)
+                    assert.is_nil(SDK.Module.FooBar())
+                end)
+            end)
+
+            describe("and referencing an internal function", function()
+                it("should debug error string", function()
+                    assert.spy(SDK.Debug.Error).was_not_called()
+                    SDK.Module._DoInit()
+                    assert.spy(SDK.Debug.Error).was_called(1)
+                    assert.spy(SDK.Debug.Error).was_called_with(
+                        "Function SDK.Module._DoInit() shouldn't be used directly"
+                    )
+                end)
+
+                it("should return a function that returns nil", function()
+                    assert.is_function(SDK.Module._DoInit)
+                    assert.is_nil(SDK.Module._DoInit())
+                end)
+            end)
+
+            describe("and referencing an internal field", function()
+                before_each(function()
+                    Module.foo = "bar"
+                end)
+
+                it("should debug error string", function()
+                    assert.spy(SDK.Debug.Error).was_not_called()
+                    assert.is_not_nil(SDK.Module.foo)
+                    assert.spy(SDK.Debug.Error).was_called(1)
+                    assert.spy(SDK.Debug.Error).was_called_with(
+                        "Field SDK.Module.foo shouldn't be used directly"
+                    )
+                end)
+
+                it("should return a function that returns nil", function()
+                    assert.is_function(SDK.Module.foo)
+                    assert.is_nil(SDK.Module.foo())
+                end)
+            end)
+        end)
+    end)
+
     describe("internal", function()
         local _print
 
