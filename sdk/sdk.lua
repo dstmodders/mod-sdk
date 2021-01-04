@@ -151,27 +151,56 @@ function SDK._DebugErrorNoCallWithoutGlobal(module, fn_name, global)
     ))
 end
 
-function SDK._DebugErrorNoDirectUse(module, fn_name)
-    SDK.Debug.Error(string.format("SDK.%s.%s() shouldn't be used directly", module, fn_name))
+function SDK._DebugErrorNoDirectUse(module, field, name)
+    if not SDK.Debug then
+        return
+    end
+
+    if type(field) == "function" then
+        SDK.Debug.Error(string.format(
+            "Function %s.%s() shouldn't be used directly",
+            tostring(module),
+            name
+        ))
+    else
+        SDK.Debug.Error(string.format(
+            "Field %s.%s shouldn't be used directly",
+            tostring(module),
+            name
+        ))
+    end
 end
 
-function SDK._DebugErrorNoFunction(module, fn_name)
-    SDK.Debug.Error(string.format("SDK.%s.%s() doesn't exist", module, fn_name))
+function SDK._DebugErrorNoFunction(module, name)
+    if SDK.Debug then
+        SDK.Debug.Error(string.format(
+            "Function or field %s.%s doesn't exist",
+            tostring(module),
+            name
+        ))
+    end
 end
 
 function SDK._DoInitModule(parent, module, name, global)
-    local mt = setmetatable({}, {
+    local mt = setmetatable({
+        module = module,
+        Has = function(field)
+            return rawget(module, field) and true or false
+        end,
+    }, {
         __index = function(_, k)
             if global and not _G[global] then
                 SDK._DebugErrorNoCallWithoutGlobal(name, k, global)
             else
-                local fn = rawget(module, k)
-                if fn and not string.match(k, "^_") then
-                    return fn
-                elseif fn and string.match(k, "^_") then
-                    SDK._DebugErrorNoDirectUse(name, k)
+                local field = rawget(module, k)
+                if type(field) == "function" and not string.match(k, "^_") then -- function
+                    return field
+                elseif type(field) == "table" and field.module then -- another module or submodule
+                    return field
+                elseif field then
+                    SDK._DebugErrorNoDirectUse(module, field, k)
                 else
-                    SDK._DebugErrorNoFunction(name, k)
+                    SDK._DebugErrorNoFunction(module, k)
                 end
             end
 
