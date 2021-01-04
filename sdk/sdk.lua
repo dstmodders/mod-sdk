@@ -4,9 +4,7 @@
 -- This is an SDK entry point. On its own it doesn't do much and requires `SDK.Load` to be called
 -- inside your `modmain.lua` in order to initialize SDK and load all corresponding submodules.
 --
---    local SDK = require "<your subdirectory>/sdk/sdk/sdk"
---
---    SDK.Load(env, "<your subdirectory>/sdk")
+--    require("<your subdirectory>/sdk/sdk/sdk").Load(env, "<your subdirectory>/sdk")
 --
 -- That's it! You may now use SDK by requiring it in any of your mod files:
 --
@@ -351,10 +349,13 @@ end
 
 --- Loads a single module.
 -- @see SDK.UnloadModule
+-- @usage SDK.LoadModule("Player")
+-- @usage SDK.LoadModule("Player", "<your subdirectory>/sdk/player")
 -- @tparam string name
 -- @tparam[opt] string path
+-- @tparam[opt] table submodules
 -- @treturn boolean
-function SDK.LoadModule(name, path)
+function SDK.LoadModule(name, path, submodules)
     if not name or (not path and not SDK.path) then
         return false
     end
@@ -376,38 +377,51 @@ function SDK.LoadModule(name, path)
         return false
     end
 
-    SDK[name] = module._DoInit and module._DoInit(SDK) or module
+    SDK[name] = module._DoInit and module._DoInit(SDK, submodules) or module
     SDK._Info("Loaded", tostring(SDK[name]))
 
     return true
 end
 
 --- Loads a single submodule.
+-- @see SDK.LoadSubmodules
 -- @tparam table parent
 -- @tparam string name
 -- @tparam string path
 -- @tparam[opt] table global
 -- @treturn boolean
 function SDK.LoadSubmodule(parent, name, path, global)
-    if not parent or not name or not path then
-        return false
+    if parent and name and path then
+        path = RemoveTrailingSlashes(path)
+
+        local module = require(SDK.path .. path)
+        if type(module) ~= "table" then
+            return false
+        end
+
+        module = module._DoInit and module._DoInit(SDK) or module
+        module = SDK._DoInitModule(parent, module, name, global)
+
+        SDK._Info("Loaded", tostring(module))
+
+        parent[name] = module
     end
+    return SDK
+end
 
-    path = RemoveTrailingSlashes(path)
-
-    local module = require(SDK.path .. path)
-    if type(module) ~= "table" then
-        return false
+--- Loads submodules.
+-- @see SDK.LoadSubmodule
+-- @tparam table parent
+-- @tparam table submodules
+-- @tparam[opt] table global
+-- @treturn SDK
+function SDK.LoadSubmodules(parent, submodules, global)
+    if parent and type(submodules) == "table" then
+        for k, v in pairs(submodules) do
+            SDK.LoadSubmodule(parent, k, v, global)
+        end
     end
-
-    module = module._DoInit and module._DoInit(SDK) or module
-    module = SDK._DoInitModule(parent, module, name, global)
-
-    SDK._Info("Loaded", tostring(module))
-
-    parent[name] = module
-
-    return true
+    return SDK
 end
 
 --- Sets a silent state.
@@ -438,6 +452,7 @@ end
 
 --- Unloads a single module.
 -- @see SDK.LoadModule
+-- @usage SDK.UnloadModule("Player")
 -- @tparam string name
 -- @treturn boolean
 function SDK.UnloadModule(name)
