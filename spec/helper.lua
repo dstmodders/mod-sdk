@@ -25,6 +25,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/player"] = "sdk/player",
     ["yoursubdirectory/sdk/sdk/remote"] = "sdk/remote",
     ["yoursubdirectory/sdk/sdk/remote/player"] = "sdk/remote/player",
+    ["yoursubdirectory/sdk/sdk/remote/world"] = "sdk/remote/world",
     ["yoursubdirectory/sdk/sdk/rpc"] = "sdk/rpc",
     ["yoursubdirectory/sdk/sdk/sdk"] = "sdk/sdk",
     ["yoursubdirectory/sdk/sdk/test"] = "sdk/test",

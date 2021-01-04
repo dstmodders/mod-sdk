@@ -116,39 +116,6 @@ describe("#sdk SDK.Remote", function()
         assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
     end
 
-    local function TestRemoteInvalid(name, msg, explanation, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when valid arguments are passed"
-        elseif #args == 1 then
-            description = "when a valid argument is passed"
-        end
-
-        describe(description, function()
-            it("should debug error string", function()
-                AssertDebugError(
-                    function()
-                        Remote[name](unpack(args))
-                    end,
-                    string.format("SDK.Remote.%s():", name),
-                    msg,
-                    explanation and "(" .. explanation .. ")"
-                )
-            end)
-
-            it("shouldn't call TheSim:SendRemoteExecute()", function()
-                AssertSendWasNotCalled(function()
-                    Remote[name](unpack(args))
-                end)
-            end)
-
-            it("should return false", function()
-                assert.is_false(Remote[name](unpack(args)))
-            end)
-        end)
-    end
-
     local function TestRemoteInvalidArg(name, arg_name, explanation, ...)
         local args = { ... }
         local description = "when no arguments are passed"
@@ -175,10 +142,6 @@ describe("#sdk SDK.Remote", function()
                 assert.is_false(Remote[name](unpack(args)))
             end)
         end)
-    end
-
-    local function TestRemoteInvalidWorldType(name, explanation, ...)
-        TestRemoteInvalid(name, "Invalid world type", explanation, ...)
     end
 
     local function TestRemoteValid(name, debug, send, ...)
@@ -228,26 +191,6 @@ describe("#sdk SDK.Remote", function()
             }, 'c_gonext("foobar")', entity)
         end)
 
-        describe("Rollback()", function()
-            TestRemoteInvalidArg("Rollback", "days", "must be an unsigned integer", -1)
-            TestRemoteInvalidArg("Rollback", "days", "must be an unsigned integer", 0.5)
-
-            TestRemoteValid("Rollback", {
-                "Rollback:",
-                "0 days",
-            }, "TheNet:SendWorldRollbackRequestToServer(0)")
-
-            TestRemoteValid("Rollback", {
-                "Rollback:",
-                "1 day",
-            }, "TheNet:SendWorldRollbackRequestToServer(1)", 1)
-
-            TestRemoteValid("Rollback", {
-                "Rollback:",
-                "3 days",
-            }, "TheNet:SendWorldRollbackRequestToServer(3)", 3)
-        end)
-
         describe("Send()", function()
             describe("when different data types are passed", function()
                 it("should call TheSim:SendRemoteExecute()", function()
@@ -276,156 +219,6 @@ describe("#sdk SDK.Remote", function()
                     Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { "autumn" })
                 end, 'TheWorld:PushEvent("ms_setseason", "autumn")')
             end)
-        end)
-    end)
-
-    describe("world", function()
-        describe("ForcePrecipitation()", function()
-            TestRemoteValid("ForcePrecipitation", {
-                "Force precipitation:",
-                "true",
-            }, 'TheWorld:PushEvent("ms_forceprecipitation", true)')
-
-            TestRemoteValid("ForcePrecipitation", {
-                "Force precipitation:",
-                "true",
-            }, 'TheWorld:PushEvent("ms_forceprecipitation", true)', true)
-
-            TestRemoteValid("ForcePrecipitation", {
-                "Force precipitation:",
-                "false",
-            }, 'TheWorld:PushEvent("ms_forceprecipitation", false)', false)
-        end)
-
-        describe("SetSeason()", function()
-            TestRemoteInvalidArg(
-                "SetSeason",
-                "season",
-                "must be a season: autumn, winter, spring or summer",
-                "foo"
-            )
-
-            TestRemoteValid("SetSeason", {
-                "Season:",
-                "autumn",
-            }, 'TheWorld:PushEvent("ms_setseason", "autumn")', "autumn")
-        end)
-
-        describe("SetSeasonLength()", function()
-            TestRemoteInvalidArg(
-                "SetSeasonLength",
-                "season",
-                "must be a season: autumn, winter, spring or summer",
-                "foo",
-                10
-            )
-
-            TestRemoteInvalidArg(
-                "SetSeasonLength",
-                "length",
-                "must be an unsigned integer",
-                "autumn",
-                -10
-            )
-
-            TestRemoteValid(
-                "SetSeasonLength",
-                { "Season length:", "autumn", "(10 days)" },
-                'TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 10 })',
-                "autumn",
-                10
-            )
-        end)
-
-        describe("SendLightningStrike()", function()
-            local pt
-
-            setup(function()
-                pt = Vector3(1, 0, 3)
-            end)
-
-            describe("when in a cave world", function()
-                before_each(function()
-                    _G.TheWorld.HasTag = spy.new(function(_, tag)
-                        return tag == "cave"
-                    end)
-                end)
-
-                TestRemoteInvalidWorldType("SendLightningStrike", "must be in a forest", pt)
-            end)
-
-            describe("when in a forest world", function()
-                before_each(function()
-                    _G.TheWorld.HasTag = spy.new(function(_, tag)
-                        return tag == "forest"
-                    end)
-                end)
-
-                TestRemoteInvalidArg("SendLightningStrike", "pt", "must be a point", "foo")
-
-                TestRemoteValid(
-                    "SendLightningStrike",
-                    { "Send lighting strike:", "(1.00, 0.00, 3.00)" },
-                    'TheWorld:PushEvent("ms_sendlightningstrike", Vector3(1.00, 0.00, 3.00))',
-                    pt
-                )
-            end)
-        end)
-
-        describe("SetSnowLevel()", function()
-            describe("when not in a forest world", function()
-                before_each(function()
-                    _G.TheWorld.HasTag = ReturnValueFn(true)
-                end)
-
-                TestRemoteInvalidWorldType("SetSnowLevel", "must be in a forest", 1)
-            end)
-
-            describe("when in a forest world", function()
-                before_each(function()
-                    _G.TheWorld.HasTag = ReturnValueFn(false)
-                end)
-
-                TestRemoteInvalidArg("SetSnowLevel", "delta", "must be a unit interval", 2)
-
-                TestRemoteValid("SetSnowLevel", {
-                    "Snow level:",
-                    "0",
-                }, 'TheWorld:PushEvent("ms_setsnowlevel", 0.00)')
-
-                TestRemoteValid("SetSnowLevel", {
-                    "Snow level:",
-                    "1",
-                }, 'TheWorld:PushEvent("ms_setsnowlevel", 1.00)', 1)
-            end)
-        end)
-
-        describe("SetWorldDeltaMoisture()", function()
-            TestRemoteInvalidArg("SetWorldDeltaMoisture", "delta", "must be a number", "foo")
-
-            TestRemoteValid("SetWorldDeltaMoisture", {
-                "World delta moisture:",
-                "0",
-            }, 'TheWorld:PushEvent("ms_deltamoisture", 0)')
-
-            TestRemoteValid("SetWorldDeltaMoisture", {
-                "World delta moisture:",
-                "1",
-            }, 'TheWorld:PushEvent("ms_deltamoisture", 1)', 1)
-        end)
-
-        describe("SetWorldDeltaWetness()", function()
-            TestRemoteInvalidArg("SetWorldDeltaWetness", "delta", "must be a number", "foo")
-
-            TestRemoteValid("SetWorldDeltaWetness", {
-                "World delta wetness:",
-                "0",
-            }, 'TheWorld:PushEvent("ms_deltawetness", 0)')
-
-            TestRemoteValid("SetWorldDeltaWetness", {
-                "World delta wetness:",
-                "1",
-            }, 'TheWorld:PushEvent("ms_deltawetness", 1)', 1)
         end)
     end)
 end)

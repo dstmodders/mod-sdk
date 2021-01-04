@@ -170,7 +170,7 @@ function Method.AddTogglers(togglers, is_return_self, class)
     return Method
 end
 
---- Adds a __tostring method.
+--- Adds a `__tostring` value.
 -- @tparam table value Value to return
 -- @tparam[opt] table class
 -- @treturn SDK.Method
