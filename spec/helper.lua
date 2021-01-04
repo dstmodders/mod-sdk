@@ -10,7 +10,6 @@ require "spec/class"
 require "spec/vector3"
 
 local preloads = {
-    ["yoursubdirectory/sdk/sdk/sdk"] = "sdk/sdk",
     ["yoursubdirectory/sdk/sdk/config"] = "sdk/config",
     ["yoursubdirectory/sdk/sdk/console"] = "sdk/console",
     ["yoursubdirectory/sdk/sdk/constant"] = "sdk/constant",
@@ -25,7 +24,9 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/persistentdata"] = "sdk/persistentdata",
     ["yoursubdirectory/sdk/sdk/player"] = "sdk/player",
     ["yoursubdirectory/sdk/sdk/remote"] = "sdk/remote",
+    ["yoursubdirectory/sdk/sdk/remote/player"] = "sdk/remote/player",
     ["yoursubdirectory/sdk/sdk/rpc"] = "sdk/rpc",
+    ["yoursubdirectory/sdk/sdk/sdk"] = "sdk/sdk",
     ["yoursubdirectory/sdk/sdk/test"] = "sdk/test",
     ["yoursubdirectory/sdk/sdk/thread"] = "sdk/thread",
     ["yoursubdirectory/sdk/sdk/utils"] = "sdk/utils",

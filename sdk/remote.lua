@@ -5,6 +5,7 @@
 --
 -- @module SDK.Remote
 -- @see SDK
+-- @see SDK.Remote.Player
 --
 -- @author Victor Popkov
 -- @copyright 2020
@@ -39,42 +40,10 @@ local function DebugErrorInvalidWorldType(explanation, fn_name)
     DebugError(fn_name, "Invalid world type", explanation and "(" .. explanation .. ")")
 end
 
-local function DebugErrorPlayerIsGhost(fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(fn_name, "Player shouldn't be a ghost")
-end
-
 local function DebugString(...)
     if SDK.Debug then
         SDK.Debug.String("[remote]", ...)
     end
-end
-
-local function IsValidPlayerAlive(player, fn_name)
-    if not Value.IsPlayer(player) then
-        DebugErrorInvalidArg("player", "must be a player", fn_name)
-        return false
-    end
-
-    if player:HasTag("playerghost") then
-        DebugErrorPlayerIsGhost(fn_name)
-        return false
-    end
-
-    return true
-end
-
-local function IsValidSetPlayerAttributePercent(percent, player, fn_name)
-    if not Value.IsPercent(percent) then
-        DebugErrorInvalidArg("percent", "must be a percent", fn_name)
-        return false
-    end
-
-    if not IsValidPlayerAlive(player, fn_name) then
-        return false
-    end
-
-    return true
 end
 
 --- General
@@ -127,194 +96,6 @@ function Remote.Send(cmd, data)
     TheNet:SendRemoteExecute(string.format(cmd, unpack(data or {})), x, z)
 end
 
---- Player
--- @section player
-
---- Sends a request to set a player health limit percent.
--- @tparam number percent Health limit percent
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Remote.SetPlayerHealthLimitPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerHealthLimitPercent") then
-        return false
-    end
-
-    DebugString(
-        "Player health limit:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.health then player.components.health:SetPenalty(%0.2f) end', -- luacheck: only
-        { player.userid, 1 - (percent / 100) }
-    )
-
-    return true
-end
-
---- Sends a request to set a player health percent.
--- @tparam number percent Health percent
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Remote.SetPlayerHealthPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerHealthPercent") then
-        return false
-    end
-
-    DebugString(
-        "Player health:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.health then player.components.health:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
-
-    return true
-end
-
---- Sends a request to set a player hunger percent.
--- @tparam number percent Hunger percent
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Remote.SetPlayerHungerPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerHungerPercent") then
-        return false
-    end
-
-    DebugString(
-        "Player hunger:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.hunger then player.components.hunger:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
-
-    return true
-end
-
---- Sends a request to set a player moisture percent.
--- @tparam number percent Moisture percent
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Remote.SetPlayerMoisturePercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerMoisturePercent") then
-        return false
-    end
-
-    DebugString(
-        "Player moisture:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.moisture then player.components.moisture:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
-
-    return true
-end
-
---- Sends a request to set a player sanity percent.
--- @tparam number percent Sanity percent
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Remote.SetPlayerSanityPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerSanityPercent") then
-        return false
-    end
-
-    DebugString(
-        "Player sanity:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.sanity then player.components.sanity:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
-
-    return true
-end
-
---- Sends a request to set a player temperature.
--- @tparam number temperature Temperature percent
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Remote.SetPlayerTemperature(temperature, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not Value.IsEntityTemperature(temperature) then
-        DebugErrorInvalidArg("value", "must be an entity temperature", "SetPlayerTemperature")
-        return false
-    end
-
-    if not IsValidPlayerAlive(player, "SetPlayerTemperature") then
-        return false
-    end
-
-    DebugString(
-        "Player temperature:",
-        Value.ToDegreeString(temperature),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.temperature then player.components.temperature:SetTemperature(%0.2f) end', -- luacheck: only
-        { player.userid, temperature }
-    )
-
-    return true
-end
-
---- Sends a request to set a player wereness percent.
--- @tparam number percent Wereness percent
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Remote.SetPlayerWerenessPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetPlayerWerenessPercent") then
-        return false
-    end
-
-    if not player:HasTag("werehuman") then
-        DebugError("SetPlayerWerenessPercent", "Player should be a Woodie")
-        return false
-    end
-
-    DebugString(
-        "Player wereness:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.wereness then player.components.wereness:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
-
-    return true
-end
-
 --- World
 -- @section world
 
@@ -345,52 +126,6 @@ function Remote.SendLightningStrike(pt)
     local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
     DebugString("Send lighting strike:", tostring(pt))
     Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
-    return true
-end
-
---- Sends a request to send a mini earthquake.
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @tparam[opt] number radius Default: 20
--- @tparam[opt] number amount Default: 20
--- @tparam[opt] number duration Default: 2.5
--- @treturn boolean
-function Remote.SendMiniEarthquake(player, radius, amount, duration)
-    player = player ~= nil and player or ThePlayer
-    radius = radius ~= nil and radius or 20
-    amount = amount ~= nil and amount or 20
-    duration = duration ~= nil and duration or 2.5
-
-    if not TheWorld:HasTag("cave") then
-        DebugErrorInvalidWorldType("must be in a cave", "SendMiniEarthquake")
-        return false
-    end
-
-    if not Value.IsPlayer(player) then
-        DebugErrorInvalidArg("player", "must be a player", "SendMiniEarthquake")
-        return false
-    end
-
-    if not Value.IsUnsigned(radius) or not Value.IsInteger(radius) then
-        DebugErrorInvalidArg("radius", "must be an unsigned integer", "SendMiniEarthquake")
-        return false
-    end
-
-    if not Value.IsUnsigned(amount) or not Value.IsInteger(amount) then
-        DebugErrorInvalidArg("amount", "must be an unsigned integer", "SendMiniEarthquake")
-        return false
-    end
-
-    if not Value.IsUnsigned(duration) or not Value.IsNumber(duration) then
-        DebugErrorInvalidArg("duration", "must be an unsigned number", "SendMiniEarthquake")
-        return false
-    end
-
-    DebugString("Send mini earthquake:", player:GetDisplayName())
-    Remote.Send(
-        'TheWorld:PushEvent("ms_miniquake", { target = LookupPlayerInstByUserID("%s"), rad = %d, num = %d, duration = %0.2f })', -- luacheck: only
-        { player.userid, radius, amount, duration }
-    )
-
     return true
 end
 
@@ -498,11 +233,20 @@ end
 
 --- Initializes.
 -- @tparam SDK sdk
+-- @tparam table submodules
 -- @treturn SDK.Remote
-function Remote._DoInit(sdk)
+function Remote._DoInit(sdk, submodules)
     SDK = sdk
     Value = SDK.Utils.Value
-    return SDK._DoInitModule(SDK, Remote, "Remote", "TheWorld")
+
+    submodules = submodules ~= nil and submodules or {
+        Player = "sdk/remote/player",
+    }
+
+    SDK._SetModuleName(SDK, Remote, "Remote")
+    SDK.LoadSubmodules(Remote, submodules)
+
+    return SDK._DoInitModule(SDK, Remote, "Remote", "ThePlayer")
 end
 
 return Remote
