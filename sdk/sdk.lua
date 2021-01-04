@@ -32,6 +32,7 @@ local SDK = {
     -- general
     env = nil,
     is_silent = false,
+    loaded = {},
     modname = nil,
     path = nil,
     path_full = nil,
@@ -364,9 +365,11 @@ function SDK.LoadModule(name, path)
     SDK.UnloadModule(name)
 
     if path then
-        module = require(path)
+        SDK.loaded[name] = path
+        module = require(SDK.loaded[name])
     elseif _MODULES[name] then
-        module = require(SDK.path .. _MODULES[name])
+        SDK.loaded[name] = SDK.path .. _MODULES[name]
+        module = require(SDK.loaded[name])
     end
 
     if type(module) ~= "table" then
@@ -438,14 +441,20 @@ end
 -- @tparam string name
 -- @treturn boolean
 function SDK.UnloadModule(name)
-    if not name or not rawget(SDK, name) or not _MODULES[name] then
+    if not name or not rawget(SDK, name) then
         return false
     end
 
     local module_name = tostring(SDK[name])
-    if package.loaded[SDK.path .. _MODULES[name]] then
-        package.loaded[SDK.path .. _MODULES[name]] = nil
+
+    if not SDK.loaded[name] then
+        SDK._Error("Module", module_name, "is not loaded")
+    end
+
+    if package.loaded[SDK.loaded[name]] then
+        package.loaded[SDK.loaded[name]] = nil
         SDK[name] = nil
+        SDK.loaded[name] = nil
         SDK._Info("Unloaded", module_name)
     end
 
