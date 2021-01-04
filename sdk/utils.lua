@@ -35,9 +35,11 @@ function Utils._DoInit(sdk)
     SDK = sdk
 
     SDK._SetModuleName(SDK, Utils, "Utils")
-    SDK.LoadSubmodule(Utils, "Chain", "sdk/utils/chain")
-    SDK.LoadSubmodule(Utils, "Table", "sdk/utils/table")
-    SDK.LoadSubmodule(Utils, "Value", "sdk/utils/value")
+    SDK.LoadSubmodules(Utils, {
+        Chain = "sdk/utils/chain",
+        Table = "sdk/utils/table",
+        Value = "sdk/utils/value",
+    })
 
     return SDK._DoInitModule(SDK, Utils, "Utils")
 end
