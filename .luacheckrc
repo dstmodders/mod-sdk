@@ -72,6 +72,7 @@ files["**/*.lua"] = {
         "MODS_ROOT",
         "newproxy",
         "PREFAB_SKINS_IDS",
+        "PREFABFILES",
         "ReturnValueFn",
         "ReturnValuesFn",
         "RPC",

@@ -13,6 +13,20 @@
 ----
 local Value = {}
 
+--- Helpers
+-- @section helpers
+
+local function TableHasValue(t, value)
+    if type(t) == "table" then
+        for _, v in pairs(t) do
+            if v == value then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 --- Checkers
 -- @section checkers
 
@@ -72,6 +86,16 @@ end
 -- @treturn boolean
 function Value.IsPoint(value)
     return type(value) == "table" and value.x and value.y and value.z and true or false
+end
+
+--- Checks if a value is a prefab.
+-- @tparam any value
+-- @treturn boolean
+function Value.IsPrefab(value)
+    return type(value) == "string"
+        and PREFABFILES
+        and TableHasValue(PREFABFILES, value)
+        and true or false
 end
 
 --- Checks if a value is a season.
