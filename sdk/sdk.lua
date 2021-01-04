@@ -289,7 +289,7 @@ end
 -- @tparam table env Environment
 -- @tparam string path Path
 -- @tparam[opt] table modules Modules to load
--- @treturn boolean
+-- @treturn SDK|boolean
 function SDK.Load(env, path, modules)
     if not env then
         SDK._Error("SDK.Load():", "required env not passed")
@@ -342,7 +342,7 @@ function SDK.Load(env, path, modules)
         end
 
         AddWorldPostInit()
-        return true
+        return SDK
     end
 
     SDK._Error("SDK.Load():", "path not resolved")

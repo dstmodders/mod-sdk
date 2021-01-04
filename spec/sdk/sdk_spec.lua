@@ -228,8 +228,8 @@ describe("#sdk SDK", function()
                         assert.spy(SDK._Error).was_not_called()
                     end)
 
-                    it("should return true", function()
-                        assert.is_true(SDK.Load(env, "yoursubdirectory/sdk"))
+                    it("should return self", function()
+                        assert.is_equal(SDK, SDK.Load(env, "yoursubdirectory/sdk"))
                     end)
                 end)
 
