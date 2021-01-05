@@ -210,6 +210,31 @@ function Player.SetHealthLimitPercent(percent, player)
     return true
 end
 
+--- Sends a request to set a health penalty percent.
+-- @tparam number percent Health penalty percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.SetHealthPenaltyPercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not IsValidSetPlayerAttributePercent(percent, player, "SetHealthPenaltyPercent") then
+        return false
+    end
+
+    DebugString(
+        "Player health penalty:",
+        Value.ToPercentString(percent),
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    SDK.Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") if player.components.health then player.components.health:SetPenalty(%0.2f) end', -- luacheck: only
+        { player.userid, percent / 100 }
+    )
+
+    return true
+end
+
 --- Sends a request to set a health percent.
 -- @tparam number percent Health percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)

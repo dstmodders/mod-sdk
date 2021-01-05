@@ -383,6 +383,12 @@ describe("#sdk SDK.Remote.Player", function()
         )
 
         TestSetAttributePercent(
+            "SetHealthPenaltyPercent",
+            { "Player health penalty:", "25.00%", "(Player)" },
+            'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPenalty(0.25) end' -- luacheck: only
+        )
+
+        TestSetAttributePercent(
             "SetHealthPercent",
             { "Player health:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
