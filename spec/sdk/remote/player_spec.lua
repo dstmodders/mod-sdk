@@ -13,7 +13,18 @@ describe("#sdk SDK.Remote.Player", function()
         match = require "luassert.match"
 
         -- globals
+        _G.AllRecipes = {
+            foo = {},
+            bar = {},
+            foobar = {},
+        }
+
+        _G.IsRecipeValid = spy.new(function(recipe)
+            return _G.AllRecipes[recipe] and true or false
+        end)
+
         _G.PREFABFILES = { "foo", "bar", "foobar" }
+
         _G.TUNING = {
             MIN_ENTITY_TEMP = -20,
             MAX_ENTITY_TEMP = 90,
@@ -22,6 +33,8 @@ describe("#sdk SDK.Remote.Player", function()
 
     teardown(function()
         -- globals
+        _G.AllRecipes = nil
+        _G.IsRecipeValid = nil
         _G.PREFABFILES = nil
         _G.TheNet = nil
         _G.ThePlayer = nil
@@ -500,6 +513,21 @@ describe("#sdk SDK.Remote.Player", function()
             end)
 
             TestRemotePlayerIsGhost("SetWerenessPercent", _G.ThePlayer, 25)
+        end)
+    end)
+
+    describe("recipe", function()
+        describe("LockRecipe()", function()
+            TestRemoteInvalidArg("LockRecipe", "recipe", "must be a valid recipe", "string")
+            TestRemoteInvalidArg("LockRecipe", "player", "must be a player", "foo", "foo")
+
+            TestRemoteValid(
+                "LockRecipe",
+                { "Lock recipe:", "foo", "(Player)" },
+                'player = LookupPlayerInstByUserID("KU_foobar") for k, v in pairs(player.components.builder.recipes) do if v == "foo" then table.remove(player.components.builder.recipes, k) end end player.replica.builder:RemoveRecipe("foo")', -- luacheck: only
+                "foo",
+                _G.ThePlayer
+            )
         end)
     end)
 end)

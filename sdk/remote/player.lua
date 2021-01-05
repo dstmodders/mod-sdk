@@ -51,9 +51,16 @@ local function DebugString(...)
     end
 end
 
-local function IsValidPlayerAlive(player, fn_name)
+local function IsValidPlayer(player, fn_name)
     if not Value.IsPlayer(player) then
         DebugErrorInvalidArg("player", "must be a player", fn_name)
+        return false
+    end
+    return true
+end
+
+local function IsValidPlayerAlive(player, fn_name)
+    if not IsValidPlayer(player, fn_name) then
         return false
     end
 
@@ -62,6 +69,14 @@ local function IsValidPlayerAlive(player, fn_name)
         return false
     end
 
+    return true
+end
+
+local function IsValidRecipe(recipe, fn_name)
+    if not Value.IsRecipeValid(recipe) then
+        DebugErrorInvalidArg("recipe", "must be a valid recipe", fn_name)
+        return false
+    end
     return true
 end
 
@@ -332,6 +347,34 @@ function Player.SetWerenessPercent(percent, player)
     SDK.Remote.Send(
         'player = LookupPlayerInstByUserID("%s") if player.components.wereness then player.components.wereness:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
         { player.userid, percent / 100 }
+    )
+
+    return true
+end
+
+--- Recipe
+-- @section recipe
+
+--- Sends a request to lock a recipe.
+-- @tparam string recipe Valid recipe
+-- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @treturn boolean
+function Player.LockRecipe(recipe, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not IsValidRecipe(recipe, "LockRecipe") or not IsValidPlayer(player, "LockRecipe") then
+        return false
+    end
+
+    DebugString(
+        "Lock recipe:",
+        recipe,
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    SDK.Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") for k, v in pairs(player.components.builder.recipes) do if v == "%s" then table.remove(player.components.builder.recipes, k) end end player.replica.builder:RemoveRecipe("%s")', -- luacheck: only
+        { player.userid, recipe, recipe }
     )
 
     return true
