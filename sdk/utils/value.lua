@@ -105,6 +105,13 @@ function Value.IsRecipe(value)
     return AllRecipes[value] and true or false
 end
 
+--- Checks if a value is a valid recipe.
+-- @tparam any value
+-- @treturn boolean
+function Value.IsRecipeValid(value)
+    return IsRecipeValid(value)
+end
+
 --- Checks if a value is a season.
 -- @tparam any value
 -- @treturn boolean

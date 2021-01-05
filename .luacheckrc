@@ -69,6 +69,7 @@ files["**/*.lua"] = {
         "GetModConfigData",
         "GROUND",
         "InGamePlay",
+        "IsRecipeValid",
         "KillThreadsWithID",
         "MODS_ROOT",
         "newproxy",

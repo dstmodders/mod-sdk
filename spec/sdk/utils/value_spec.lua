@@ -11,6 +11,10 @@ describe("#sdk SDK.Utils.Value", function()
             foobar = {},
         }
 
+        _G.IsRecipeValid = spy.new(function(recipe)
+            return _G.AllRecipes[recipe] and true or false
+        end)
+
         _G.PREFABFILES = { "foo", "bar", "foobar" }
 
         _G.TUNING = {
@@ -21,6 +25,7 @@ describe("#sdk SDK.Utils.Value", function()
 
     teardown(function()
         _G.AllRecipes = nil
+        _G.IsRecipeValid = nil
         _G.PREFABFILES = nil
         _G.TUNING = nil
     end)
@@ -93,6 +98,7 @@ describe("#sdk SDK.Utils.Value", function()
 
         TestChecker("IsPrefab", { "foo", "bar" }, { "string", 0, false, true, {} })
         TestChecker("IsRecipe", { "foo", "bar", "foobar" }, { "string", 0, false, true, {} })
+        TestChecker("IsRecipeValid", { "foo", "bar", "foobar" }, { "string", 0, false, true, {} })
 
         TestChecker("IsSeason", {
             "autumn",
