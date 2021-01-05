@@ -9,7 +9,15 @@ describe("#sdk SDK.Remote", function()
     local Remote
 
     setup(function()
+        -- match
         match = require "luassert.match"
+
+        -- globals
+        _G.PREFABFILES = { "foo", "bar", "foobar" }
+        _G.TUNING = {
+            MIN_ENTITY_TEMP = -20,
+            MAX_ENTITY_TEMP = 90,
+        }
     end)
 
     teardown(function()
@@ -49,11 +57,6 @@ describe("#sdk SDK.Remote", function()
         _G.TheWorld = mock({
             HasTag = ReturnValueFn(false),
         })
-
-        _G.TUNING = {
-            MIN_ENTITY_TEMP = -20,
-            MAX_ENTITY_TEMP = 90,
-        }
 
         -- initialization
         SDK = require "yoursubdirectory/sdk/sdk/sdk"
@@ -174,17 +177,11 @@ describe("#sdk SDK.Remote", function()
 
     describe("general", function()
         describe("GoNext()", function()
-            local entity = {
-                GUID = 1,
-                prefab = "foobar",
-                GetDisplayName = ReturnValueFn("Foo Bar"),
-            }
-
-            TestRemoteInvalidArg("GoNext", "entity", "must be an entity", "foo")
+            TestRemoteInvalidArg("GoNext", "prefab", "must be a prefab", "string")
             TestRemoteValid("GoNext", {
                 "Go next:",
-                "Foo Bar",
-            }, 'c_gonext("foobar")', entity)
+                "foobar",
+            }, 'c_gonext("foobar")', "foobar")
         end)
 
         describe("Send()", function()

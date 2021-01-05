@@ -5,11 +5,7 @@ describe("#sdk SDK.Utils.Value", function()
     local Value
 
     setup(function()
-        _G.PREFABFILES = {
-            "foo",
-            "bar"
-        }
-
+        _G.PREFABFILES = { "foo", "bar", "foobar" }
         _G.TUNING = {
             MIN_ENTITY_TEMP = -20,
             MAX_ENTITY_TEMP = 90,

@@ -46,16 +46,16 @@ end
 -- @section general
 
 --- Sends a request to go next to a certain prefab.
--- @tparam EntityScript entity
+-- @tparam string prefab
 -- @treturn boolean
-function Remote.GoNext(entity)
-    if not Value.IsEntity(entity) then
-        DebugErrorInvalidArg("entity", "must be an entity", "GoNext")
+function Remote.GoNext(prefab)
+    if not Value.IsPrefab(prefab) then
+        DebugErrorInvalidArg("prefab", "must be a prefab", "GoNext")
         return false
     end
 
-    DebugString("Go next:", entity:GetDisplayName())
-    Remote.Send('c_gonext("%s")', { entity.prefab })
+    DebugString("Go next:", prefab)
+    Remote.Send('c_gonext("%s")', { prefab })
     return true
 end
 
