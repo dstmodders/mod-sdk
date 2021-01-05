@@ -14,19 +14,12 @@ describe("#sdk SDK.Remote", function()
 
         -- globals
         _G.PREFABFILES = { "foo", "bar", "foobar" }
-        _G.TUNING = {
-            MIN_ENTITY_TEMP = -20,
-            MAX_ENTITY_TEMP = 90,
-        }
     end)
 
     teardown(function()
         -- globals
         _G.TheNet = nil
-        _G.ThePlayer = nil
         _G.TheSim = nil
-        _G.TheWorld = nil
-        _G.TUNING = nil
 
         -- sdk
         LoadSDK()
@@ -38,24 +31,11 @@ describe("#sdk SDK.Remote", function()
             SendRemoteExecute = Empty,
         })
 
-        _G.ThePlayer = mock({
-            GUID = 1,
-            userid = "KU_foobar",
-            GetDisplayName = ReturnValueFn("Player"),
-            HasTag = function(_, tag)
-                return tag == "player"
-            end,
-        })
-
         _G.TheSim = mock({
             GetPosition = Empty,
             ProjectScreenPos = function()
                 return 1, 0, 3
             end,
-        })
-
-        _G.TheWorld = mock({
-            HasTag = ReturnValueFn(false),
         })
 
         -- initialization

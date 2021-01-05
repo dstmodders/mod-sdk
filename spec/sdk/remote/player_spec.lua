@@ -9,7 +9,14 @@ describe("#sdk SDK.Remote.Player", function()
     local Player
 
     setup(function()
+        -- match
         match = require "luassert.match"
+
+        -- globals
+        _G.TUNING = {
+            MIN_ENTITY_TEMP = -20,
+            MAX_ENTITY_TEMP = 90,
+        }
     end)
 
     teardown(function()
@@ -49,11 +56,6 @@ describe("#sdk SDK.Remote.Player", function()
         _G.TheWorld = mock({
             HasTag = ReturnValueFn(false),
         })
-
-        _G.TUNING = {
-            MIN_ENTITY_TEMP = -20,
-            MAX_ENTITY_TEMP = 90,
-        }
 
         -- initialization
         SDK = require "yoursubdirectory/sdk/sdk/sdk"
