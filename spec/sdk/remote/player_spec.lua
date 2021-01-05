@@ -337,6 +337,14 @@ describe("#sdk SDK.Remote.Player", function()
                 )
             end)
         end)
+
+        describe("ToggleFreeCrafting()", function()
+            TestRemoteInvalidArg("ToggleFreeCrafting", "player", "must be a player", "foo")
+            TestRemoteValid("ToggleFreeCrafting", {
+                "Toggle free crafting:",
+                "Player",
+            }, 'player = LookupPlayerInstByUserID("KU_foobar") player.components.builder:GiveAllRecipes() player:PushEvent("techlevelchange")', _G.ThePlayer) -- luacheck: only
+        end)
     end)
 
     describe("attributes", function()
@@ -520,7 +528,6 @@ describe("#sdk SDK.Remote.Player", function()
         describe("LockRecipe()", function()
             TestRemoteInvalidArg("LockRecipe", "recipe", "must be a valid recipe", "string")
             TestRemoteInvalidArg("LockRecipe", "player", "must be a player", "foo", "foo")
-
             TestRemoteValid(
                 "LockRecipe",
                 { "Lock recipe:", "foo", "(Player)" },
@@ -533,7 +540,6 @@ describe("#sdk SDK.Remote.Player", function()
         describe("UnlockRecipe()", function()
             TestRemoteInvalidArg("UnlockRecipe", "recipe", "must be a valid recipe", "string")
             TestRemoteInvalidArg("UnlockRecipe", "player", "must be a player", "foo", "foo")
-
             TestRemoteValid(
                 "UnlockRecipe",
                 { "Unlock recipe:", "foo", "(Player)" },

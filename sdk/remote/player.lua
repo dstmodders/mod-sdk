@@ -164,6 +164,25 @@ function Player.SendMiniEarthquake(radius, amount, duration, player)
     return true
 end
 
+--- Sends a request to toggle a free crafting.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.ToggleFreeCrafting(player)
+    player = player ~= nil and player or ThePlayer
+
+    if not IsValidPlayer(player, "ToggleFreeCrafting") then
+        return false
+    end
+
+    DebugString("Toggle free crafting:", player:GetDisplayName())
+    SDK.Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") player.components.builder:GiveAllRecipes() player:PushEvent("techlevelchange")', -- luacheck: only
+        { player.userid }
+    )
+
+    return true
+end
+
 --- Attributes
 -- @section attributes
 
@@ -366,12 +385,7 @@ function Player.LockRecipe(recipe, player)
         return false
     end
 
-    DebugString(
-        "Lock recipe:",
-        recipe,
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
+    DebugString("Lock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
     SDK.Remote.Send(
         'player = LookupPlayerInstByUserID("%s") for k, v in pairs(player.components.builder.recipes) do if v == "%s" then table.remove(player.components.builder.recipes, k) end end player.replica.builder:RemoveRecipe("%s")', -- luacheck: only
         { player.userid, recipe, recipe }
@@ -391,12 +405,7 @@ function Player.UnlockRecipe(recipe, player)
         return false
     end
 
-    DebugString(
-        "Unlock recipe:",
-        recipe,
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
+    DebugString("Unlock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
     SDK.Remote.Send(
         'player = LookupPlayerInstByUserID("%s") player.components.builder:AddRecipe("%s") player:PushEvent("unlockrecipe", { recipe = "%s" })', -- luacheck: only
         { player.userid, recipe, recipe }
