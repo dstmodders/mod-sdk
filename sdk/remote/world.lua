@@ -89,6 +89,26 @@ function World.Rollback(days)
     return true
 end
 
+--- Sends a request to send a lightning strike.
+-- @tparam Vector3 pt Point
+-- @treturn boolean
+function World.SendLightningStrike(pt)
+    if not TheWorld:HasTag("forest") then
+        DebugErrorInvalidWorldType("must be in a forest", "SendLightningStrike")
+        return false
+    end
+
+    if not Value.IsPoint(pt) then
+        DebugErrorInvalidArg("pt", "must be a point", "SendLightningStrike")
+        return false
+    end
+
+    local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
+    DebugString("Send lighting strike:", tostring(pt))
+    SDK.Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
+    return true
+end
+
 --- Sends a request to set a delta moisture.
 -- @tparam[opt] number delta
 -- @treturn boolean
@@ -118,26 +138,6 @@ function World.SetDeltaWetness(delta)
 
     DebugString("World delta wetness:", tostring(delta))
     SDK.Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
-    return true
-end
-
---- Sends a request to send a lightning strike.
--- @tparam Vector3 pt Point
--- @treturn boolean
-function World.SendLightningStrike(pt)
-    if not TheWorld:HasTag("forest") then
-        DebugErrorInvalidWorldType("must be in a forest", "SendLightningStrike")
-        return false
-    end
-
-    if not Value.IsPoint(pt) then
-        DebugErrorInvalidArg("pt", "must be a point", "SendLightningStrike")
-        return false
-    end
-
-    local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
-    DebugString("Send lighting strike:", tostring(pt))
-    SDK.Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
     return true
 end
 
@@ -206,6 +206,20 @@ function World.SetSnowLevel(delta)
 
     DebugErrorInvalidArg("delta", "must be a unit interval", "SetSnowLevel")
     return false
+end
+
+--- Sends a request to set a time scale.
+-- @tparam string timescale
+-- @treturn boolean
+function World.SetTimeScale(timescale)
+    if not Value.IsUnsigned(timescale) or not Value.IsNumber(timescale) then
+        DebugErrorInvalidArg("timescale", "must be an unsigned number", "SetTimeScale")
+        return false
+    end
+
+    DebugString("Time scale:", Value.ToFloatString(timescale))
+    SDK.Remote.Send('TheSim:SetTimeScale(%0.2f)', { timescale })
+    return true
 end
 
 --- Lifecycle

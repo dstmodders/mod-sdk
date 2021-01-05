@@ -252,6 +252,41 @@ describe("#sdk SDK.World.World", function()
             }, "TheNet:SendWorldRollbackRequestToServer(3)", 3)
         end)
 
+        describe("SendLightningStrike()", function()
+            local pt
+
+            setup(function()
+                pt = Vector3(1, 0, 3)
+            end)
+
+            describe("when in a cave world", function()
+                before_each(function()
+                    _G.TheWorld.HasTag = spy.new(function(_, tag)
+                        return tag == "cave"
+                    end)
+                end)
+
+                TestRemoteInvalidWorldType("SendLightningStrike", "must be in a forest", pt)
+            end)
+
+            describe("when in a forest world", function()
+                before_each(function()
+                    _G.TheWorld.HasTag = spy.new(function(_, tag)
+                        return tag == "forest"
+                    end)
+                end)
+
+                TestRemoteInvalidArg("SendLightningStrike", "pt", "must be a point", "foo")
+
+                TestRemoteValid(
+                    "SendLightningStrike",
+                    { "Send lighting strike:", "(1.00, 0.00, 3.00)" },
+                    'TheWorld:PushEvent("ms_sendlightningstrike", Vector3(1.00, 0.00, 3.00))',
+                    pt
+                )
+            end)
+        end)
+
         describe("SetDeltaMoisture()", function()
             TestRemoteInvalidArg("SetDeltaMoisture", "delta", "must be a number", "foo")
 
@@ -320,41 +355,6 @@ describe("#sdk SDK.World.World", function()
             )
         end)
 
-        describe("SendLightningStrike()", function()
-            local pt
-
-            setup(function()
-                pt = Vector3(1, 0, 3)
-            end)
-
-            describe("when in a cave world", function()
-                before_each(function()
-                    _G.TheWorld.HasTag = spy.new(function(_, tag)
-                        return tag == "cave"
-                    end)
-                end)
-
-                TestRemoteInvalidWorldType("SendLightningStrike", "must be in a forest", pt)
-            end)
-
-            describe("when in a forest world", function()
-                before_each(function()
-                    _G.TheWorld.HasTag = spy.new(function(_, tag)
-                        return tag == "forest"
-                    end)
-                end)
-
-                TestRemoteInvalidArg("SendLightningStrike", "pt", "must be a point", "foo")
-
-                TestRemoteValid(
-                    "SendLightningStrike",
-                    { "Send lighting strike:", "(1.00, 0.00, 3.00)" },
-                    'TheWorld:PushEvent("ms_sendlightningstrike", Vector3(1.00, 0.00, 3.00))',
-                    pt
-                )
-            end)
-        end)
-
         describe("SetSnowLevel()", function()
             describe("when not in a forest world", function()
                 before_each(function()
@@ -381,6 +381,16 @@ describe("#sdk SDK.World.World", function()
                     "1",
                 }, 'TheWorld:PushEvent("ms_setsnowlevel", 1.00)', 1)
             end)
+        end)
+
+        describe("SetTimeScale()", function()
+            TestRemoteInvalidArg("SetTimeScale", "timescale", "must be an unsigned number", "foo")
+            TestRemoteValid(
+                "SetTimeScale",
+                { "Time scale:", "1.00" },
+                'TheSim:SetTimeScale(1.00)',
+                1
+            )
         end)
     end)
 end)
