@@ -222,6 +222,16 @@ describe("#sdk SDK.World.World", function()
             }, 'TheWorld:PushEvent("ms_forceprecipitation", false)', false)
         end)
 
+        describe("PushEvent()", function()
+            TestRemoteInvalidArg("PushEvent", "event", "must be a string")
+            TestRemoteInvalidArg("PushEvent", "event", "must be a string", true)
+
+            TestRemoteValid("PushEvent", {
+                "Push event:",
+                "ms_advanceseason",
+            }, 'TheWorld:PushEvent("ms_advanceseason")', "ms_advanceseason")
+        end)
+
         describe("Rollback()", function()
             TestRemoteInvalidArg("Rollback", "days", "must be an unsigned integer", -1)
             TestRemoteInvalidArg("Rollback", "days", "must be an unsigned integer", 0.5)

@@ -59,6 +59,20 @@ function World.ForcePrecipitation(bool)
     return true
 end
 
+--- Sends a request to push a certain event.
+-- @tparam string event
+-- @treturn boolean
+function World.PushEvent(event)
+    if not Value.IsString(event) then
+        DebugErrorInvalidArg("event", "must be a string", "PushEvent")
+        return false
+    end
+
+    DebugString("Push event:", event)
+    SDK.Remote.Send('TheWorld:PushEvent("%s")', { event })
+    return true
+end
+
 --- Sends a world rollback request to server.
 -- @tparam number days
 -- @treturn boolean
