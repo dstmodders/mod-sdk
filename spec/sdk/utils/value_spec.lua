@@ -5,7 +5,14 @@ describe("#sdk SDK.Utils.Value", function()
     local Value
 
     setup(function()
+        _G.AllRecipes = {
+            foo = {},
+            bar = {},
+            foobar = {},
+        }
+
         _G.PREFABFILES = { "foo", "bar", "foobar" }
+
         _G.TUNING = {
             MIN_ENTITY_TEMP = -20,
             MAX_ENTITY_TEMP = 90,
@@ -13,6 +20,7 @@ describe("#sdk SDK.Utils.Value", function()
     end)
 
     teardown(function()
+        _G.AllRecipes = nil
         _G.PREFABFILES = nil
         _G.TUNING = nil
     end)
@@ -84,6 +92,7 @@ describe("#sdk SDK.Utils.Value", function()
         })
 
         TestChecker("IsPrefab", { "foo", "bar" }, { "string", 0, false, true, {} })
+        TestChecker("IsRecipe", { "foo", "bar", "foobar" }, { "string", 0, false, true, {} })
 
         TestChecker("IsSeason", {
             "autumn",

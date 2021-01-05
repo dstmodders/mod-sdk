@@ -98,6 +98,13 @@ function Value.IsPrefab(value)
         and true or false
 end
 
+--- Checks if a value is a recipe.
+-- @tparam any value
+-- @treturn boolean
+function Value.IsRecipe(value)
+    return AllRecipes[value] and true or false
+end
+
 --- Checks if a value is a season.
 -- @tparam any value
 -- @treturn boolean

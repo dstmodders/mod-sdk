@@ -52,6 +52,7 @@ files["**/*.lua"] = {
     read_globals = {
         "ACTIONS",
         "AllPlayers",
+        "AllRecipes",
         "AssertChainNil",
         "AssertModuleGetter",
         "AssertModuleSetter",
