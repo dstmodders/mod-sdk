@@ -135,11 +135,6 @@ function Player.SendMiniEarthquake(radius, amount, duration, player)
         return false
     end
 
-    if not Value.IsPlayer(player) then
-        DebugErrorInvalidArg("player", "must be a player", "SendMiniEarthquake")
-        return false
-    end
-
     if not Value.IsUnsigned(radius) or not Value.IsInteger(radius) then
         DebugErrorInvalidArg("radius", "must be an unsigned integer", "SendMiniEarthquake")
         return false
@@ -152,6 +147,10 @@ function Player.SendMiniEarthquake(radius, amount, duration, player)
 
     if not Value.IsUnsigned(duration) or not Value.IsNumber(duration) then
         DebugErrorInvalidArg("duration", "must be an unsigned number", "SendMiniEarthquake")
+        return false
+    end
+
+    if not IsValidPlayer(player, "SendMiniEarthquake") then
         return false
     end
 

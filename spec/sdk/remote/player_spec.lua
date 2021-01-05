@@ -320,6 +320,16 @@ describe("#sdk SDK.Remote.Player", function()
                     _G.ThePlayer
                 )
 
+                TestRemoteInvalidArg(
+                    "SendMiniEarthquake",
+                    "player",
+                    "must be a player",
+                    20,
+                    20,
+                    2.5,
+                    "foo"
+                )
+
                 TestRemoteValid(
                     "SendMiniEarthquake",
                     { "Send mini earthquake:", "Player" },
