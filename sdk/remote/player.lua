@@ -89,6 +89,20 @@ function Player.GatherPlayers()
     return true
 end
 
+--- Sends a request to go next to a certain prefab.
+-- @tparam string prefab
+-- @treturn boolean
+function Player.GoNext(prefab)
+    if not Value.IsPrefab(prefab) then
+        DebugErrorInvalidArg("prefab", "must be a prefab", "GoNext")
+        return false
+    end
+
+    DebugString("Go next:", prefab)
+    SDK.Remote.Send('c_gonext("%s")', { prefab })
+    return true
+end
+
 --- Sends a request to send a mini earthquake.
 -- @tparam[opt] number radius Default: 20
 -- @tparam[opt] number amount Default: 20

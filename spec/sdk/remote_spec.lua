@@ -9,11 +9,7 @@ describe("#sdk SDK.Remote", function()
     local Remote
 
     setup(function()
-        -- match
         match = require "luassert.match"
-
-        -- globals
-        _G.PREFABFILES = { "foo", "bar", "foobar" }
     end)
 
     teardown(function()
@@ -56,32 +52,6 @@ describe("#sdk SDK.Remote", function()
         package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
     end)
 
-    local function AssertDebugError(fn, ...)
-        assert.spy(SDK.Debug.Error).was_not_called()
-        fn()
-        assert.spy(SDK.Debug.Error).was_called(1)
-        assert.spy(SDK.Debug.Error).was_called_with(...)
-    end
-
-    local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
-        AssertDebugError(
-            fn,
-            string.format("SDK.Remote.%s():", fn_name),
-            string.format(
-                "Invalid argument%s is passed",
-                arg_name and ' (' .. arg_name .. ")" or ""
-            ),
-            explanation and "(" .. explanation .. ")"
-        )
-    end
-
-    local function AssertDebugString(fn, ...)
-        assert.spy(SDK.Debug.String).was_not_called()
-        fn()
-        assert.spy(SDK.Debug.String).was_called(1)
-        assert.spy(SDK.Debug.String).was_called_with(...)
-    end
-
     local function AssertSendWasCalled(fn, ...)
         local args = { ..., 1, 3 }
         assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
@@ -93,77 +63,7 @@ describe("#sdk SDK.Remote", function()
         )
     end
 
-    local function AssertSendWasNotCalled(fn)
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-        fn()
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-    end
-
-    local function TestRemoteInvalidArg(name, arg_name, explanation, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when invalid arguments are passed"
-        elseif #args == 1 then
-            description = "when an invalid argument is passed"
-        end
-
-        describe(description, function()
-            it("should debug error string", function()
-                AssertDebugErrorInvalidArg(function()
-                    Remote[name](unpack(args))
-                end, name, arg_name, explanation)
-            end)
-
-            it("shouldn't call TheSim:SendRemoteExecute()", function()
-                AssertSendWasNotCalled(function()
-                    Remote[name](unpack(args))
-                end)
-            end)
-
-            it("should return false", function()
-                assert.is_false(Remote[name](unpack(args)))
-            end)
-        end)
-    end
-
-    local function TestRemoteValid(name, debug, send, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when valid arguments are passed"
-        elseif #args == 1 then
-            description = "when a valid argument is passed"
-        end
-
-        describe(description, function()
-            it("should debug string", function()
-                AssertDebugString(function()
-                    Remote[name](unpack(args))
-                end, "[remote]", unpack(debug))
-            end)
-
-            it("should call TheSim:SendRemoteExecute()", function()
-                AssertSendWasCalled(function()
-                    Remote[name](unpack(args))
-                end, send)
-            end)
-
-            it("should return true", function()
-                assert.is_true(Remote[name](unpack(args)))
-            end)
-        end)
-    end
-
     describe("general", function()
-        describe("GoNext()", function()
-            TestRemoteInvalidArg("GoNext", "prefab", "must be a prefab", "string")
-            TestRemoteValid("GoNext", {
-                "Go next:",
-                "foobar",
-            }, 'c_gonext("foobar")', "foobar")
-        end)
-
         describe("Send()", function()
             describe("when different data types are passed", function()
                 it("should call TheSim:SendRemoteExecute()", function()

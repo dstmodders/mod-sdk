@@ -13,6 +13,7 @@ describe("#sdk SDK.Remote.Player", function()
         match = require "luassert.match"
 
         -- globals
+        _G.PREFABFILES = { "foo", "bar", "foobar" }
         _G.TUNING = {
             MIN_ENTITY_TEMP = -20,
             MAX_ENTITY_TEMP = 90,
@@ -21,6 +22,7 @@ describe("#sdk SDK.Remote.Player", function()
 
     teardown(function()
         -- globals
+        _G.PREFABFILES = nil
         _G.TheNet = nil
         _G.ThePlayer = nil
         _G.TheSim = nil
@@ -247,6 +249,14 @@ describe("#sdk SDK.Remote.Player", function()
     describe("general", function()
         describe("GatherPlayers()", function()
             TestRemoteValid("GatherPlayers", { "Gather players" }, "c_gatherplayers()")
+        end)
+
+        describe("GoNext()", function()
+            TestRemoteInvalidArg("GoNext", "prefab", "must be a prefab", "string")
+            TestRemoteValid("GoNext", {
+                "Go next:",
+                "foobar",
+            }, 'c_gonext("foobar")', "foobar")
         end)
 
         describe("SendMiniEarthquake()", function()

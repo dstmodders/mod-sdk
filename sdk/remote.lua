@@ -16,48 +16,9 @@
 local Remote = {}
 
 local SDK
-local Value
-
---- Helpers
--- @section helpers
-
-local function DebugError(fn_name, ...)
-    if SDK.Debug then
-        SDK.Debug.Error(string.format("%s.%s():", tostring(Remote), fn_name), ...)
-    end
-end
-
-local function DebugErrorInvalidArg(arg_name, explanation, fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(
-        fn_name,
-        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
-        explanation and "(" .. explanation .. ")"
-    )
-end
-
-local function DebugString(...)
-    if SDK.Debug then
-        SDK.Debug.String("[remote]", ...)
-    end
-end
 
 --- General
 -- @section general
-
---- Sends a request to go next to a certain prefab.
--- @tparam string prefab
--- @treturn boolean
-function Remote.GoNext(prefab)
-    if not Value.IsPrefab(prefab) then
-        DebugErrorInvalidArg("prefab", "must be a prefab", "GoNext")
-        return false
-    end
-
-    DebugString("Go next:", prefab)
-    Remote.Send('c_gonext("%s")', { prefab })
-    return true
-end
 
 --- Sends a remote command to execute.
 -- @tparam string cmd Command to execute
@@ -77,7 +38,6 @@ end
 -- @treturn SDK.Remote
 function Remote._DoInit(sdk, submodules)
     SDK = sdk
-    Value = SDK.Utils.Value
 
     submodules = submodules ~= nil and submodules or {
         Player = "sdk/remote/player",
