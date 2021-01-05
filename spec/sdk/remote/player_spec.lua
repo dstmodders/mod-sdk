@@ -529,5 +529,18 @@ describe("#sdk SDK.Remote.Player", function()
                 _G.ThePlayer
             )
         end)
+
+        describe("UnlockRecipe()", function()
+            TestRemoteInvalidArg("UnlockRecipe", "recipe", "must be a valid recipe", "string")
+            TestRemoteInvalidArg("UnlockRecipe", "player", "must be a player", "foo", "foo")
+
+            TestRemoteValid(
+                "UnlockRecipe",
+                { "Unlock recipe:", "foo", "(Player)" },
+                'player = LookupPlayerInstByUserID("KU_foobar") player.components.builder:AddRecipe("foo") player:PushEvent("unlockrecipe", { recipe = "foo" })', -- luacheck: only
+                "foo",
+                _G.ThePlayer
+            )
+        end)
     end)
 end)

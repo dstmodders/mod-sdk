@@ -357,7 +357,7 @@ end
 
 --- Sends a request to lock a recipe.
 -- @tparam string recipe Valid recipe
--- @tparam[opt] EntityScript player Player instance (the owner by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.LockRecipe(recipe, player)
     player = player ~= nil and player or ThePlayer
@@ -374,6 +374,31 @@ function Player.LockRecipe(recipe, player)
 
     SDK.Remote.Send(
         'player = LookupPlayerInstByUserID("%s") for k, v in pairs(player.components.builder.recipes) do if v == "%s" then table.remove(player.components.builder.recipes, k) end end player.replica.builder:RemoveRecipe("%s")', -- luacheck: only
+        { player.userid, recipe, recipe }
+    )
+
+    return true
+end
+
+--- Sends a request to unlock a recipe.
+-- @tparam string recipe
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.UnlockRecipe(recipe, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not IsValidRecipe(recipe, "UnlockRecipe") or not IsValidPlayer(player, "UnlockRecipe") then
+        return false
+    end
+
+    DebugString(
+        "Unlock recipe:",
+        recipe,
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    SDK.Remote.Send(
+        'player = LookupPlayerInstByUserID("%s") player.components.builder:AddRecipe("%s") player:PushEvent("unlockrecipe", { recipe = "%s" })', -- luacheck: only
         { player.userid, recipe, recipe }
     )
 
