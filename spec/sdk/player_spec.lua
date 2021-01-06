@@ -97,6 +97,9 @@ describe("#sdk SDK.Player", function()
                 sanity = {
                     SetPercent = Empty,
                 },
+                temperature = {
+                    SetTemperature = Empty,
+                },
             },
             GUID = guid,
             HUD = {
@@ -159,7 +162,14 @@ describe("#sdk SDK.Player", function()
     end
 
     setup(function()
+        -- match
         match = require "luassert.match"
+
+        -- globals
+        _G.TUNING = {
+            MIN_ENTITY_TEMP = -20,
+            MAX_ENTITY_TEMP = 90,
+        }
     end)
 
     teardown(function()
@@ -169,6 +179,7 @@ describe("#sdk SDK.Player", function()
         _G.TheFrontEnd = nil
         _G.TheNet = nil
         _G.ThePlayer = nil
+        _G.TUNING = nil
 
         -- sdk
         LoadSDK()
@@ -1584,6 +1595,179 @@ describe("#sdk SDK.Player", function()
             "25.00%",
             "(PlayerInst)",
         })
+
+        describe("SetTemperature()", function()
+            describe("when invalid percent is passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        Player.SetTemperature("foo")
+                    end, "SetTemperature", "temperature", "must be an entity temperature")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player.SetTemperature("foo"))
+                end)
+            end)
+
+            describe("when invalid player is passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        Player.SetTemperature(25, "foo")
+                    end, "SetTemperature", "player", "must be a player")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player.SetTemperature(25, "foo"))
+                end)
+            end)
+
+            describe("when a player is a ghost", function()
+                it("should debug error string", function()
+                    AssertDebugError(
+                        function()
+                            Player.SetTemperature(25, player_dead)
+                        end,
+                        "SDK.Player.SetTemperature():",
+                        "Player shouldn't be a ghost"
+                    )
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player.SetTemperature(25, player_dead))
+                end)
+            end)
+
+            describe("when is master simulation", function()
+                before_each(function()
+                    _G.TheWorld = {
+                        ismastersim = true,
+                    }
+                end)
+
+                describe("and temperature component is available", function()
+                    before_each(function()
+                        _G.ThePlayer.components.temperature = mock({
+                            SetTemperature = Empty,
+                        })
+                    end)
+
+                    it("should debug string", function()
+                        AssertDebugString(function()
+                            Player.SetTemperature(25)
+                        end, "[player]", "Temperature:", "25.00°", "(PlayerInst)")
+                    end)
+
+                    it(
+                        "should call [player].components.temperature:SetTemperature()",
+                        function()
+                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
+                                .was_not_called()
+                            Player.SetTemperature(25)
+                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
+                                .was_called(1)
+                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
+                                .was_called_with(
+                                    match.is_ref(_G.ThePlayer.components.temperature),
+                                    25
+                                )
+                        end)
+
+                    it("should return true", function()
+                        assert.is_true(Player.SetTemperature(25))
+                    end)
+                end)
+
+                describe("and temperature component is not available", function()
+                    before_each(function()
+                        _G.ThePlayer.components.temperature = nil
+                    end)
+
+                    it("should debug error string", function()
+                        AssertDebugError(
+                            function()
+                                Player.SetTemperature(25)
+                            end,
+                            "SDK.Player.SetTemperature():",
+                            "Temperature component is not available"
+                        )
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.SetTemperature(25))
+                    end)
+                end)
+            end)
+
+            describe("when is non-master simulation", function()
+                before_each(function()
+                    _G.TheWorld = {
+                        ismastersim = false,
+                    }
+                end)
+
+                describe("and SDK.Remote.Player.SetTemperature() returns true", function()
+                    before_each(function()
+                        SDK.Remote.Player.SetTemperature = spy.new(ReturnValueFn(true))
+                    end)
+
+                    it(
+                        "shouldn't call [player].components.temperature:SetTemperature()",
+                        function()
+                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
+                                .was_not_called()
+                            Player.SetTemperature(25)
+                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
+                                .was_not_called()
+                        end
+                    )
+
+                    it("should call SDK.Remote.Player.SetTemperature()", function()
+                        assert.spy(SDK.Remote.Player.SetTemperature).was_not_called()
+                        Player.SetTemperature(25)
+                        assert.spy(SDK.Remote.Player.SetTemperature).was_called(1)
+                        assert.spy(SDK.Remote.Player.SetTemperature).was_called_with(
+                            25,
+                            _G.ThePlayer
+                        )
+                    end)
+
+                    it("should return true", function()
+                        assert.is_true(Player.SetTemperature(25))
+                    end)
+                end)
+
+                describe("and SDK.Remote.Player.SetTemperature() returns false", function()
+                    before_each(function()
+                        SDK.Remote.Player.SetTemperature = spy.new(ReturnValueFn(false))
+                    end)
+
+                    it(
+                        "shouldn't call [player].components.temperature:SetTemperature()",
+                        function()
+                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
+                                .was_not_called()
+                            Player.SetTemperature(25)
+                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
+                                .was_not_called()
+                        end
+                    )
+
+                    it("should call SDK.Remote.Player.SetTemperature()", function()
+                        assert.spy(SDK.Remote.Player.SetTemperature).was_not_called()
+                        Player.SetTemperature(25)
+                        assert.spy(SDK.Remote.Player.SetTemperature).was_called(1)
+                        assert.spy(SDK.Remote.Player.SetTemperature).was_called_with(
+                            25,
+                            _G.ThePlayer
+                        )
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.SetTemperature(25))
+                    end)
+                end)
+            end)
+        end)
     end)
 
     describe("light watcher", function()

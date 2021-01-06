@@ -503,6 +503,42 @@ function Player.SetSanityPercent(percent, player)
     return SetAttributeComponentPercent("SetSanityPercent", "sanity", percent, player)
 end
 
+--- Sets a temperature value.
+-- @see SDK.Remote.Player.SetTemperature
+-- @tparam number temperature Temperature
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.SetTemperature(temperature, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not Value.IsEntityTemperature(temperature) then
+        DebugErrorInvalidArg("temperature", "must be an entity temperature", "SetTemperature")
+        return false
+    end
+
+    if not IsValidPlayerAlive(player, "SetTemperature") then
+        return false
+    end
+
+    local component = SDK.Utils.Chain.Get(player, "components", "temperature")
+    if TheWorld.ismastersim and component then
+        DebugString(
+            "Temperature:",
+            Value.ToDegreeString(temperature),
+            "(" .. player:GetDisplayName() .. ")"
+        )
+        component:SetTemperature(temperature)
+        return true
+    end
+
+    if not TheWorld.ismastersim then
+        return SDK.Remote.Player.SetTemperature(temperature, player)
+    end
+
+    DebugError("SetTemperature", "Temperature component is not available")
+    return false
+end
+
 --- Light Watcher
 -- @section light-watcher
 

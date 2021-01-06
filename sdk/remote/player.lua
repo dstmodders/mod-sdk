@@ -288,6 +288,7 @@ function Player.SetSanityPercent(percent, player)
 end
 
 --- Sends a request to set a temperature.
+-- @see SDK.Player.SetTemperature
 -- @tparam number temperature Temperature percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
