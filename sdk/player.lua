@@ -33,6 +33,28 @@ local function DebugString(...)
     end
 end
 
+local function SetAttributeComponentPercent(fn_name, name, percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    local component = SDK.Utils.Chain.Get(player, "components", name)
+    if TheWorld.ismastersim and component then
+        DebugString(
+            string.format("Player %s:", name),
+            Value.ToPercentString(percent),
+            "(" .. player:GetDisplayName() .. ")"
+        )
+        component:SetPercent(math.min(percent / 100, 1))
+        return true
+    end
+
+    if not TheWorld.ismastersim then
+        return SDK.Remote.Player[fn_name](percent, player)
+    end
+
+    DebugError(fn_name, name:gsub("^%l", string.upper) .. " component is not available")
+    return false
+end
+
 --- General
 -- @section general
 
@@ -352,25 +374,7 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.SetHealthPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    local health = SDK.Utils.Chain.Get(player, "components", "health")
-    if TheWorld.ismastersim and health then
-        DebugString(
-            "Player health:",
-            Value.ToPercentString(percent),
-            "(" .. player:GetDisplayName() .. ")"
-        )
-        health:SetPercent(math.min(percent / 100, 1))
-        return true
-    end
-
-    if not TheWorld.ismastersim then
-        return SDK.Remote.Player.SetHealthPercent(percent, player)
-    end
-
-    DebugError("SetHealthPercent", "Health component is not available")
-    return false
+    return SetAttributeComponentPercent("SetHealthPercent", "health", percent, player)
 end
 
 --- Sets a hunger percent value.
@@ -379,25 +383,7 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.SetHungerPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    local hunger = SDK.Utils.Chain.Get(player, "components", "hunger")
-    if TheWorld.ismastersim and hunger then
-        DebugString(
-            "Player hunger:",
-            Value.ToPercentString(percent),
-            "(" .. player:GetDisplayName() .. ")"
-        )
-        hunger:SetPercent(math.min(percent / 100, 1))
-        return true
-    end
-
-    if not TheWorld.ismastersim then
-        return SDK.Remote.Player.SetHungerPercent(percent, player)
-    end
-
-    DebugError("SetHungerPercent", "Hunger component is not available")
-    return false
+    return SetAttributeComponentPercent("SetHungerPercent", "hunger", percent, player)
 end
 
 --- Sets a moisture percent value.
@@ -406,25 +392,7 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.SetMoisturePercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    local moisture = SDK.Utils.Chain.Get(player, "components", "moisture")
-    if TheWorld.ismastersim and moisture then
-        DebugString(
-            "Player moisture:",
-            Value.ToPercentString(percent),
-            "(" .. player:GetDisplayName() .. ")"
-        )
-        moisture:SetPercent(math.min(percent / 100, 1))
-        return true
-    end
-
-    if not TheWorld.ismastersim then
-        return SDK.Remote.Player.SetMoisturePercent(percent, player)
-    end
-
-    DebugError("SetMoisturePercent", "Moisture component is not available")
-    return false
+    return SetAttributeComponentPercent("SetMoisturePercent", "moisture", percent, player)
 end
 
 --- Sets a sanity percent value.
@@ -433,25 +401,7 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.SetSanityPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    local sanity = SDK.Utils.Chain.Get(player, "components", "sanity")
-    if TheWorld.ismastersim and sanity then
-        DebugString(
-            "Player sanity:",
-            Value.ToPercentString(percent),
-            "(" .. player:GetDisplayName() .. ")"
-        )
-        sanity:SetPercent(math.min(percent / 100, 1))
-        return true
-    end
-
-    if not TheWorld.ismastersim then
-        return SDK.Remote.Player.SetSanityPercent(percent, player)
-    end
-
-    DebugError("SetSanityPercent", "Sanity component is not available")
-    return false
+    return SetAttributeComponentPercent("SetSanityPercent", "sanity", percent, player)
 end
 
 --- Light Watcher

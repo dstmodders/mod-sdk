@@ -1271,8 +1271,8 @@ describe("#sdk SDK.Player", function()
             end)
         end
 
-        local function TestSetAttributePercent(name, component, debug, error)
-            describe(name .. "()", function()
+        local function TestSetAttributeComponentPercent(fn_name, name, debug, error)
+            describe(fn_name .. "()", function()
                 describe("when master simulation", function()
                     before_each(function()
                         _G.TheWorld = {
@@ -1280,50 +1280,50 @@ describe("#sdk SDK.Player", function()
                         }
                     end)
 
-                    describe("and " .. component .. " component is available", function()
+                    describe("and " .. name .. " component is available", function()
                         before_each(function()
-                            _G.ThePlayer.components[component] = mock({
+                            _G.ThePlayer.components[name] = mock({
                                 SetPercent = Empty,
                             })
                         end)
 
                         it("should debug string", function()
                             AssertDebugString(function()
-                                Player[name](25)
+                                Player[fn_name](25)
                             end, "[player]", unpack(debug))
                         end)
 
                         it(
-                            "should call [player].components." .. component .. ":SetPercent()",
+                            "should call [player].components." .. name .. ":SetPercent()",
                             function()
-                                assert.spy(_G.ThePlayer.components[component].SetPercent)
+                                assert.spy(_G.ThePlayer.components[name].SetPercent)
                                     .was_not_called()
-                                Player[name](25)
-                                assert.spy(_G.ThePlayer.components[component].SetPercent).was_called(1)
-                                assert.spy(_G.ThePlayer.components[component].SetPercent).was_called_with(
-                                    match.is_ref(_G.ThePlayer.components[component]),
+                                Player[fn_name](25)
+                                assert.spy(_G.ThePlayer.components[name].SetPercent).was_called(1)
+                                assert.spy(_G.ThePlayer.components[name].SetPercent).was_called_with(
+                                    match.is_ref(_G.ThePlayer.components[name]),
                                     0.25
                             )
                         end)
 
                         it("should return true", function()
-                            assert.is_true(Player[name](25))
+                            assert.is_true(Player[fn_name](25))
                         end)
                     end)
 
-                    describe("and " .. component .. " component is not available", function()
+                    describe("and " .. name .. " component is not available", function()
                         before_each(function()
-                            _G.ThePlayer.components[component] = nil
+                            _G.ThePlayer.components[name] = nil
                         end)
 
                         it("should debug error string", function()
                             AssertDebugError(function()
-                                Player[name](25)
-                            end, "SDK.Player." .. name .. "():", unpack(error))
+                                Player[fn_name](25)
+                            end, "SDK.Player." .. fn_name .. "():", unpack(error))
                         end)
 
                         it("should return false", function()
-                            assert.is_false(Player[name](25))
+                            assert.is_false(Player[fn_name](25))
                         end)
                     end)
                 end)
@@ -1335,65 +1335,65 @@ describe("#sdk SDK.Player", function()
                         }
                     end)
 
-                    describe("and SDK.Remote.Player." .. name .. "() returns true", function()
+                    describe("and SDK.Remote.Player." .. fn_name .. "() returns true", function()
                         before_each(function()
-                            SDK.Remote.Player[name] = spy.new(ReturnValueFn(true))
+                            SDK.Remote.Player[fn_name] = spy.new(ReturnValueFn(true))
                         end)
 
                         it(
-                            "shouldn't call [player].components." .. component .. ":SetPercent()",
+                            "shouldn't call [player].components." .. name .. ":SetPercent()",
                             function()
-                                assert.spy(_G.ThePlayer.components[component].SetPercent)
+                                assert.spy(_G.ThePlayer.components[name].SetPercent)
                                     .was_not_called()
-                                Player[name](25)
-                                assert.spy(_G.ThePlayer.components[component].SetPercent)
+                                Player[fn_name](25)
+                                assert.spy(_G.ThePlayer.components[name].SetPercent)
                                     .was_not_called()
                             end
                         )
 
-                        it("should call SDK.Remote.Player." .. name .. "()", function()
-                            assert.spy(SDK.Remote.Player[name]).was_not_called()
-                            Player[name](25)
-                            assert.spy(SDK.Remote.Player[name]).was_called(1)
-                            assert.spy(SDK.Remote.Player[name]).was_called_with(
+                        it("should call SDK.Remote.Player." .. fn_name .. "()", function()
+                            assert.spy(SDK.Remote.Player[fn_name]).was_not_called()
+                            Player[fn_name](25)
+                            assert.spy(SDK.Remote.Player[fn_name]).was_called(1)
+                            assert.spy(SDK.Remote.Player[fn_name]).was_called_with(
                                 25,
                                 _G.ThePlayer
                             )
                         end)
 
                         it("should return true", function()
-                            assert.is_true(Player[name](25))
+                            assert.is_true(Player[fn_name](25))
                         end)
                     end)
 
-                    describe("and SDK.Remote.Player." .. name .. "() returns false", function()
+                    describe("and SDK.Remote.Player." .. fn_name .. "() returns false", function()
                         before_each(function()
-                            SDK.Remote.Player[name] = spy.new(ReturnValueFn(false))
+                            SDK.Remote.Player[fn_name] = spy.new(ReturnValueFn(false))
                         end)
 
                         it(
-                            "shouldn't call [player].components." .. component .. ":SetPercent()",
+                            "shouldn't call [player].components." .. name .. ":SetPercent()",
                             function()
-                                assert.spy(_G.ThePlayer.components[component].SetPercent)
+                                assert.spy(_G.ThePlayer.components[name].SetPercent)
                                       .was_not_called()
-                                Player[name](25)
-                                assert.spy(_G.ThePlayer.components[component].SetPercent)
+                                Player[fn_name](25)
+                                assert.spy(_G.ThePlayer.components[name].SetPercent)
                                       .was_not_called()
                             end
                         )
 
-                        it("should call SDK.Remote.Player." .. name .. "()", function()
-                            assert.spy(SDK.Remote.Player[name]).was_not_called()
-                            Player[name](25)
-                            assert.spy(SDK.Remote.Player[name]).was_called(1)
-                            assert.spy(SDK.Remote.Player[name]).was_called_with(
+                        it("should call SDK.Remote.Player." .. fn_name .. "()", function()
+                            assert.spy(SDK.Remote.Player[fn_name]).was_not_called()
+                            Player[fn_name](25)
+                            assert.spy(SDK.Remote.Player[fn_name]).was_called(1)
+                            assert.spy(SDK.Remote.Player[fn_name]).was_called_with(
                                 25,
                                 _G.ThePlayer
                             )
                         end)
 
                         it("should return false", function()
-                            assert.is_false(Player[name](25))
+                            assert.is_false(Player[fn_name](25))
                         end)
                     end)
                 end)
@@ -1509,25 +1509,25 @@ describe("#sdk SDK.Player", function()
             end)
         end)
 
-        TestSetAttributePercent("SetHealthPercent", "health", {
+        TestSetAttributeComponentPercent("SetHealthPercent", "health", {
             "Player health:",
             "25.00%",
             "(PlayerInst)"
         }, { "Health component is not available" })
 
-        TestSetAttributePercent("SetHungerPercent", "hunger", {
+        TestSetAttributeComponentPercent("SetHungerPercent", "hunger", {
             "Player hunger:",
             "25.00%",
             "(PlayerInst)"
         }, { "Hunger component is not available" })
 
-        TestSetAttributePercent("SetMoisturePercent", "moisture", {
+        TestSetAttributeComponentPercent("SetMoisturePercent", "moisture", {
             "Player moisture:",
             "25.00%",
             "(PlayerInst)"
         }, { "Moisture component is not available" })
 
-        TestSetAttributePercent("SetSanityPercent", "sanity", {
+        TestSetAttributeComponentPercent("SetSanityPercent", "sanity", {
             "Player sanity:",
             "25.00%",
             "(PlayerInst)"

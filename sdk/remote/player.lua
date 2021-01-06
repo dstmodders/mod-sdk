@@ -93,7 +93,7 @@ local function IsValidSetAttributePercent(percent, player, fn_name)
     return true
 end
 
-local function SetAttributeComponentPercent(fn_name, component, percent, player)
+local function SetAttributeComponentPercent(fn_name, name, percent, player)
     player = player ~= nil and player or ThePlayer
 
     if not IsValidSetAttributePercent(percent, player, fn_name) then
@@ -101,14 +101,14 @@ local function SetAttributeComponentPercent(fn_name, component, percent, player)
     end
 
     DebugString(
-        string.format("Player %s:", component),
+        string.format("Player %s:", name),
         Value.ToPercentString(percent),
         "(" .. player:GetDisplayName() .. ")"
     )
 
     SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'if player.components.' .. component .. ' then '
-            .. 'player.components.' .. component .. ':SetPercent(math.min(%0.2f, 1)) '
+        .. 'if player.components.' .. name .. ' then '
+            .. 'player.components.' .. name .. ':SetPercent(math.min(%0.2f, 1)) '
         .. 'end',
         { player.userid, percent / 100 })
 
