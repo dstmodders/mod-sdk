@@ -27,14 +27,66 @@ local function DebugError(fn_name, ...)
     end
 end
 
+local function DebugErrorInvalidArg(arg_name, explanation, fn_name)
+    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
+    DebugError(
+        fn_name,
+        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
+        explanation and "(" .. explanation .. ")"
+    )
+end
+
+local function DebugErrorPlayerIsGhost(fn_name)
+    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
+    DebugError(fn_name, "Player shouldn't be a ghost")
+end
+
 local function DebugString(...)
     if SDK.Debug then
         SDK.Debug.String("[player]", ...)
     end
 end
 
+local function IsValidPlayer(player, fn_name)
+    if not Value.IsPlayer(player) then
+        DebugErrorInvalidArg("player", "must be a player", fn_name)
+        return false
+    end
+    return true
+end
+
+local function IsValidPlayerAlive(player, fn_name)
+    if not IsValidPlayer(player, fn_name) then
+        return false
+    end
+
+    if player:HasTag("playerghost") then
+        DebugErrorPlayerIsGhost(fn_name)
+        return false
+    end
+
+    return true
+end
+
+local function IsValidSetAttributePercent(percent, player, fn_name)
+    if not Value.IsPercent(percent) then
+        DebugErrorInvalidArg("percent", "must be a percent", fn_name)
+        return false
+    end
+
+    if not IsValidPlayerAlive(player, fn_name) then
+        return false
+    end
+
+    return true
+end
+
 local function SetAttributeComponentPercent(fn_name, name, percent, player)
     player = player ~= nil and player or ThePlayer
+
+    if not IsValidSetAttributePercent(percent, player, fn_name) then
+        return false
+    end
 
     local component = SDK.Utils.Chain.Get(player, "components", name)
     if TheWorld.ismastersim and component then

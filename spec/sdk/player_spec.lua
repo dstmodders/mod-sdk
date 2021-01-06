@@ -39,7 +39,7 @@ describe("#sdk SDK.Player", function()
         })
     end
 
-    local function MockPlayerInst(name, userid, states, tags, position)
+    local function MockPlayerInst(guid, name, userid, states, tags, position)
         userid = userid ~= nil and userid or "KU_admin"
         states = states ~= nil and states or { "idle" }
         tags = tags ~= nil and tags or {}
@@ -47,6 +47,8 @@ describe("#sdk SDK.Player", function()
 
         local animation
         local state_tags = {}
+
+        table.insert(tags, "player")
 
         if TableHasValue(states, "dead") then
             table.insert(tags, "playerghost")
@@ -95,6 +97,7 @@ describe("#sdk SDK.Player", function()
                     SetPercent = Empty,
                 },
             },
+            GUID = guid,
             HUD = {
                 HasInputFocus = ReturnValueFn(false),
                 IsChatInputScreenOpen = ReturnValueFn(false),
@@ -123,6 +126,7 @@ describe("#sdk SDK.Player", function()
                     return TableHasValue(state_tags, tag)
                 end,
             },
+            tags = tags,
             userid = userid,
             AnimState = {
                 IsCurrentAnimation = function(_, anim)
@@ -172,12 +176,20 @@ describe("#sdk SDK.Player", function()
     before_each(function()
         -- test data
         active_screen = {}
-        inst = MockPlayerInst("PlayerInst", nil, { "godmode", "idle" }, { "wereness" })
-        player_dead = MockPlayerInst("PlayerDead", "KU_one", { "dead", "idle" })
-        player_hopping = MockPlayerInst("PlayerHopping", "KU_two", { "hopping" })
-        player_running = MockPlayerInst("PlayerRunning", "KU_four", { "running" })
-        player_sinking = MockPlayerInst("PlayerSinking", "KU_five", { "sinking" })
-        player_over_water = MockPlayerInst("PlayerOverWater", "KU_three", nil, nil, { 100, 0, 100 })
+        inst = MockPlayerInst(1, "PlayerInst", nil, { "godmode", "idle" }, { "wereness" })
+        player_dead = MockPlayerInst(2, "PlayerDead", "KU_one", { "dead", "idle" })
+        player_hopping = MockPlayerInst(3, "PlayerHopping", "KU_two", { "hopping" })
+        player_running = MockPlayerInst(4, "PlayerRunning", "KU_four", { "running" })
+        player_sinking = MockPlayerInst(5, "PlayerSinking", "KU_five", { "sinking" })
+
+        player_over_water = MockPlayerInst(
+            6,
+            "PlayerOverWater",
+            "KU_three",
+            nil,
+            nil,
+            { 100, 0, 100 }
+        )
 
         players = {
             inst,
@@ -258,16 +270,24 @@ describe("#sdk SDK.Player", function()
         assert.spy(SDK.Debug.Error).was_called_with(...)
     end
 
+    local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
+        AssertDebugError(
+            fn,
+            string.format("SDK.Player.%s():", fn_name),
+            string.format(
+                "Invalid argument%s is passed",
+                arg_name and ' (' .. arg_name .. ")" or ""
+            ),
+            explanation and "(" .. explanation .. ")"
+        )
+    end
+
     local function AssertDebugString(fn, ...)
         assert.spy(SDK.Debug.String).was_not_called()
         fn()
         assert.spy(SDK.Debug.String).was_called(1)
         assert.spy(SDK.Debug.String).was_called_with(...)
     end
-
-    after_each(function()
-        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
-    end)
 
     describe("general", function()
         describe("CanPressKeyInGamePlay()", function()
@@ -1273,7 +1293,47 @@ describe("#sdk SDK.Player", function()
 
         local function TestSetAttributeComponentPercent(fn_name, name, debug, error)
             describe(fn_name .. "()", function()
-                describe("when master simulation", function()
+                describe("when invalid percent is passed", function()
+                    it("should debug error string", function()
+                        AssertDebugErrorInvalidArg(function()
+                            Player[fn_name]("foo")
+                        end, fn_name, "percent", "must be a percent")
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player[fn_name]("foo"))
+                    end)
+                end)
+
+                describe("when invalid player is passed", function()
+                    it("should debug error string", function()
+                        AssertDebugErrorInvalidArg(function()
+                            Player[fn_name](25, "foo")
+                        end, fn_name, "player", "must be a player")
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player[fn_name](25, "foo"))
+                    end)
+                end)
+
+                describe("when a player is a ghost", function()
+                    it("should debug error string", function()
+                        AssertDebugError(
+                            function()
+                                Player[fn_name](25, player_dead)
+                            end,
+                            string.format("SDK.Player.%s():", fn_name),
+                            "Player shouldn't be a ghost"
+                        )
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player[fn_name](25, player_dead))
+                    end)
+                end)
+
+                describe("when is master simulation", function()
                     before_each(function()
                         _G.TheWorld = {
                             ismastersim = true,
@@ -1297,14 +1357,14 @@ describe("#sdk SDK.Player", function()
                             "should call [player].components." .. name .. ":SetPercent()",
                             function()
                                 assert.spy(_G.ThePlayer.components[name].SetPercent)
-                                    .was_not_called()
+                                      .was_not_called()
                                 Player[fn_name](25)
                                 assert.spy(_G.ThePlayer.components[name].SetPercent).was_called(1)
                                 assert.spy(_G.ThePlayer.components[name].SetPercent).was_called_with(
                                     match.is_ref(_G.ThePlayer.components[name]),
                                     0.25
-                            )
-                        end)
+                                )
+                            end)
 
                         it("should return true", function()
                             assert.is_true(Player[fn_name](25))
@@ -1328,7 +1388,7 @@ describe("#sdk SDK.Player", function()
                     end)
                 end)
 
-                describe("when non-master simulation", function()
+                describe("when is non-master simulation", function()
                     before_each(function()
                         _G.TheWorld = {
                             ismastersim = false,
@@ -1344,10 +1404,10 @@ describe("#sdk SDK.Player", function()
                             "shouldn't call [player].components." .. name .. ":SetPercent()",
                             function()
                                 assert.spy(_G.ThePlayer.components[name].SetPercent)
-                                    .was_not_called()
+                                      .was_not_called()
                                 Player[fn_name](25)
                                 assert.spy(_G.ThePlayer.components[name].SetPercent)
-                                    .was_not_called()
+                                      .was_not_called()
                             end
                         )
 
