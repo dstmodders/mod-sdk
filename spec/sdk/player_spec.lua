@@ -78,6 +78,10 @@ describe("#sdk SDK.Player", function()
             table.insert(tags, "busy")
         end
 
+        if TableHasValue(states, "werehuman") then
+            table.insert(tags, "werehuman")
+        end
+
         return require("busted").mock({
             components = {
                 health = {
@@ -99,6 +103,9 @@ describe("#sdk SDK.Player", function()
                 },
                 temperature = {
                     SetTemperature = Empty,
+                },
+                wereness = {
+                    SetPercent = Empty,
                 },
             },
             GUID = guid,
@@ -188,7 +195,13 @@ describe("#sdk SDK.Player", function()
     before_each(function()
         -- test data
         active_screen = {}
-        inst = MockPlayerInst(1, "PlayerInst", nil, { "godmode", "idle" }, { "wereness" })
+
+        inst = MockPlayerInst(1, "PlayerInst", nil, {
+            "godmode",
+            "idle",
+            "werehuman",
+        }, { "wereness" })
+
         player_dead = MockPlayerInst(2, "PlayerDead", "KU_one", { "dead", "idle" })
         player_hopping = MockPlayerInst(3, "PlayerHopping", "KU_two", { "hopping" })
         player_running = MockPlayerInst(4, "PlayerRunning", "KU_four", { "running" })
@@ -1328,49 +1341,59 @@ describe("#sdk SDK.Player", function()
             end)
         end
 
-        local function TestSetAttributeComponentPercent(fn_name, name, debug, setter, is_reversed)
+        local function TestInvalidPercentIsPassed(fn_name)
+            describe("when invalid percent is passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        Player[fn_name]("foo")
+                    end, fn_name, "percent", "must be a percent")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player[fn_name]("foo"))
+                end)
+            end)
+        end
+
+        local function TestInvalidPlayerIsPassed(fn_name)
+            describe("when invalid player is passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        Player[fn_name](25, "foo")
+                    end, fn_name, "player", "must be a player")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player[fn_name](25, "foo"))
+                end)
+            end)
+        end
+
+        local function TestPlayerIsGhost(fn_name)
+            describe("when a player is a ghost", function()
+                it("should debug error string", function()
+                    AssertDebugError(
+                        function()
+                            Player[fn_name](25, player_dead)
+                        end,
+                        string.format("SDK.Player.%s():", fn_name),
+                        "Player shouldn't be a ghost"
+                    )
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player[fn_name](25, player_dead))
+                end)
+            end)
+        end
+
+        local function TestSetComponentPercent(fn_name, name, debug, setter, is_reversed)
             setter = setter ~= nil and setter or "SetPercent"
 
             describe(fn_name .. "()", function()
-                describe("when invalid percent is passed", function()
-                    it("should debug error string", function()
-                        AssertDebugErrorInvalidArg(function()
-                            Player[fn_name]("foo")
-                        end, fn_name, "percent", "must be a percent")
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player[fn_name]("foo"))
-                    end)
-                end)
-
-                describe("when invalid player is passed", function()
-                    it("should debug error string", function()
-                        AssertDebugErrorInvalidArg(function()
-                            Player[fn_name](25, "foo")
-                        end, fn_name, "player", "must be a player")
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player[fn_name](25, "foo"))
-                    end)
-                end)
-
-                describe("when a player is a ghost", function()
-                    it("should debug error string", function()
-                        AssertDebugError(
-                            function()
-                                Player[fn_name](25, player_dead)
-                            end,
-                            string.format("SDK.Player.%s():", fn_name),
-                            "Player shouldn't be a ghost"
-                        )
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player[fn_name](25, player_dead))
-                    end)
-                end)
+                TestInvalidPercentIsPassed(fn_name)
+                TestInvalidPlayerIsPassed(fn_name)
+                TestPlayerIsGhost(fn_name)
 
                 describe("when is master simulation", function()
                     before_each(function()
@@ -1560,37 +1583,37 @@ describe("#sdk SDK.Player", function()
             end)
         end)
 
-        TestSetAttributeComponentPercent("SetHealthLimitPercent", "health", {
+        TestSetComponentPercent("SetHealthLimitPercent", "health", {
             "Health limit:",
             "25.00%",
             "(PlayerInst)",
         }, "SetPenalty", true)
 
-        TestSetAttributeComponentPercent("SetHealthPenaltyPercent", "health", {
+        TestSetComponentPercent("SetHealthPenaltyPercent", "health", {
             "Health penalty:",
             "25.00%",
             "(PlayerInst)",
         }, "SetPenalty")
 
-        TestSetAttributeComponentPercent("SetHealthPercent", "health", {
+        TestSetComponentPercent("SetHealthPercent", "health", {
             "Health:",
             "25.00%",
             "(PlayerInst)",
         })
 
-        TestSetAttributeComponentPercent("SetHungerPercent", "hunger", {
+        TestSetComponentPercent("SetHungerPercent", "hunger", {
             "Hunger:",
             "25.00%",
             "(PlayerInst)",
         })
 
-        TestSetAttributeComponentPercent("SetMoisturePercent", "moisture", {
+        TestSetComponentPercent("SetMoisturePercent", "moisture", {
             "Moisture:",
             "25.00%",
             "(PlayerInst)",
         })
 
-        TestSetAttributeComponentPercent("SetSanityPercent", "sanity", {
+        TestSetComponentPercent("SetSanityPercent", "sanity", {
             "Sanity:",
             "25.00%",
             "(PlayerInst)",
@@ -1609,33 +1632,8 @@ describe("#sdk SDK.Player", function()
                 end)
             end)
 
-            describe("when invalid player is passed", function()
-                it("should debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        Player.SetTemperature(25, "foo")
-                    end, "SetTemperature", "player", "must be a player")
-                end)
-
-                it("should return false", function()
-                    assert.is_false(Player.SetTemperature(25, "foo"))
-                end)
-            end)
-
-            describe("when a player is a ghost", function()
-                it("should debug error string", function()
-                    AssertDebugError(
-                        function()
-                            Player.SetTemperature(25, player_dead)
-                        end,
-                        "SDK.Player.SetTemperature():",
-                        "Player shouldn't be a ghost"
-                    )
-                end)
-
-                it("should return false", function()
-                    assert.is_false(Player.SetTemperature(25, player_dead))
-                end)
-            end)
+            TestInvalidPlayerIsPassed("SetTemperature")
+            TestPlayerIsGhost("SetTemperature")
 
             describe("when is master simulation", function()
                 before_each(function()
@@ -1764,6 +1762,150 @@ describe("#sdk SDK.Player", function()
 
                     it("should return false", function()
                         assert.is_false(Player.SetTemperature(25))
+                    end)
+                end)
+            end)
+        end)
+
+        describe("SetWerenessPercent()", function()
+            TestInvalidPercentIsPassed("SetWerenessPercent")
+            TestInvalidPlayerIsPassed("SetWerenessPercent")
+            TestPlayerIsGhost("SetWerenessPercent")
+
+            describe("when a player is a ghost", function()
+                it("should debug error string", function()
+                    AssertDebugError(
+                        function()
+                            Player.SetWerenessPercent(25, player_dead)
+                        end,
+                        "SDK.Player.SetWerenessPercent():",
+                        "Player shouldn't be a ghost"
+                    )
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player.SetWerenessPercent(25, player_dead))
+                end)
+            end)
+
+            describe("when is master simulation", function()
+                before_each(function()
+                    _G.TheWorld = {
+                        ismastersim = true,
+                    }
+                end)
+
+                describe("and wereness component is available", function()
+                    before_each(function()
+                        _G.ThePlayer.components.wereness = mock({
+                            SetPercent = Empty,
+                        })
+                    end)
+
+                    it("should debug string", function()
+                        AssertDebugString(function()
+                            Player.SetWerenessPercent(25)
+                        end, "[player]", "Wereness:", "25.00%", "(PlayerInst)")
+                    end)
+
+                    it("should call [player].components.wereness:SetWerenessPercent()", function()
+                        assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
+                        Player.SetWerenessPercent(25)
+                        assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_called(1)
+                        assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_called_with(
+                            match.is_ref(_G.ThePlayer.components.wereness),
+                            0.25
+                        )
+                    end)
+
+                    it("should return true", function()
+                        assert.is_true(Player.SetWerenessPercent(25))
+                    end)
+                end)
+
+                describe("and wereness component is not available", function()
+                    before_each(function()
+                        _G.ThePlayer.components.wereness = nil
+                    end)
+
+                    it("should debug error string", function()
+                        AssertDebugError(
+                            function()
+                                Player.SetWerenessPercent(25)
+                            end,
+                            "SDK.Player.SetWerenessPercent():",
+                            "Wereness component is not available"
+                        )
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.SetWerenessPercent(25))
+                    end)
+                end)
+            end)
+
+            describe("when is non-master simulation", function()
+                before_each(function()
+                    _G.TheWorld = {
+                        ismastersim = false,
+                    }
+                end)
+
+                describe("and SDK.Remote.Player.SetWerenessPercent() returns true", function()
+                    before_each(function()
+                        SDK.Remote.Player.SetWerenessPercent = spy.new(ReturnValueFn(true))
+                    end)
+
+                    it(
+                        "shouldn't call [player].components.wereness:SetWerenessPercent()",
+                        function()
+                            assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
+                            Player.SetWerenessPercent(25)
+                            assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
+                        end
+                    )
+
+                    it("should call SDK.Remote.Player.SetWerenessPercent()", function()
+                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_not_called()
+                        Player.SetWerenessPercent(25)
+                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_called(1)
+                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_called_with(
+                            25,
+                            _G.ThePlayer
+                        )
+                    end)
+
+                    it("should return true", function()
+                        assert.is_true(Player.SetWerenessPercent(25))
+                    end)
+                end)
+
+                describe("and SDK.Remote.Player.SetWerenessPercent() returns false", function()
+                    before_each(function()
+                        SDK.Remote.Player.SetWerenessPercent = spy.new(ReturnValueFn(false))
+                    end)
+
+                    it(
+                        "shouldn't call [player].components.wereness:SetWerenessPercent()",
+                        function()
+                            assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
+                            Player.SetWerenessPercent(25)
+                            assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
+                        end
+                    )
+
+                    it("should call SDK.Remote.Player.SetWerenessPercent()", function()
+                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_not_called()
+                        Player.SetWerenessPercent(25)
+                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_called(1)
+                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_called_with(
+                            25,
+                            _G.ThePlayer
+                        )
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(Player.SetWerenessPercent(25))
                     end)
                 end)
             end)

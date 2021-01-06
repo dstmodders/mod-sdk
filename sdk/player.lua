@@ -98,10 +98,10 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
         _component:SetPercent(math.min(value / 100, 1))
     end
 
-    if (pre_validation_fn and not pre_validation_fn())
-        or (validation_fn and not validation_fn())
+    if (pre_validation_fn and not pre_validation_fn(percent, player))
+        or (validation_fn and not validation_fn(percent, player))
         or (not validation_fn and not IsValidSetAttributePercent(percent, player, fn_name))
-        or (post_validation_fn and not post_validation_fn())
+        or (post_validation_fn and not post_validation_fn(percent, player))
     then
         return false
     end
@@ -537,6 +537,24 @@ function Player.SetTemperature(temperature, player)
 
     DebugError("SetTemperature", "Temperature component is not available")
     return false
+end
+
+--- Sets a wereness percent value.
+-- @see SDK.Remote.Player.SetWerenessPercent
+-- @tparam number percent Wereness percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.SetWerenessPercent(percent, player)
+    return SetAttributeComponentPercent("SetWerenessPercent", {
+        component = "wereness",
+        post_validation_fn = function(_, _player)
+            if not _player:HasTag("werehuman") then
+                DebugError("SetWerenessPercent", "Player should be a Woodie")
+                return false
+            end
+            return true
+        end,
+    }, percent, player)
 end
 
 --- Light Watcher

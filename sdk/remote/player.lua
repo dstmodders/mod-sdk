@@ -320,6 +320,7 @@ function Player.SetTemperature(temperature, player)
 end
 
 --- Sends a request to set a wereness percent.
+-- @see SDK.Player.SetWerenessPercent
 -- @tparam number percent Wereness percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
