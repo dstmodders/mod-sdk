@@ -223,6 +223,7 @@ end
 -- @section attributes
 
 --- Sends a request to set a health limit percent.
+-- @see SDK.Player.SetHealthLimitPercent
 -- @tparam number percent Health limit percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean

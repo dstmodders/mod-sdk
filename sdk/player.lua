@@ -81,21 +81,36 @@ local function IsValidSetAttributePercent(percent, player, fn_name)
     return true
 end
 
-local function SetAttributeComponentPercent(fn_name, name, percent, player)
+local function SetAttributeComponentPercent(fn_name, options, percent, player)
     player = player ~= nil and player or ThePlayer
 
-    if not IsValidSetAttributePercent(percent, player, fn_name) then
+    local component = type(options) == "table" and options.component or options
+    local post_validation_fn = type(options) == "table" and options.post_validation_fn
+    local pre_validation_fn = type(options) == "table" and options.pre_validation_fn
+    local validation_fn = type(options) == "table" and options.validation_fn
+
+    local debug_args = type(options) == "table" and options.debug_args or {
+        component:gsub("^%l", string.upper) .. ":",
+        Value.ToPercentString(percent),
+    }
+
+    local setter_fn = type(options) == "table" and options.setter_fn or function(_component, value)
+        _component:SetPercent(math.min(value / 100, 1))
+    end
+
+    if (pre_validation_fn and not pre_validation_fn())
+        or (validation_fn and not validation_fn())
+        or (not validation_fn and not IsValidSetAttributePercent(percent, player, fn_name))
+        or (post_validation_fn and not post_validation_fn())
+    then
         return false
     end
 
-    local component = SDK.Utils.Chain.Get(player, "components", name)
-    if TheWorld.ismastersim and component then
-        DebugString(
-            string.format("Player %s:", name),
-            Value.ToPercentString(percent),
-            "(" .. player:GetDisplayName() .. ")"
-        )
-        component:SetPercent(math.min(percent / 100, 1))
+    local _component = SDK.Utils.Chain.Get(player, "components", component)
+    if TheWorld.ismastersim and _component then
+        table.insert(debug_args, "(" .. player:GetDisplayName() .. ")")
+        DebugString(unpack(debug_args))
+        setter_fn(_component, percent)
         return true
     end
 
@@ -103,7 +118,7 @@ local function SetAttributeComponentPercent(fn_name, name, percent, player)
         return SDK.Remote.Player[fn_name](percent, player)
     end
 
-    DebugError(fn_name, name:gsub("^%l", string.upper) .. " component is not available")
+    DebugError(fn_name, component:gsub("^%l", string.upper) .. " component is not available")
     return false
 end
 
@@ -420,6 +435,21 @@ end
 function Player.GetWerenessPercent(player)
     player = player ~= nil and player or ThePlayer
     return SDK.Utils.Chain.Get(player, "player_classified", "currentwereness", "value", true)
+end
+
+--- Sets a health limit percent value.
+-- @see SDK.Remote.Player.SetHealthLimitPercent
+-- @tparam number percent Health limit percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.SetHealthLimitPercent(percent, player)
+    return SetAttributeComponentPercent("SetHealthLimitPercent", {
+        component = "health",
+        debug_args = { "Health limit:", Value.ToPercentString(percent) },
+        setter_fn = function(component, value)
+            component:SetPenalty(1 - (value / 100))
+        end,
+    }, percent, player)
 end
 
 --- Sets a health percent value.
