@@ -378,37 +378,37 @@ describe("#sdk SDK.Remote.Player", function()
 
         TestSetAttributePercent(
             "SetHealthLimitPercent",
-            { "Player health limit:", "25.00%", "(Player)" },
+            { "Health limit:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPenalty(0.75) end' -- luacheck: only
         )
 
         TestSetAttributePercent(
             "SetHealthPenaltyPercent",
-            { "Player health penalty:", "25.00%", "(Player)" },
+            { "Health penalty:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPenalty(0.25) end' -- luacheck: only
         )
 
         TestSetAttributePercent(
             "SetHealthPercent",
-            { "Player health:", "25.00%", "(Player)" },
+            { "Health:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.health then player.components.health:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
         )
 
         TestSetAttributePercent(
             "SetHungerPercent",
-            { "Player hunger:", "25.00%", "(Player)" },
+            { "Hunger:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.hunger then player.components.hunger:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
         )
 
         TestSetAttributePercent(
             "SetMoisturePercent",
-            { "Player moisture:", "25.00%", "(Player)" },
+            { "Moisture:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.moisture then player.components.moisture:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
         )
 
         TestSetAttributePercent(
             "SetSanityPercent",
-            { "Player sanity:", "25.00%", "(Player)" },
+            { "Sanity:", "25.00%", "(Player)" },
             'player = LookupPlayerInstByUserID("KU_foobar") if player.components.sanity then player.components.sanity:SetPercent(math.min(0.25, 1)) end' -- luacheck: only
         )
 
@@ -437,7 +437,7 @@ describe("#sdk SDK.Remote.Player", function()
 
                 TestRemoteValid(
                     "SetTemperature",
-                    { "Player temperature:", "25.00°", "(Player)" },
+                    { "Temperature:", "25.00°", "(Player)" },
                     'player = LookupPlayerInstByUserID("KU_foobar") if player.components.temperature then player.components.temperature:SetTemperature(25.00) end', -- luacheck: only
                     25,
                     _G.ThePlayer
@@ -460,7 +460,7 @@ describe("#sdk SDK.Remote.Player", function()
                         it("should debug string", function()
                             AssertDebugString(function()
                                 Player.SetWerenessPercent(25, _G.ThePlayer)
-                            end, "[remote]", "[player]", "Player wereness:", "25.00%", "(Player)")
+                            end, "[remote]", "[player]", "Wereness:", "25.00%", "(Player)")
                         end)
 
                         it("should call TheSim:SendRemoteExecute()", function()

@@ -97,7 +97,7 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
     player = player ~= nil and player or ThePlayer
 
     local component = type(options) == "table" and options.component or options
-    local debug = type(options) == "table" and options.debug or component
+    local debug = type(options) == "table" and options.debug or component:gsub("^%l", string.upper)
     local post_validation_fn = type(options) == "table" and options.post_validation_fn
     local pre_validation_fn = type(options) == "table" and options.pre_validation_fn
     local setter = type(options) == "table" and options.setter or "SetPercent(math.min(%0.2f, 1))"
@@ -111,11 +111,7 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
         return false
     end
 
-    DebugString(
-        string.format("Player %s:", debug),
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
+    DebugString(debug .. ":", Value.ToPercentString(percent), "(" .. player:GetDisplayName() .. ")")
 
     SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
         .. 'if player.components.' .. component .. ' then '
@@ -233,7 +229,7 @@ end
 function Player.SetHealthLimitPercent(percent, player)
     return SetAttributeComponentPercent("SetHealthLimitPercent", {
         component = "health",
-        debug = "health limit",
+        debug = "Health limit",
         setter = "SetPenalty(%0.2f)",
         value_fn = function(value)
             return 1 - (value / 100)
@@ -248,7 +244,7 @@ end
 function Player.SetHealthPenaltyPercent(percent, player)
     return SetAttributeComponentPercent("SetHealthPenaltyPercent", {
         component = "health",
-        debug = "health penalty",
+        debug = "Health penalty",
         setter = "SetPenalty(%0.2f)",
     }, percent, player)
 end
@@ -306,7 +302,7 @@ function Player.SetTemperature(temperature, player)
     end
 
     DebugString(
-        "Player temperature:",
+        "Temperature:",
         Value.ToDegreeString(temperature),
         "(" .. player:GetDisplayName() .. ")"
     )
