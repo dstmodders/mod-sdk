@@ -265,9 +265,11 @@ function Player.IsOnPlatform(player)
     if SDK.Utils.Chain.Validate(TheWorld, "Map", "GetPlatformAtPoint")
         and SDK.Utils.Chain.Validate(player, "GetPosition")
     then
-        return TheWorld.Map:GetPlatformAtPoint(SDK.Utils.Chain.Get(player:GetPosition(), "Get", true))
-            and true
-            or false
+        return TheWorld.Map:GetPlatformAtPoint(SDK.Utils.Chain.Get(
+            player:GetPosition(),
+            "Get",
+            true
+        )) and true or false
     end
 end
 
@@ -498,7 +500,9 @@ end
 -- @treturn boolean
 function Player.SetMovementPrediction(is_enabled, player)
     if TheWorld.ismastersim then
-        SDK.Debug.Error("SDK.Player.SetMovementPrediction: Can't be toggled on the master simulation")
+        SDK.Debug.Error(
+            "SDK.Player.SetMovementPrediction: Can't be toggled on the master simulation"
+        )
         return false
     end
 

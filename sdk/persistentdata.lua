@@ -229,7 +229,13 @@ function PersistentData.Get(key, dest, field)
 
         local value = server.data[key]
         if value then
-            SDK.Debug.String("[persistent_data]", "[get]", "[" .. PersistentData.server_id .. "]", key)
+            SDK.Debug.String(
+                "[persistent_data]",
+                "[get]",
+                "[" .. PersistentData.server_id .. "]",
+                key
+            )
+
             if dest then
                 field = field ~= nil and field or key
                 dest[field] = value
@@ -333,7 +339,14 @@ end
 -- @treturn string
 -- @todo Investigate uniqueness of `GetMasterSessionId()` and possible collisions
 function PersistentData.GetServerID()
-    return SDK.Utils.Chain.Get(TheWorld, "net", "components", "shardstate", "GetMasterSessionId", true)
+    return SDK.Utils.Chain.Get(
+        TheWorld,
+        "net",
+        "components",
+        "shardstate",
+        "GetMasterSessionId",
+        true
+    )
 end
 
 --- Gets a server last seen time.

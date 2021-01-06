@@ -142,7 +142,10 @@ function Inventory.GetEquippedBackpackContainer(player)
             or SDK.Utils.Chain.Get(backpack, "replica", "container", "classified")
 
         if not container then
-            SDK.Debug.Error("SDK.Inventory.GetEquippedBackpackContainer():", "container not available")
+            SDK.Debug.Error(
+                "SDK.Inventory.GetEquippedBackpackContainer():",
+                "container not available"
+            )
         end
     end
 end

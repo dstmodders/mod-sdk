@@ -1360,10 +1360,11 @@ describe("#sdk SDK.Player", function()
                                       .was_not_called()
                                 Player[fn_name](25)
                                 assert.spy(_G.ThePlayer.components[name].SetPercent).was_called(1)
-                                assert.spy(_G.ThePlayer.components[name].SetPercent).was_called_with(
-                                    match.is_ref(_G.ThePlayer.components[name]),
-                                    0.25
-                                )
+                                assert.spy(_G.ThePlayer.components[name].SetPercent)
+                                    .was_called_with(
+                                        match.is_ref(_G.ThePlayer.components[name]),
+                                        0.25
+                                    )
                             end)
 
                         it("should return true", function()
