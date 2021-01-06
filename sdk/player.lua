@@ -400,6 +400,33 @@ function Player.SetHungerPercent(percent, player)
     return false
 end
 
+--- Sets a moisture percent value.
+-- @see SDK.Remote.Player.SetMoisturePercent
+-- @tparam number percent Moisture percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.SetMoisturePercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    local moisture = SDK.Utils.Chain.Get(player, "components", "moisture")
+    if TheWorld.ismastersim and moisture then
+        DebugString(
+            "Player moisture:",
+            Value.ToPercentString(percent),
+            "(" .. player:GetDisplayName() .. ")"
+        )
+        moisture:SetPercent(math.min(percent / 100, 1))
+        return true
+    end
+
+    if not TheWorld.ismastersim then
+        return SDK.Remote.Player.SetMoisturePercent(percent, player)
+    end
+
+    DebugError("SetMoisturePercent", "Moisture component is not available")
+    return false
+end
+
 --- Light Watcher
 -- @section light-watcher
 

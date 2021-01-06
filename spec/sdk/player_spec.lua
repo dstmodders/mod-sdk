@@ -88,6 +88,9 @@ describe("#sdk SDK.Player", function()
                 locomotor = {
                     Stop = Empty,
                 },
+                moisture = {
+                    SetPercent = Empty,
+                },
             },
             HUD = {
                 HasInputFocus = ReturnValueFn(false),
@@ -1514,6 +1517,12 @@ describe("#sdk SDK.Player", function()
             "25.00%",
             "(PlayerInst)"
         }, { "Hunger component is not available" })
+
+        TestSetAttributePercent("SetMoisturePercent", "moisture", {
+            "Player moisture:",
+            "25.00%",
+            "(PlayerInst)"
+        }, { "Moisture component is not available" })
     end)
 
     describe("light watcher", function()

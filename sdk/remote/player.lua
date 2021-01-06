@@ -288,6 +288,7 @@ function Player.SetHungerPercent(percent, player)
 end
 
 --- Sends a request to set a moisture percent.
+-- @see SDK.Player.SetMoisturePercent
 -- @tparam number percent Moisture percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
