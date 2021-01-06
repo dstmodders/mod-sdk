@@ -80,7 +80,7 @@ local function IsValidRecipe(recipe, fn_name)
     return true
 end
 
-local function IsValidSetPlayerAttributePercent(percent, player, fn_name)
+local function IsValidSetAttributePercent(percent, player, fn_name)
     if not Value.IsPercent(percent) then
         DebugErrorInvalidArg("percent", "must be a percent", fn_name)
         return false
@@ -89,6 +89,28 @@ local function IsValidSetPlayerAttributePercent(percent, player, fn_name)
     if not IsValidPlayerAlive(player, fn_name) then
         return false
     end
+
+    return true
+end
+
+local function SetAttributeComponentPercent(fn_name, component, percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    if not IsValidSetAttributePercent(percent, player, fn_name) then
+        return false
+    end
+
+    DebugString(
+        string.format("Player %s:", component),
+        Value.ToPercentString(percent),
+        "(" .. player:GetDisplayName() .. ")"
+    )
+
+    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. 'if player.components.' .. component .. ' then '
+            .. 'player.components.' .. component .. ':SetPercent(math.min(%0.2f, 1)) '
+        .. 'end',
+        { player.userid, percent / 100 })
 
     return true
 end
@@ -155,10 +177,13 @@ function Player.SendMiniEarthquake(radius, amount, duration, player)
     end
 
     DebugString("Send mini earthquake:", player:GetDisplayName())
-    SDK.Remote.Send(
-        'TheWorld:PushEvent("ms_miniquake", { target = LookupPlayerInstByUserID("%s"), rad = %d, num = %d, duration = %0.2f })', -- luacheck: only
-        { player.userid, radius, amount, duration }
-    )
+    SDK.Remote.Send('TheWorld:PushEvent("ms_miniquake", { '
+            .. 'target = LookupPlayerInstByUserID("%s"), '
+            .. 'rad = %d, '
+            .. 'num = %d, '
+            .. 'duration = %0.2f '
+        .. '})', -- luacheck: only
+        { player.userid, radius, amount, duration })
 
     return true
 end
@@ -174,10 +199,10 @@ function Player.ToggleFreeCrafting(player)
     end
 
     DebugString("Toggle free crafting:", player:GetDisplayName())
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") player.components.builder:GiveAllRecipes() player:PushEvent("techlevelchange")', -- luacheck: only
-        { player.userid }
-    )
+    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. 'player.components.builder:GiveAllRecipes() '
+        .. 'player:PushEvent("techlevelchange")',
+        { player.userid })
 
     return true
 end
@@ -192,7 +217,7 @@ end
 function Player.SetHealthLimitPercent(percent, player)
     player = player ~= nil and player or ThePlayer
 
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetHealthLimitPercent") then
+    if not IsValidSetAttributePercent(percent, player, "SetHealthLimitPercent") then
         return false
     end
 
@@ -202,10 +227,11 @@ function Player.SetHealthLimitPercent(percent, player)
         "(" .. player:GetDisplayName() .. ")"
     )
 
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.health then player.components.health:SetPenalty(%0.2f) end', -- luacheck: only
-        { player.userid, 1 - (percent / 100) }
-    )
+    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. 'if player.components.health then '
+            .. 'player.components.health:SetPenalty(%0.2f) '
+        .. 'end',
+        { player.userid, 1 - (percent / 100) })
 
     return true
 end
@@ -217,7 +243,7 @@ end
 function Player.SetHealthPenaltyPercent(percent, player)
     player = player ~= nil and player or ThePlayer
 
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetHealthPenaltyPercent") then
+    if not IsValidSetAttributePercent(percent, player, "SetHealthPenaltyPercent") then
         return false
     end
 
@@ -227,10 +253,11 @@ function Player.SetHealthPenaltyPercent(percent, player)
         "(" .. player:GetDisplayName() .. ")"
     )
 
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.health then player.components.health:SetPenalty(%0.2f) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
+    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. 'if player.components.health then '
+            .. 'player.components.health:SetPenalty(%0.2f) '
+        .. 'end',
+        { player.userid, percent / 100 })
 
     return true
 end
@@ -241,24 +268,7 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetHealthPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetHealthPercent") then
-        return false
-    end
-
-    DebugString(
-        "Player health:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.health then player.components.health:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
-
-    return true
+    return SetAttributeComponentPercent("SetHealthPercent", "health", percent, player)
 end
 
 --- Sends a request to set a hunger percent.
@@ -267,24 +277,7 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetHungerPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetHungerPercent") then
-        return false
-    end
-
-    DebugString(
-        "Player hunger:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.hunger then player.components.hunger:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
-
-    return true
+    return SetAttributeComponentPercent("SetHungerPercent", "hunger", percent, player)
 end
 
 --- Sends a request to set a moisture percent.
@@ -293,24 +286,7 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetMoisturePercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetMoisturePercent") then
-        return false
-    end
-
-    DebugString(
-        "Player moisture:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.moisture then player.components.moisture:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
-
-    return true
+    return SetAttributeComponentPercent("SetMoisturePercent", "moisture", percent, player)
 end
 
 --- Sends a request to set a sanity percent.
@@ -319,24 +295,7 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetSanityPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetSanityPercent") then
-        return false
-    end
-
-    DebugString(
-        "Player sanity:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.sanity then player.components.sanity:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
-
-    return true
+    return SetAttributeComponentPercent("SetSanityPercent", "sanity", percent, player)
 end
 
 --- Sends a request to set a temperature.
@@ -361,10 +320,11 @@ function Player.SetTemperature(temperature, player)
         "(" .. player:GetDisplayName() .. ")"
     )
 
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.temperature then player.components.temperature:SetTemperature(%0.2f) end', -- luacheck: only
-        { player.userid, temperature }
-    )
+    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. 'if player.components.temperature then '
+            .. 'player.components.temperature:SetTemperature(%0.2f) '
+        .. 'end',
+        { player.userid, temperature })
 
     return true
 end
@@ -376,7 +336,7 @@ end
 function Player.SetWerenessPercent(percent, player)
     player = player ~= nil and player or ThePlayer
 
-    if not IsValidSetPlayerAttributePercent(percent, player, "SetWerenessPercent") then
+    if not IsValidSetAttributePercent(percent, player, "SetWerenessPercent") then
         return false
     end
 
@@ -391,10 +351,11 @@ function Player.SetWerenessPercent(percent, player)
         "(" .. player:GetDisplayName() .. ")"
     )
 
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") if player.components.wereness then player.components.wereness:SetPercent(math.min(%0.2f, 1)) end', -- luacheck: only
-        { player.userid, percent / 100 }
-    )
+    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. 'if player.components.wereness then '
+            .. 'player.components.wereness:SetPercent(math.min(%0.2f, 1)) '
+        .. 'end',
+        { player.userid, percent / 100 })
 
     return true
 end
@@ -414,10 +375,14 @@ function Player.LockRecipe(recipe, player)
     end
 
     DebugString("Lock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") for k, v in pairs(player.components.builder.recipes) do if v == "%s" then table.remove(player.components.builder.recipes, k) end end player.replica.builder:RemoveRecipe("%s")', -- luacheck: only
-        { player.userid, recipe, recipe }
-    )
+    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. 'for k, v in pairs(player.components.builder.recipes) do '
+            .. 'if v == "%s" then '
+                .. 'table.remove(player.components.builder.recipes, k) '
+            .. 'end '
+        .. 'end '
+        .. 'player.replica.builder:RemoveRecipe("%s")',
+        { player.userid, recipe, recipe })
 
     return true
 end
@@ -434,10 +399,10 @@ function Player.UnlockRecipe(recipe, player)
     end
 
     DebugString("Unlock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
-    SDK.Remote.Send(
-        'player = LookupPlayerInstByUserID("%s") player.components.builder:AddRecipe("%s") player:PushEvent("unlockrecipe", { recipe = "%s" })', -- luacheck: only
-        { player.userid, recipe, recipe }
-    )
+    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. 'player.components.builder:AddRecipe("%s") '
+        .. 'player:PushEvent("unlockrecipe", { recipe = "%s" })',
+        { player.userid, recipe, recipe })
 
     return true
 end
