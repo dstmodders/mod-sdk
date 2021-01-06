@@ -427,6 +427,33 @@ function Player.SetMoisturePercent(percent, player)
     return false
 end
 
+--- Sets a sanity percent value.
+-- @see SDK.Remote.Player.SetSanityPercent
+-- @tparam number percent Sanity percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.SetSanityPercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    local sanity = SDK.Utils.Chain.Get(player, "components", "sanity")
+    if TheWorld.ismastersim and sanity then
+        DebugString(
+            "Player sanity:",
+            Value.ToPercentString(percent),
+            "(" .. player:GetDisplayName() .. ")"
+        )
+        sanity:SetPercent(math.min(percent / 100, 1))
+        return true
+    end
+
+    if not TheWorld.ismastersim then
+        return SDK.Remote.Player.SetSanityPercent(percent, player)
+    end
+
+    DebugError("SetSanityPercent", "Sanity component is not available")
+    return false
+end
+
 --- Light Watcher
 -- @section light-watcher
 

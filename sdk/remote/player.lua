@@ -314,6 +314,7 @@ function Player.SetMoisturePercent(percent, player)
 end
 
 --- Sends a request to set a sanity percent.
+-- @see SDK.Player.SetSanityPercent
 -- @tparam number percent Sanity percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean

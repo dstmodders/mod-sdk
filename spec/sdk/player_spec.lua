@@ -91,6 +91,9 @@ describe("#sdk SDK.Player", function()
                 moisture = {
                     SetPercent = Empty,
                 },
+                sanity = {
+                    SetPercent = Empty,
+                },
             },
             HUD = {
                 HasInputFocus = ReturnValueFn(false),
@@ -1523,6 +1526,12 @@ describe("#sdk SDK.Player", function()
             "25.00%",
             "(PlayerInst)"
         }, { "Moisture component is not available" })
+
+        TestSetAttributePercent("SetSanityPercent", "sanity", {
+            "Player sanity:",
+            "25.00%",
+            "(PlayerInst)"
+        }, { "Sanity component is not available" })
     end)
 
     describe("light watcher", function()
