@@ -16,6 +16,22 @@
 local Player = {}
 
 local SDK
+local Value
+
+--- Helpers
+-- @section helpers
+
+local function DebugError(fn_name, ...)
+    if SDK.Debug then
+        SDK.Debug.Error(string.format("%s.%s():", tostring(Player), fn_name), ...)
+    end
+end
+
+local function DebugString(...)
+    if SDK.Debug then
+        SDK.Debug.String("[player]", ...)
+    end
+end
 
 --- General
 -- @section general
@@ -258,7 +274,7 @@ end
 --- Attributes
 -- @section attributes
 
---- Gets a health limit value.
+--- Gets a health limit percent value.
 --
 -- Maximum health when the penalty has been applied.
 --
@@ -270,7 +286,7 @@ function Player.GetHealthLimitPercent(player)
     return penalty and (1 - penalty) * 100
 end
 
---- Gets a health penalty value.
+--- Gets a health penalty percent value.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetHealthPenaltyPercent(player)
@@ -279,7 +295,7 @@ function Player.GetHealthPenaltyPercent(player)
     return penalty and penalty * 100
 end
 
---- Gets a health value.
+--- Gets a health percent value.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetHealthPercent(player)
@@ -288,7 +304,7 @@ function Player.GetHealthPercent(player)
     return health and health * 100
 end
 
---- Gets a hunger value.
+--- Gets a hunger percent value.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetHungerPercent(player)
@@ -297,7 +313,7 @@ function Player.GetHungerPercent(player)
     return hunger and hunger * 100
 end
 
---- Gets a moisture value.
+--- Gets a moisture percent value.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetMoisturePercent(player)
@@ -305,7 +321,7 @@ function Player.GetMoisturePercent(player)
     return SDK.Utils.Chain.Get(player, "GetMoisture", true)
 end
 
---- Gets a sanity value.
+--- Gets a sanity percent value.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetSanityPercent(player)
@@ -322,12 +338,39 @@ function Player.GetTemperature(player)
     return SDK.Utils.Chain.Get(player, "GetTemperature", true)
 end
 
---- Gets a wereness value.
+--- Gets a wereness percent value.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn number
 function Player.GetWerenessPercent(player)
     player = player ~= nil and player or ThePlayer
     return SDK.Utils.Chain.Get(player, "player_classified", "currentwereness", "value", true)
+end
+
+--- Sets a health percent value.
+-- @see SDK.Remote.Player.SetHealthPercent
+-- @tparam number percent Health percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.SetHealthPercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    local health = SDK.Utils.Chain.Get(player, "components", "health")
+    if TheWorld.ismastersim and health then
+        DebugString(
+            "Player health:",
+            Value.ToPercentString(percent),
+            "(" .. player:GetDisplayName() .. ")"
+        )
+        health:SetPercent(math.min(percent / 100, 1))
+        return true
+    end
+
+    if not TheWorld.ismastersim then
+        return SDK.Remote.Player.SetHealthPercent(percent, player)
+    end
+
+    DebugError("SetHealthPercent", "Health component is not available")
+    return false
 end
 
 --- Light Watcher
@@ -411,6 +454,7 @@ end
 -- @treturn SDK.Player
 function Player._DoInit(sdk)
     SDK = sdk
+    Value = SDK.Utils.Value
     return SDK._DoInitModule(SDK, Player, "Player", "ThePlayer")
 end
 

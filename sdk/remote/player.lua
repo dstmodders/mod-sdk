@@ -236,6 +236,7 @@ function Player.SetHealthPenaltyPercent(percent, player)
 end
 
 --- Sends a request to set a health percent.
+-- @see SDK.Player.SetHealthPercent
 -- @tparam number percent Health percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -343,7 +344,7 @@ function Player.SetTemperature(temperature, player)
     player = player ~= nil and player or ThePlayer
 
     if not Value.IsEntityTemperature(temperature) then
-        DebugErrorInvalidArg("value", "must be an entity temperature", "SetTemperature")
+        DebugErrorInvalidArg("temperature", "must be an entity temperature", "SetTemperature")
         return false
     end
 

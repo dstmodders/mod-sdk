@@ -422,7 +422,7 @@ describe("#sdk SDK.Remote.Player", function()
 
                 TestRemoteInvalidArg(
                     "SetTemperature",
-                    "value",
+                    "temperature",
                     "must be an entity temperature",
                     "foo"
                 )
