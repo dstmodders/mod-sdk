@@ -1555,6 +1555,12 @@ describe("#sdk SDK.Player", function()
             "(PlayerInst)",
         }, "SetPenalty", true)
 
+        TestSetAttributeComponentPercent("SetHealthPenaltyPercent", "health", {
+            "Health penalty:",
+            "25.00%",
+            "(PlayerInst)",
+        }, "SetPenalty")
+
         TestSetAttributeComponentPercent("SetHealthPercent", "health", {
             "Health:",
             "25.00%",

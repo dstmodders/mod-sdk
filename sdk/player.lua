@@ -452,6 +452,21 @@ function Player.SetHealthLimitPercent(percent, player)
     }, percent, player)
 end
 
+--- Sets a health penalty percent value.
+-- @see SDK.Remote.Player.SetHealthPenaltyPercent
+-- @tparam number percent Health penalty percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.SetHealthPenaltyPercent(percent, player)
+    return SetAttributeComponentPercent("SetHealthPenaltyPercent", {
+        component = "health",
+        debug_args = { "Health penalty:", Value.ToPercentString(percent) },
+        setter_fn = function(component, value)
+            component:SetPenalty(value / 100)
+        end,
+    }, percent, player)
+end
+
 --- Sets a health percent value.
 -- @see SDK.Remote.Player.SetHealthPercent
 -- @tparam number percent Health percent

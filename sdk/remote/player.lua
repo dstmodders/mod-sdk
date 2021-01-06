@@ -239,6 +239,7 @@ function Player.SetHealthLimitPercent(percent, player)
 end
 
 --- Sends a request to set a health penalty percent.
+-- @see SDK.Player.SetHealthPenaltyPercent
 -- @tparam number percent Health penalty percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
