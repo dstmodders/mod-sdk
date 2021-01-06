@@ -82,6 +82,9 @@ describe("#sdk SDK.Player", function()
                     invincible = TableHasValue(states, "godmode"),
                     SetPercent = Empty,
                 },
+                hunger = {
+                    SetPercent = Empty,
+                },
                 locomotor = {
                     Stop = Empty,
                 },
@@ -1505,6 +1508,12 @@ describe("#sdk SDK.Player", function()
             "25.00%",
             "(PlayerInst)"
         }, { "Health component is not available" })
+
+        TestSetAttributePercent("SetHungerPercent", "hunger", {
+            "Player hunger:",
+            "25.00%",
+            "(PlayerInst)"
+        }, { "Hunger component is not available" })
     end)
 
     describe("light watcher", function()

@@ -373,6 +373,33 @@ function Player.SetHealthPercent(percent, player)
     return false
 end
 
+--- Sets a hunger percent value.
+-- @see SDK.Remote.Player.SetHungerPercent
+-- @tparam number percent Hunger percent
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn number
+function Player.SetHungerPercent(percent, player)
+    player = player ~= nil and player or ThePlayer
+
+    local hunger = SDK.Utils.Chain.Get(player, "components", "hunger")
+    if TheWorld.ismastersim and hunger then
+        DebugString(
+            "Player hunger:",
+            Value.ToPercentString(percent),
+            "(" .. player:GetDisplayName() .. ")"
+        )
+        hunger:SetPercent(math.min(percent / 100, 1))
+        return true
+    end
+
+    if not TheWorld.ismastersim then
+        return SDK.Remote.Player.SetHungerPercent(percent, player)
+    end
+
+    DebugError("SetHungerPercent", "Hunger component is not available")
+    return false
+end
+
 --- Light Watcher
 -- @section light-watcher
 

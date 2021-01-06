@@ -262,6 +262,7 @@ function Player.SetHealthPercent(percent, player)
 end
 
 --- Sends a request to set a hunger percent.
+-- @see SDK.Player.SetHungerPercent
 -- @tparam number percent Hunger percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
