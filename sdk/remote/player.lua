@@ -93,24 +93,40 @@ local function IsValidSetAttributePercent(percent, player, fn_name)
     return true
 end
 
-local function SetAttributeComponentPercent(fn_name, name, percent, player)
+local function SetAttributeComponentPercent(fn_name, options, percent, player)
     player = player ~= nil and player or ThePlayer
 
-    if not IsValidSetAttributePercent(percent, player, fn_name) then
+    local component = type(options) == "table" and options.component or options
+    local debug = type(options) == "table" and options.debug or component
+    local post_validation_fn = type(options) == "table" and options.post_validation_fn
+    local pre_validation_fn = type(options) == "table" and options.pre_validation_fn
+    local setter = type(options) == "table" and options.setter or "SetPercent(math.min(%0.2f, 1))"
+    local validation_fn = type(options) == "table" and options.validation_fn
+
+    if (pre_validation_fn and not pre_validation_fn())
+        or (validation_fn and not validation_fn())
+        or (not validation_fn and not IsValidSetAttributePercent(percent, player, fn_name))
+        or (post_validation_fn and not post_validation_fn())
+    then
         return false
     end
 
     DebugString(
-        string.format("Player %s:", name),
+        string.format("Player %s:", debug),
         Value.ToPercentString(percent),
         "(" .. player:GetDisplayName() .. ")"
     )
 
     SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'if player.components.' .. name .. ' then '
-            .. 'player.components.' .. name .. ':SetPercent(math.min(%0.2f, 1)) '
+        .. 'if player.components.' .. component .. ' then '
+            .. 'player.components.' .. component .. ':' .. setter .. ' '
         .. 'end',
-        { player.userid, percent / 100 })
+        {
+            player.userid,
+            (type(options) == "table" and options.value_fn)
+                and options.value_fn(percent)
+                or percent / 100,
+        })
 
     return true
 end
@@ -215,25 +231,14 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetHealthLimitPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetAttributePercent(percent, player, "SetHealthLimitPercent") then
-        return false
-    end
-
-    DebugString(
-        "Player health limit:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'if player.components.health then '
-            .. 'player.components.health:SetPenalty(%0.2f) '
-        .. 'end',
-        { player.userid, 1 - (percent / 100) })
-
-    return true
+    return SetAttributeComponentPercent("SetHealthLimitPercent", {
+        component = "health",
+        debug = "health limit",
+        setter = "SetPenalty(%0.2f)",
+        value_fn = function(value)
+            return 1 - (value / 100)
+        end,
+    }, percent, player)
 end
 
 --- Sends a request to set a health penalty percent.
@@ -241,25 +246,11 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetHealthPenaltyPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetAttributePercent(percent, player, "SetHealthPenaltyPercent") then
-        return false
-    end
-
-    DebugString(
-        "Player health penalty:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'if player.components.health then '
-            .. 'player.components.health:SetPenalty(%0.2f) '
-        .. 'end',
-        { player.userid, percent / 100 })
-
-    return true
+    return SetAttributeComponentPercent("SetHealthPenaltyPercent", {
+        component = "health",
+        debug = "health penalty",
+        setter = "SetPenalty(%0.2f)",
+    }, percent, player)
 end
 
 --- Sends a request to set a health percent.
@@ -334,30 +325,16 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetWerenessPercent(percent, player)
-    player = player ~= nil and player or ThePlayer
-
-    if not IsValidSetAttributePercent(percent, player, "SetWerenessPercent") then
-        return false
-    end
-
-    if not player:HasTag("werehuman") then
-        DebugError("SetWerenessPercent", "Player should be a Woodie")
-        return false
-    end
-
-    DebugString(
-        "Player wereness:",
-        Value.ToPercentString(percent),
-        "(" .. player:GetDisplayName() .. ")"
-    )
-
-    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'if player.components.wereness then '
-            .. 'player.components.wereness:SetPercent(math.min(%0.2f, 1)) '
-        .. 'end',
-        { player.userid, percent / 100 })
-
-    return true
+    return SetAttributeComponentPercent("SetWerenessPercent", {
+        component = "wereness",
+        post_validation_fn = function()
+            if not player:HasTag("werehuman") then
+                DebugError("SetWerenessPercent", "Player should be a Woodie")
+                return false
+            end
+            return true
+        end,
+    }, percent, player)
 end
 
 --- Recipe
