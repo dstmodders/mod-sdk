@@ -42,6 +42,21 @@ describe("#sdk SDK", function()
                 assert.is_false(SDK.Module.Has("FooBar"))
             end)
 
+            describe("and referencing an existent function", function()
+                it("should debug error string", function()
+                    assert.spy(SDK.Debug.Error).was_not_called()
+                    SDK.Module.Foo()
+                    assert.spy(SDK.Debug.Error).was_called(1)
+                    assert.spy(SDK.Debug.Error).was_called_with("Function SDK.Module.Foo() "
+                        .. "shouldn't be called when ThePlayer global is not available")
+                end)
+
+                it("should return a function itself", function()
+                    assert.is_function(SDK.Module.Foo)
+                    assert.is_equal("bar", SDK.Module.Foo())
+                end)
+            end)
+
             describe("and referencing a non-existent function", function()
                 it("should debug error string", function()
                     assert.spy(SDK.Debug.Error).was_not_called()

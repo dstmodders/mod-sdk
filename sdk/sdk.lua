@@ -141,29 +141,25 @@ end
 --- Internal
 -- @section internal
 
-function SDK._DebugErrorNoCallWithoutGlobal(module, fn_name, global)
-    SDK.Debug.Error(string.format(
-        "SDK.%s.%s() shouldn't be called when %s global is not available",
-        module,
-        fn_name,
-        global
-    ))
+function SDK._DebugErrorNoCallWithoutGlobal(module, field, name, global)
+    if SDK.Debug then
+        SDK.Debug.Error(string.format(
+            type(field) == "function"
+                and "Function %s.%s() shouldn't be called when %s global is not available"
+                or "Field %s.%s shouldn't be called when %s global is not available",
+            tostring(module),
+            name,
+            global
+        ))
+    end
 end
 
 function SDK._DebugErrorNoDirectUse(module, field, name)
-    if not SDK.Debug then
-        return
-    end
-
-    if type(field) == "function" then
+    if SDK.Debug then
         SDK.Debug.Error(string.format(
-            "Function %s.%s() shouldn't be used directly",
-            tostring(module),
-            name
-        ))
-    else
-        SDK.Debug.Error(string.format(
-            "Field %s.%s shouldn't be used directly",
+            type(field) == "function"
+                and "Function %s.%s() shouldn't be used directly"
+                or "Field %s.%s shouldn't be used directly",
             tostring(module),
             name
         ))
@@ -181,6 +177,8 @@ function SDK._DebugErrorNoFunction(module, name)
 end
 
 function SDK._DoInitModule(parent, module, name, global)
+    SDK._SetModuleName(parent, module, name)
+
     local mt = setmetatable({
         module = module,
         Has = function(field)
@@ -188,19 +186,21 @@ function SDK._DoInitModule(parent, module, name, global)
         end,
     }, {
         __index = function(_, k)
-            if global and not _G[global] then
-                SDK._DebugErrorNoCallWithoutGlobal(name, k, global)
-            else
-                local field = rawget(module, k)
-                if type(field) == "function" and not string.match(k, "^_") then -- function
-                    return field
-                elseif type(field) == "table" and field.module then -- another module or submodule
-                    return field
-                elseif field then
-                    SDK._DebugErrorNoDirectUse(module, field, k)
-                else
-                    SDK._DebugErrorNoFunction(module, k)
+            local field = rawget(module, k)
+            if type(field) == "function" and not string.match(k, "^_") then -- function
+                if global and not _G[global] then
+                    SDK._DebugErrorNoCallWithoutGlobal(module, field, k, global)
                 end
+                return field
+            elseif type(field) == "table" and field.module then -- another module or submodule
+                if global and not _G[global] then
+                    SDK._DebugErrorNoCallWithoutGlobal(module, field, k, global)
+                end
+                return field
+            elseif field then
+                SDK._DebugErrorNoDirectUse(module, field, k)
+            else
+                SDK._DebugErrorNoFunction(module, k)
             end
 
             return function()
@@ -209,7 +209,6 @@ function SDK._DoInitModule(parent, module, name, global)
         end,
     })
 
-    SDK._SetModuleName(parent, module, name)
     SDK._SetModuleName(parent, mt, name)
 
     return mt
