@@ -1,6 +1,6 @@
 require "busted.runner"()
 
-describe("#sdk SDK.World.World", function()
+describe("#sdk SDK.Remote.World", function()
     -- setup
     local match
 

@@ -65,7 +65,7 @@ describe("#sdk SDK.Entity", function()
     end)
 
     describe("general", function()
-        describe("GetTags", function()
+        describe("GetTags()", function()
             local entity
 
             setup(function()
@@ -79,7 +79,7 @@ describe("#sdk SDK.Entity", function()
             end)
         end)
 
-        describe("FindClosestInvisiblePlayerInRange", function()
+        describe("FindClosestInvisiblePlayerInRange()", function()
             local pt
 
             setup(function()
@@ -106,7 +106,7 @@ describe("#sdk SDK.Entity", function()
             end)
         end)
 
-        describe("GetTentSleeper", function()
+        describe("GetTentSleeper()", function()
             local entity
 
             before_each(function()
@@ -126,7 +126,7 @@ describe("#sdk SDK.Entity", function()
                 }
             end)
 
-            describe('when the "sleepingbag" component is available', function()
+            describe('when a sleepingbag component is available', function()
                 before_each(function()
                     entity.components.sleepingbag.sleeper = _G.AllPlayers[2]
                 end)
@@ -144,7 +144,7 @@ describe("#sdk SDK.Entity", function()
                 end)
             end)
 
-            describe('when the "sleepingbag" component is not available', function()
+            describe('when a sleepingbag component is not available', function()
                 before_each(function()
                     entity.components.sleepingbag = nil
                 end)
@@ -178,13 +178,13 @@ describe("#sdk SDK.Entity", function()
             }
         end)
 
-        describe("GetAnimStateBank", function()
+        describe("GetAnimStateBank()", function()
             it("should return the entity animation state bank", function()
                 assert.is_equal("wilson", Entity.GetAnimStateBank(entity))
             end)
         end)
 
-        describe("GetAnimStateBuild", function()
+        describe("GetAnimStateBuild()", function()
             setup(function()
                 entity.AnimState = {
                     GetBuild = ReturnValueFn("test"),
@@ -196,7 +196,7 @@ describe("#sdk SDK.Entity", function()
             end)
         end)
 
-        describe("GetAnimStateAnim", function()
+        describe("GetAnimStateAnim()", function()
             it("should return the entity animation state animation", function()
                 assert.is_equal("idle_loop", Entity.GetAnimStateAnim(entity))
             end)
@@ -212,13 +212,13 @@ describe("#sdk SDK.Entity", function()
             }
         end)
 
-        describe("GetStateGraphName", function()
+        describe("GetStateGraphName()", function()
             it("should return the state graph name", function()
                 assert.is_equal("wilson", Entity.GetStateGraphName(entity))
             end)
         end)
 
-        describe("GetStateGraphState", function()
+        describe("GetStateGraphState()", function()
             it("should return the state graph state", function()
                 assert.is_equal("idle", Entity.GetStateGraphState(entity))
             end)

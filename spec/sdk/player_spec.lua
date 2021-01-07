@@ -1284,7 +1284,7 @@ describe("#sdk SDK.Player", function()
 
     describe("attributes", function()
         local function TestComponentIsAvailable(fn_name, name, setter, debug, value)
-            describe("and " .. name .. " component is available", function()
+            describe("and a " .. name .. " component is available", function()
                 local component
 
                 setup(function()
@@ -1326,7 +1326,7 @@ describe("#sdk SDK.Player", function()
         end
 
         local function TestComponentIsNotAvailable(fn_name, name)
-            describe("and " .. name .. " component is not available", function()
+            describe("and a " .. name .. " component is not available", function()
                 local component
 
                 setup(function()
@@ -1583,8 +1583,8 @@ describe("#sdk SDK.Player", function()
         end
 
         describe("GetHealthLimitPercent()", function()
-            describe("and the Health replica component is available", function()
-                it("should call the Health:GetPenaltyPercent()", function()
+            describe("when a health replica is available", function()
+                it("should call [player].replica.health:GetPenaltyPercent()", function()
                     EachPlayer(function(player)
                         assert.spy(player.replica.health.GetPenaltyPercent).was_not_called()
                         Player.GetHealthLimitPercent(player)
@@ -1810,7 +1810,7 @@ describe("#sdk SDK.Player", function()
 
     describe("movement prediction", function()
         describe("HasMovementPrediction()", function()
-            describe("when locomotor component is available", function()
+            describe("when a locomotor component is available", function()
                 before_each(function()
                     inst.components = {
                         locomotor = {},
@@ -1822,7 +1822,7 @@ describe("#sdk SDK.Player", function()
                 end)
             end)
 
-            describe("when locomotor component is not available", function()
+            describe("when a locomotor component is not available", function()
                 before_each(function()
                     inst.components = {
                         locomotor = nil,
