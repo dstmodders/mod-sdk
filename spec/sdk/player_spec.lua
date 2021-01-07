@@ -1283,6 +1283,80 @@ describe("#sdk SDK.Player", function()
     end)
 
     describe("attributes", function()
+        local function TestComponentIsAvailable(fn_name, name, setter, debug, value)
+            describe("and " .. name .. " component is available", function()
+                local component
+
+                setup(function()
+                    component = _G.ThePlayer.components[name]
+                end)
+
+                before_each(function()
+                    _G.ThePlayer.components[name] = mock({
+                        [setter] = Empty,
+                    })
+                end)
+
+                teardown(function()
+                    _G.ThePlayer.components[name] = component
+                end)
+
+                it("should debug string", function()
+                    AssertDebugString(function()
+                        Player[fn_name](25)
+                    end, "[player]", unpack(debug))
+                end)
+
+                it(
+                    "should call [player].components." .. name .. ":" .. setter .. "()",
+                    function()
+                        assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
+                        Player[fn_name](25)
+                        assert.spy(_G.ThePlayer.components[name][setter]).was_called(1)
+                        assert.spy(_G.ThePlayer.components[name][setter]).was_called_with(
+                            match.is_ref(_G.ThePlayer.components[name]),
+                            value
+                        )
+                    end)
+
+                it("should return true", function()
+                    assert.is_true(Player[fn_name](25))
+                end)
+            end)
+        end
+
+        local function TestComponentIsNotAvailable(fn_name, name)
+            describe("and " .. name .. " component is not available", function()
+                local component
+
+                setup(function()
+                    component = _G.ThePlayer.components[name]
+                end)
+
+                before_each(function()
+                    _G.ThePlayer.components[name] = nil
+                end)
+
+                teardown(function()
+                    _G.ThePlayer.components[name] = component
+                end)
+
+                it("should debug error string", function()
+                    AssertDebugError(
+                        function()
+                            Player[fn_name](25)
+                        end,
+                        "SDK.Player." .. fn_name .. "():",
+                        name:gsub("^%l", string.upper) .. " component is not available"
+                    )
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player[fn_name](25))
+                end)
+            end)
+        end
+
         local function TestGetAttribute(name, fn_name)
             describe(name .. "()", function()
                 it("should return [player]." .. fn_name .. "() value", function()
@@ -1342,7 +1416,7 @@ describe("#sdk SDK.Player", function()
         end
 
         local function TestInvalidPercentIsPassed(fn_name)
-            describe("when invalid percent is passed", function()
+            describe("when an invalid percent is passed", function()
                 it("should debug error string", function()
                     AssertDebugErrorInvalidArg(function()
                         Player[fn_name]("foo")
@@ -1356,7 +1430,7 @@ describe("#sdk SDK.Player", function()
         end
 
         local function TestInvalidPlayerIsPassed(fn_name)
-            describe("when invalid player is passed", function()
+            describe("when an invalid player is passed", function()
                 it("should debug error string", function()
                     AssertDebugErrorInvalidArg(function()
                         Player[fn_name](25, "foo")
@@ -1387,6 +1461,88 @@ describe("#sdk SDK.Player", function()
             end)
         end
 
+        local function TestRemoteSetReturnsFalse(fn_name, name, setter)
+            describe("and SDK.Remote.Player." .. fn_name .. "() returns false", function()
+                local _fn
+
+                setup(function()
+                    _fn = SDK.Remote.Player[fn_name]
+                end)
+
+                before_each(function()
+                    SDK.Remote.Player[fn_name] = spy.new(ReturnValueFn(false))
+                end)
+
+                teardown(function()
+                    SDK.Remote.Player[fn_name] = _fn
+                end)
+
+                it(
+                    "shouldn't call [player].components." .. name .. ":" .. fn_name .. "()",
+                    function()
+                        assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
+                        Player[fn_name](25)
+                        assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
+                    end
+                )
+
+                it("should call SDK.Remote.Player.SetWerenessPercent()", function()
+                    assert.spy(SDK.Remote.Player[fn_name]).was_not_called()
+                    Player[fn_name](25)
+                    assert.spy(SDK.Remote.Player[fn_name]).was_called(1)
+                    assert.spy(SDK.Remote.Player[fn_name]).was_called_with(
+                        25,
+                        _G.ThePlayer
+                    )
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player[fn_name](25))
+                end)
+            end)
+        end
+
+        local function TestRemoteSetReturnsTrue(fn_name, name, setter)
+            describe("and SDK.Remote.Player." .. fn_name .. "() returns true", function()
+                local _fn
+
+                setup(function()
+                    _fn = SDK.Remote.Player[fn_name]
+                end)
+
+                before_each(function()
+                    SDK.Remote.Player[fn_name] = spy.new(ReturnValueFn(true))
+                end)
+
+                teardown(function()
+                    SDK.Remote.Player[fn_name] = _fn
+                end)
+
+                it(
+                    "shouldn't call [player].components." .. name .. ":" .. fn_name .. "()",
+                    function()
+                        assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
+                        Player[fn_name](25)
+                        assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
+                    end
+                )
+
+                it("should call SDK.Remote.Player.SetWerenessPercent()", function()
+                    assert.spy(SDK.Remote.Player[fn_name]).was_not_called()
+                    Player[fn_name](25)
+                    assert.spy(SDK.Remote.Player[fn_name]).was_called(1)
+                    assert.spy(SDK.Remote.Player[fn_name]).was_called_with(
+                        25,
+                        _G.ThePlayer
+                    )
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player[fn_name](25))
+                end)
+            end)
+        end
+
         local function TestSetComponentPercent(fn_name, name, debug, setter, is_reversed)
             setter = setter ~= nil and setter or "SetPercent"
 
@@ -1402,56 +1558,15 @@ describe("#sdk SDK.Player", function()
                         }
                     end)
 
-                    describe("and " .. name .. " component is available", function()
-                        before_each(function()
-                            _G.ThePlayer.components[name] = mock({
-                                SetPenalty = Empty,
-                                SetPercent = Empty,
-                            })
-                        end)
+                    TestComponentIsAvailable(
+                        fn_name,
+                        name,
+                        setter,
+                        debug,
+                        is_reversed and 0.75 or 0.25
+                    )
 
-                        it("should debug string", function()
-                            AssertDebugString(function()
-                                Player[fn_name](25)
-                            end, "[player]", unpack(debug))
-                        end)
-
-                        it(
-                            "should call [player].components." .. name .. ":" .. setter .. "()",
-                            function()
-                                assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
-                                Player[fn_name](25)
-                                assert.spy(_G.ThePlayer.components[name][setter]).was_called(1)
-                                assert.spy(_G.ThePlayer.components[name][setter]).was_called_with(
-                                    match.is_ref(_G.ThePlayer.components[name]),
-                                    is_reversed and 0.75 or 0.25
-                                )
-                            end)
-
-                        it("should return true", function()
-                            assert.is_true(Player[fn_name](25))
-                        end)
-                    end)
-
-                    describe("and " .. name .. " component is not available", function()
-                        before_each(function()
-                            _G.ThePlayer.components[name] = nil
-                        end)
-
-                        it("should debug error string", function()
-                            AssertDebugError(
-                                function()
-                                    Player[fn_name](25)
-                                end,
-                                "SDK.Player." .. fn_name .. "():",
-                                name:gsub("^%l", string.upper) .. " component is not available"
-                            )
-                        end)
-
-                        it("should return false", function()
-                            assert.is_false(Player[fn_name](25))
-                        end)
-                    end)
+                    TestComponentIsNotAvailable(fn_name, name)
                 end)
 
                 describe("when is non-master simulation", function()
@@ -1461,60 +1576,8 @@ describe("#sdk SDK.Player", function()
                         }
                     end)
 
-                    describe("and SDK.Remote.Player." .. fn_name .. "() returns true", function()
-                        before_each(function()
-                            SDK.Remote.Player[fn_name] = spy.new(ReturnValueFn(true))
-                        end)
-
-                        it(
-                            "shouldn't call [player].components." .. name .. ":" .. setter .. "()",
-                            function()
-                                assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
-                                Player[fn_name](25)
-                                assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
-                            end
-                        )
-
-                        it("should call SDK.Remote.Player." .. fn_name .. "()", function()
-                            assert.spy(SDK.Remote.Player[fn_name]).was_not_called()
-                            Player[fn_name](25)
-                            assert.spy(SDK.Remote.Player[fn_name]).was_called(1)
-                            assert.spy(SDK.Remote.Player[fn_name]).was_called_with(
-                                25,
-                                _G.ThePlayer
-                            )
-                        end)
-
-                        it("should return true", function()
-                            assert.is_true(Player[fn_name](25))
-                        end)
-                    end)
-
-                    describe("and SDK.Remote.Player." .. fn_name .. "() returns false", function()
-                        before_each(function()
-                            SDK.Remote.Player[fn_name] = spy.new(ReturnValueFn(false))
-                        end)
-
-                        it(
-                            "shouldn't call [player].components." .. name .. ":" .. setter .. "()",
-                            function()
-                                assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
-                                Player[fn_name](25)
-                                assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
-                            end
-                        )
-
-                        it("should call SDK.Remote.Player." .. fn_name .. "()", function()
-                            assert.spy(SDK.Remote.Player[fn_name]).was_not_called()
-                            Player[fn_name](25)
-                            assert.spy(SDK.Remote.Player[fn_name]).was_called(1)
-                            assert.spy(SDK.Remote.Player[fn_name]).was_called_with(25, _G.ThePlayer)
-                        end)
-
-                        it("should return false", function()
-                            assert.is_false(Player[fn_name](25))
-                        end)
-                    end)
+                    TestRemoteSetReturnsFalse(fn_name, name, setter)
+                    TestRemoteSetReturnsTrue(fn_name, name, setter)
                 end)
             end)
         end
@@ -1620,7 +1683,7 @@ describe("#sdk SDK.Player", function()
         })
 
         describe("SetTemperature()", function()
-            describe("when invalid percent is passed", function()
+            describe("when an invalid percent is passed", function()
                 it("should debug error string", function()
                     AssertDebugErrorInvalidArg(function()
                         Player.SetTemperature("foo")
@@ -1642,58 +1705,13 @@ describe("#sdk SDK.Player", function()
                     }
                 end)
 
-                describe("and temperature component is available", function()
-                    before_each(function()
-                        _G.ThePlayer.components.temperature = mock({
-                            SetTemperature = Empty,
-                        })
-                    end)
+                TestComponentIsAvailable("SetTemperature", "temperature", "SetTemperature", {
+                    "Temperature:",
+                    "25.00°",
+                    "(PlayerInst)",
+                }, 25)
 
-                    it("should debug string", function()
-                        AssertDebugString(function()
-                            Player.SetTemperature(25)
-                        end, "[player]", "Temperature:", "25.00°", "(PlayerInst)")
-                    end)
-
-                    it(
-                        "should call [player].components.temperature:SetTemperature()",
-                        function()
-                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
-                                .was_not_called()
-                            Player.SetTemperature(25)
-                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
-                                .was_called(1)
-                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
-                                .was_called_with(
-                                    match.is_ref(_G.ThePlayer.components.temperature),
-                                    25
-                                )
-                        end)
-
-                    it("should return true", function()
-                        assert.is_true(Player.SetTemperature(25))
-                    end)
-                end)
-
-                describe("and temperature component is not available", function()
-                    before_each(function()
-                        _G.ThePlayer.components.temperature = nil
-                    end)
-
-                    it("should debug error string", function()
-                        AssertDebugError(
-                            function()
-                                Player.SetTemperature(25)
-                            end,
-                            "SDK.Player.SetTemperature():",
-                            "Temperature component is not available"
-                        )
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player.SetTemperature(25))
-                    end)
-                end)
+                TestComponentIsNotAvailable("SetTemperature", "temperature")
             end)
 
             describe("when is non-master simulation", function()
@@ -1703,67 +1721,8 @@ describe("#sdk SDK.Player", function()
                     }
                 end)
 
-                describe("and SDK.Remote.Player.SetTemperature() returns true", function()
-                    before_each(function()
-                        SDK.Remote.Player.SetTemperature = spy.new(ReturnValueFn(true))
-                    end)
-
-                    it(
-                        "shouldn't call [player].components.temperature:SetTemperature()",
-                        function()
-                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
-                                .was_not_called()
-                            Player.SetTemperature(25)
-                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
-                                .was_not_called()
-                        end
-                    )
-
-                    it("should call SDK.Remote.Player.SetTemperature()", function()
-                        assert.spy(SDK.Remote.Player.SetTemperature).was_not_called()
-                        Player.SetTemperature(25)
-                        assert.spy(SDK.Remote.Player.SetTemperature).was_called(1)
-                        assert.spy(SDK.Remote.Player.SetTemperature).was_called_with(
-                            25,
-                            _G.ThePlayer
-                        )
-                    end)
-
-                    it("should return true", function()
-                        assert.is_true(Player.SetTemperature(25))
-                    end)
-                end)
-
-                describe("and SDK.Remote.Player.SetTemperature() returns false", function()
-                    before_each(function()
-                        SDK.Remote.Player.SetTemperature = spy.new(ReturnValueFn(false))
-                    end)
-
-                    it(
-                        "shouldn't call [player].components.temperature:SetTemperature()",
-                        function()
-                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
-                                .was_not_called()
-                            Player.SetTemperature(25)
-                            assert.spy(_G.ThePlayer.components.temperature.SetTemperature)
-                                .was_not_called()
-                        end
-                    )
-
-                    it("should call SDK.Remote.Player.SetTemperature()", function()
-                        assert.spy(SDK.Remote.Player.SetTemperature).was_not_called()
-                        Player.SetTemperature(25)
-                        assert.spy(SDK.Remote.Player.SetTemperature).was_called(1)
-                        assert.spy(SDK.Remote.Player.SetTemperature).was_called_with(
-                            25,
-                            _G.ThePlayer
-                        )
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player.SetTemperature(25))
-                    end)
-                end)
+                TestRemoteSetReturnsFalse("SetTemperature", "temperature", "SetTemperature")
+                TestRemoteSetReturnsTrue("SetTemperature", "temperature", "SetTemperature")
             end)
         end)
 
@@ -1795,53 +1754,13 @@ describe("#sdk SDK.Player", function()
                     }
                 end)
 
-                describe("and wereness component is available", function()
-                    before_each(function()
-                        _G.ThePlayer.components.wereness = mock({
-                            SetPercent = Empty,
-                        })
-                    end)
+                TestComponentIsAvailable("SetWerenessPercent", "wereness", "SetPercent", {
+                    "Wereness:",
+                    "25.00%",
+                    "(PlayerInst)",
+                }, 0.25)
 
-                    it("should debug string", function()
-                        AssertDebugString(function()
-                            Player.SetWerenessPercent(25)
-                        end, "[player]", "Wereness:", "25.00%", "(PlayerInst)")
-                    end)
-
-                    it("should call [player].components.wereness:SetWerenessPercent()", function()
-                        assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
-                        Player.SetWerenessPercent(25)
-                        assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_called(1)
-                        assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_called_with(
-                            match.is_ref(_G.ThePlayer.components.wereness),
-                            0.25
-                        )
-                    end)
-
-                    it("should return true", function()
-                        assert.is_true(Player.SetWerenessPercent(25))
-                    end)
-                end)
-
-                describe("and wereness component is not available", function()
-                    before_each(function()
-                        _G.ThePlayer.components.wereness = nil
-                    end)
-
-                    it("should debug error string", function()
-                        AssertDebugError(
-                            function()
-                                Player.SetWerenessPercent(25)
-                            end,
-                            "SDK.Player.SetWerenessPercent():",
-                            "Wereness component is not available"
-                        )
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player.SetWerenessPercent(25))
-                    end)
-                end)
+                TestComponentIsNotAvailable("SetWerenessPercent", "wereness")
             end)
 
             describe("when is non-master simulation", function()
@@ -1851,63 +1770,8 @@ describe("#sdk SDK.Player", function()
                     }
                 end)
 
-                describe("and SDK.Remote.Player.SetWerenessPercent() returns true", function()
-                    before_each(function()
-                        SDK.Remote.Player.SetWerenessPercent = spy.new(ReturnValueFn(true))
-                    end)
-
-                    it(
-                        "shouldn't call [player].components.wereness:SetWerenessPercent()",
-                        function()
-                            assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
-                            Player.SetWerenessPercent(25)
-                            assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
-                        end
-                    )
-
-                    it("should call SDK.Remote.Player.SetWerenessPercent()", function()
-                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_not_called()
-                        Player.SetWerenessPercent(25)
-                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_called(1)
-                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_called_with(
-                            25,
-                            _G.ThePlayer
-                        )
-                    end)
-
-                    it("should return true", function()
-                        assert.is_true(Player.SetWerenessPercent(25))
-                    end)
-                end)
-
-                describe("and SDK.Remote.Player.SetWerenessPercent() returns false", function()
-                    before_each(function()
-                        SDK.Remote.Player.SetWerenessPercent = spy.new(ReturnValueFn(false))
-                    end)
-
-                    it(
-                        "shouldn't call [player].components.wereness:SetWerenessPercent()",
-                        function()
-                            assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
-                            Player.SetWerenessPercent(25)
-                            assert.spy(_G.ThePlayer.components.wereness.SetPercent).was_not_called()
-                        end
-                    )
-
-                    it("should call SDK.Remote.Player.SetWerenessPercent()", function()
-                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_not_called()
-                        Player.SetWerenessPercent(25)
-                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_called(1)
-                        assert.spy(SDK.Remote.Player.SetWerenessPercent).was_called_with(
-                            25,
-                            _G.ThePlayer
-                        )
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player.SetWerenessPercent(25))
-                    end)
-                end)
+                TestRemoteSetReturnsFalse("SetWerenessPercent", "wereness", "SetPercent")
+                TestRemoteSetReturnsTrue("SetTemperature", "wereness", "SetPercent")
             end)
         end)
     end)
