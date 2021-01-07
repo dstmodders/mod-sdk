@@ -16,11 +16,40 @@
 local World = {}
 
 local SDK
+local Value
 
 local _MOISTURE_FLOOR
 local _MOISTURE_RATE
 local _PEAK_PRECIPITATION_RATE
 local _WETNESS_RATE
+
+--- Helpers
+-- @section helpers
+
+local function DebugError(fn_name, ...)
+    if SDK.Debug then
+        SDK.Debug.Error(string.format("%s.%s():", tostring(World), fn_name), ...)
+    end
+end
+
+local function DebugErrorInvalidArg(arg_name, explanation, fn_name)
+    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
+    DebugError(
+        fn_name,
+        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
+        explanation and "(" .. explanation .. ")"
+    )
+end
+
+local function DebugString(...)
+    if SDK.Debug then
+        SDK.Debug.String("[world]", ...)
+    end
+end
+
+local function DebugStringNotice(fn_name, ...)
+    DebugString("[notice]", string.format("%s.%s():", tostring(World), fn_name), ...)
+end
 
 --- General
 -- @section general
@@ -75,6 +104,33 @@ function World.IsPointPassable(pt)
         and SDK.Utils.Chain.Validate(pt, "Get")
         and TheWorld.Map:IsPassableAtPoint(pt:Get())
         or false
+end
+
+--- Sets a time scale.
+-- @see SDK.Remote.World.SetTimeScale
+-- @treturn boolean
+function World.SetTimeScale(timescale)
+    if not Value.IsUnsigned(timescale) or not Value.IsNumber(timescale) then
+        DebugErrorInvalidArg("timescale", "must be an unsigned number", "SetTimeScale")
+        return false
+    end
+
+    if World.IsMasterSim() then
+        DebugString("Time scale:", Value.ToFloatString(timescale))
+        TheSim:SetTimeScale(timescale)
+        return true
+    end
+
+    if not World.IsMasterSim() and SDK.Remote.World.SetTimeScale(timescale) then
+        TheSim:SetTimeScale(timescale)
+        DebugStringNotice(
+            "SetTimeScale",
+            "Other players will experience a client-side time scale mismatch"
+        )
+        return true
+    end
+
+    return false
 end
 
 --- Phase
@@ -211,6 +267,7 @@ end
 -- @treturn SDK.World
 function World._DoInit(sdk)
     SDK = sdk
+    Value = SDK.Utils.Value
     return SDK._DoInitModule(SDK, World, "World", "TheWorld")
 end
 

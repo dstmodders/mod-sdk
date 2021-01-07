@@ -14,6 +14,8 @@ describe("#sdk SDK.World", function()
 
     teardown(function()
         -- globals
+        _G.ThePlayer = nil
+        _G.TheSim = nil
         _G.TheWorld = nil
 
         -- sdk
@@ -22,7 +24,13 @@ describe("#sdk SDK.World", function()
 
     before_each(function()
         -- globals
-        _G.TheWorld = {
+        _G.ThePlayer = {}
+
+        _G.TheSim = mock({
+            SetTimeScale = Empty,
+        })
+
+        _G.TheWorld = mock({
             meta = {
                 saveversion = "5.031",
                 seed = "1574459949",
@@ -34,19 +42,40 @@ describe("#sdk SDK.World", function()
             HasTag = function(_, tag)
                 return tag == "forest"
             end
-        }
+        })
 
         -- initialization
         SDK = require "yoursubdirectory/sdk/sdk/sdk"
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
+        SDK.LoadModule("Debug")
+        SDK.LoadModule("Remote")
         SDK.LoadModule("World")
         World = require "yoursubdirectory/sdk/sdk/world"
+
+        -- spies
+        SDK.Debug.Error = spy.on(SDK.Debug, "Error")
+        SDK.Debug.String = spy.on(SDK.Debug, "String")
     end)
 
-    after_each(function()
-        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
-    end)
+    local function AssertDebugError(fn, ...)
+        assert.spy(SDK.Debug.Error).was_not_called()
+        fn()
+        assert.spy(SDK.Debug.Error).was_called(1)
+        assert.spy(SDK.Debug.Error).was_called_with(...)
+    end
+
+    local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
+        AssertDebugError(
+            fn,
+            string.format("SDK.World.%s():", fn_name),
+            string.format(
+                "Invalid argument%s is passed",
+                arg_name and ' (' .. arg_name .. ")" or ""
+            ),
+            explanation and "(" .. explanation .. ")"
+        )
+    end
 
     describe("general", function()
         describe("GetMeta()", function()
@@ -137,6 +166,120 @@ describe("#sdk SDK.World", function()
 
             it("should return true", function()
                 assert.is_true(World.IsPointPassable(pt))
+            end)
+        end)
+
+        describe("SetTimeScale()", function()
+            describe("when an invalid timescale is passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        World.SetTimeScale("foo")
+                    end, "SetTimeScale", "timescale", "must be an unsigned number")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(World.SetTimeScale("foo"))
+                end)
+            end)
+
+            describe("when master simulation", function()
+                before_each(function()
+                    _G.TheWorld = {
+                        ismastersim = true,
+                    }
+                end)
+
+                it("should call TheSim:SetTimeScale()", function()
+                    assert.spy(_G.TheSim.SetTimeScale).was_not_called()
+                    World.SetTimeScale(1)
+                    assert.spy(_G.TheSim.SetTimeScale).was_called(1)
+                    assert.spy(_G.TheSim.SetTimeScale).was_called_with(
+                        match.is_ref(_G.TheSim),
+                        1
+                    )
+                end)
+
+                it("should return true", function()
+                    assert.is_true(World.SetTimeScale(1))
+                end)
+            end)
+
+            describe("when non-master simulation", function()
+                before_each(function()
+                    _G.TheWorld = {
+                        ismastersim = false,
+                    }
+                end)
+
+                describe("and SDK.Remote.World.SetTimeScale() returns false", function()
+                    local _fn
+
+                    setup(function()
+                        _fn = SDK.Remote.World.SetTimeScale
+                    end)
+
+                    before_each(function()
+                        SDK.Remote.World.SetTimeScale = spy.new(ReturnValueFn(false))
+                    end)
+
+                    teardown(function()
+                        SDK.Remote.World.SetTimeScale = _fn
+                    end)
+
+                    it("should call SDK.Remote.World.SetTimeScale()", function()
+                        assert.spy(SDK.Remote.World.SetTimeScale).was_not_called()
+                        World.SetTimeScale(1)
+                        assert.spy(SDK.Remote.World.SetTimeScale).was_called(1)
+                        assert.spy(SDK.Remote.World.SetTimeScale).was_called_with(1)
+                    end)
+
+                    it("shouldn't call TheSim:SetTimeScale()", function()
+                        assert.spy(_G.TheSim.SetTimeScale).was_not_called()
+                        World.SetTimeScale(1)
+                        assert.spy(_G.TheSim.SetTimeScale).was_not_called()
+                    end)
+
+                    it("should return false", function()
+                        assert.is_false(World.SetTimeScale(1))
+                    end)
+                end)
+
+                describe("and SDK.Remote.World.SetTimeScale() returns true", function()
+                    local _fn
+
+                    setup(function()
+                        _fn = SDK.Remote.World.SetTimeScale
+                    end)
+
+                    before_each(function()
+                        SDK.Remote.World.SetTimeScale = spy.new(ReturnValueFn(true))
+                    end)
+
+                    teardown(function()
+                        SDK.Remote.World.SetTimeScale = _fn
+                    end)
+
+                    it("should call SDK.Remote.World.SetTimeScale()", function()
+                        assert.spy(SDK.Remote.World.SetTimeScale).was_not_called()
+                        World.SetTimeScale(1)
+                        assert.spy(SDK.Remote.World.SetTimeScale).was_called(1)
+                        assert.spy(SDK.Remote.World.SetTimeScale).was_called_with(1)
+                    end)
+
+                    it("should call TheSim:SetTimeScale()", function()
+                        assert.spy(_G.TheSim.SetTimeScale).was_not_called()
+                        World.SetTimeScale(1)
+                        assert.spy(_G.TheSim.SetTimeScale).was_called(1)
+                        assert.spy(_G.TheSim.SetTimeScale).was_called_with(
+                            match.is_ref(_G.TheSim),
+                            1
+                        )
+                    end)
+
+                    it("should return true", function()
+                        assert.is_true(World.SetTimeScale(1))
+                    end)
+                end)
             end)
         end)
     end)
