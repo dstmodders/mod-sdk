@@ -46,9 +46,13 @@ SDK.Load(env, "<your subdirectory>/sdk", {
     "Entity",
     "Input",
     "Inventory",
+    "Method",
     "ModMain",
     "PersistentData",
     "Player",
+    "Remote",
+    "RPC",
+    "Test",
     "Thread",
     "World",
 })
