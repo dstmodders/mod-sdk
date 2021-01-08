@@ -431,11 +431,17 @@ describe("#sdk SDK.World", function()
                             assert.spy(SDK.Remote.World.SetTimeScale).was_called_with(0)
                         end)
 
-                        it("should debug string", function()
+                        it("should debug strings", function()
                             assert.spy(SDK.Debug.String).was_not_called()
                             World.Pause()
                             assert.spy(SDK.Debug.String).was_called(2)
                             assert.spy(SDK.Debug.String).was_called_with("[world]", "Pause game")
+                            assert.spy(SDK.Debug.String).was_called_with(
+                                "[world]",
+                                "[notice]",
+                                "SDK.World.Pause():",
+                                "Other players will experience a client-side time scale mismatch"
+                            )
                         end)
 
                         it("should set World.timescale field", function()
@@ -463,6 +469,159 @@ describe("#sdk SDK.World", function()
 
                         it("should return true", function()
                             assert.is_true(World.Pause())
+                        end)
+                    end)
+                end)
+            end)
+        end)
+
+        describe("Resume()", function()
+            describe("when the world is not paused", function()
+                before_each(function()
+                    World.IsPaused = spy.new(ReturnValueFn(false))
+                end)
+
+                it("should debug error string", function()
+                    AssertDebugError(function()
+                        World.Resume()
+                    end, "SDK.World.Resume():", "Game is already resumed")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(World.Resume())
+                end)
+            end)
+
+            describe("when the world is paused", function()
+                before_each(function()
+                    World.IsPaused = spy.new(ReturnValueFn(true))
+                end)
+
+                describe("when is master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = true
+                    end)
+
+                    it("should debug string", function()
+                        AssertDebugString(function()
+                            World.Resume()
+                        end, "[world]", "Resume game")
+                    end)
+
+                    it("should call TheSim:SetTimeScale()", function()
+                        assert.spy(_G.TheSim.SetTimeScale).was_not_called()
+                        World.Resume()
+                        assert.spy(_G.TheSim.SetTimeScale).was_called(1)
+                        assert.spy(_G.TheSim.SetTimeScale).was_called_with(
+                            match.is_ref(_G.TheSim),
+                            World.timescale
+                        )
+                    end)
+
+                    it("should call SetPause()", function()
+                        assert.spy(_G.SetPause).was_not_called()
+                        World.Resume()
+                        assert.spy(_G.SetPause).was_called(1)
+                        assert.spy(_G.SetPause).was_called_with(false, "console")
+                    end)
+
+                    it("should return true", function()
+                        assert.is_true(World.Resume())
+                    end)
+                end)
+
+                describe("when is non-master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = false
+                    end)
+
+                    describe("and SDK.Remote.World.SetTimeScale() returns false", function()
+                        local _fn
+
+                        setup(function()
+                            _fn = SDK.Remote.World.SetTimeScale
+                        end)
+
+                        before_each(function()
+                            SDK.Remote.World.SetTimeScale = spy.new(ReturnValueFn(false))
+                        end)
+
+                        teardown(function()
+                            SDK.Remote.World.SetTimeScale = _fn
+                        end)
+
+                        it("should call SDK.Remote.World.SetTimeScale()", function()
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_not_called()
+                            World.Resume()
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_called(1)
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_called_with(1)
+                        end)
+
+                        it("shouldn't call TheSim:SetTimeScale()", function()
+                            assert.spy(_G.TheSim.SetTimeScale).was_not_called()
+                            World.Resume()
+                            assert.spy(_G.TheSim.SetTimeScale).was_not_called()
+                        end)
+
+                        it("should return false", function()
+                            assert.is_false(World.Resume())
+                        end)
+                    end)
+
+                    describe("and SDK.Remote.World.SetTimeScale() returns true", function()
+                        local _fn
+
+                        setup(function()
+                            _fn = SDK.Remote.World.SetTimeScale
+                        end)
+
+                        before_each(function()
+                            SDK.Remote.World.SetTimeScale = spy.new(ReturnValueFn(true))
+                        end)
+
+                        teardown(function()
+                            SDK.Remote.World.SetTimeScale = _fn
+                        end)
+
+                        it("should call SDK.Remote.World.SetTimeScale()", function()
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_not_called()
+                            World.Resume()
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_called(1)
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_called_with(1)
+                        end)
+
+                        it("should debug strings", function()
+                            assert.spy(SDK.Debug.String).was_not_called()
+                            World.Resume()
+                            assert.spy(SDK.Debug.String).was_called(2)
+                            assert.spy(SDK.Debug.String).was_called_with("[world]", "Resume game")
+                            assert.spy(SDK.Debug.String).was_called_with(
+                                "[world]",
+                                "[notice]",
+                                "SDK.World.Resume():",
+                                "Other players will experience a client-side time scale mismatch"
+                            )
+                        end)
+
+                        it("should call TheSim:SetTimeScale()", function()
+                            assert.spy(_G.TheSim.SetTimeScale).was_not_called()
+                            World.Resume()
+                            assert.spy(_G.TheSim.SetTimeScale).was_called(1)
+                            assert.spy(_G.TheSim.SetTimeScale).was_called_with(
+                                match.is_ref(_G.TheSim),
+                                1
+                            )
+                        end)
+
+                        it("should call SetPause()", function()
+                            assert.spy(_G.SetPause).was_not_called()
+                            World.Resume()
+                            assert.spy(_G.SetPause).was_called(1)
+                            assert.spy(_G.SetPause).was_called_with(false, "console")
+                        end)
+
+                        it("should return true", function()
+                            assert.is_true(World.Resume())
                         end)
                     end)
                 end)

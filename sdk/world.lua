@@ -145,6 +145,7 @@ function World.IsPaused()
 end
 
 --- Pauses a game.
+-- @see SDK.Remote.World.SetTimeScale
 -- @treturn boolean
 function World.Pause()
     if World.IsPaused() then
@@ -162,13 +163,45 @@ function World.Pause()
         return true
     end
 
-    if not World.IsMasterSim() and SDK.Remote.World.SetTimeScale(0) then
+    if SDK.Remote.World.SetTimeScale(0) then
         DebugString("Pause game")
         World.timescale = timescale
         TheSim:SetTimeScale(0)
         SetPause(true, "console")
         DebugStringNotice(
             "Pause",
+            "Other players will experience a client-side time scale mismatch"
+        )
+        return true
+    end
+
+    return false
+end
+
+--- Resumes a game from a pause.
+-- @see SDK.Remote.World.SetTimeScale
+-- @treturn boolean
+function World.Resume()
+    if not World.IsPaused() then
+        DebugError("Resume", "Game is already resumed")
+        return false
+    end
+
+    local timescale = World.timescale or 1
+
+    if World.IsMasterSim() then
+        DebugString("Resume game")
+        TheSim:SetTimeScale(timescale)
+        SetPause(false, "console")
+        return true
+    end
+
+    if SDK.Remote.World.SetTimeScale(timescale) then
+        DebugString("Resume game")
+        TheSim:SetTimeScale(timescale)
+        SetPause(false, "console")
+        DebugStringNotice(
+            "Resume",
             "Other players will experience a client-side time scale mismatch"
         )
         return true
