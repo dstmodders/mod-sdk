@@ -84,6 +84,7 @@ files["**/*.lua"] = {
         "SavePersistentString",
         "scheduler",
         "SetDebugEntity",
+        "SetPause",
         "shallowcopy",
         "softresolvefilepath",
         "StartThread",

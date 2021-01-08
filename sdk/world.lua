@@ -13,7 +13,9 @@
 -- @license MIT
 -- @release 0.1
 ----
-local World = {}
+local World = {
+    timescale = 1,
+}
 
 local SDK
 local Value
@@ -140,6 +142,39 @@ end
 -- @treturn boolean
 function World.IsPaused()
     return TheSim:GetTimeScale() == 0
+end
+
+--- Pauses a game.
+-- @treturn boolean
+function World.Pause()
+    if World.IsPaused() then
+        DebugError("Pause", "Game is already paused")
+        return false
+    end
+
+    local timescale = TheSim:GetTimeScale()
+
+    if World.IsMasterSim() then
+        DebugString("Pause game")
+        World.timescale = timescale
+        TheSim:SetTimeScale(0)
+        SetPause(true, "console")
+        return true
+    end
+
+    if not World.IsMasterSim() and SDK.Remote.World.SetTimeScale(0) then
+        DebugString("Pause game")
+        World.timescale = timescale
+        TheSim:SetTimeScale(0)
+        SetPause(true, "console")
+        DebugStringNotice(
+            "Pause",
+            "Other players will experience a client-side time scale mismatch"
+        )
+        return true
+    end
+
+    return false
 end
 
 --- Phase

@@ -186,6 +186,7 @@ describe("#sdk SDK.Player", function()
         _G.TheFrontEnd = nil
         _G.TheNet = nil
         _G.ThePlayer = nil
+        _G.TheWorld = nil
         _G.TUNING = nil
 
         -- sdk
@@ -273,6 +274,8 @@ describe("#sdk SDK.Player", function()
                 performance = 1,
             }
         })
+
+        _G.TheWorld = {}
 
         -- initialization
         SDK = require "yoursubdirectory/sdk/sdk/sdk"
@@ -1553,9 +1556,7 @@ describe("#sdk SDK.Player", function()
 
                 describe("when is master simulation", function()
                     before_each(function()
-                        _G.TheWorld = {
-                            ismastersim = true,
-                        }
+                        _G.TheWorld.ismastersim = true
                     end)
 
                     TestComponentIsAvailable(
@@ -1571,9 +1572,7 @@ describe("#sdk SDK.Player", function()
 
                 describe("when is non-master simulation", function()
                     before_each(function()
-                        _G.TheWorld = {
-                            ismastersim = false,
-                        }
+                        _G.TheWorld.ismastersim = false
                     end)
 
                     TestRemoteSetReturnsFalse(fn_name, name, setter)
@@ -1700,9 +1699,7 @@ describe("#sdk SDK.Player", function()
 
             describe("when is master simulation", function()
                 before_each(function()
-                    _G.TheWorld = {
-                        ismastersim = true,
-                    }
+                    _G.TheWorld.ismastersim = true
                 end)
 
                 TestComponentIsAvailable("SetTemperature", "temperature", "SetTemperature", {
@@ -1716,9 +1713,7 @@ describe("#sdk SDK.Player", function()
 
             describe("when is non-master simulation", function()
                 before_each(function()
-                    _G.TheWorld = {
-                        ismastersim = false,
-                    }
+                    _G.TheWorld.ismastersim = false
                 end)
 
                 TestRemoteSetReturnsFalse("SetTemperature", "temperature", "SetTemperature")
@@ -1749,9 +1744,7 @@ describe("#sdk SDK.Player", function()
 
             describe("when is master simulation", function()
                 before_each(function()
-                    _G.TheWorld = {
-                        ismastersim = true,
-                    }
+                    _G.TheWorld.ismastersim = true
                 end)
 
                 TestComponentIsAvailable("SetWerenessPercent", "wereness", "SetPercent", {
@@ -1765,9 +1758,7 @@ describe("#sdk SDK.Player", function()
 
             describe("when is non-master simulation", function()
                 before_each(function()
-                    _G.TheWorld = {
-                        ismastersim = false,
-                    }
+                    _G.TheWorld.ismastersim = false
                 end)
 
                 TestRemoteSetReturnsFalse("SetWerenessPercent", "wereness", "SetPercent")
@@ -1850,11 +1841,9 @@ describe("#sdk SDK.Player", function()
                 }
             end)
 
-            describe("when master simulation", function()
+            describe("when is master simulation", function()
                 before_each(function()
-                    _G.TheWorld = {
-                        ismastersim = true,
-                    }
+                    _G.TheWorld.ismastersim = true
                 end)
 
                 describe("and enabling", function()
@@ -1894,11 +1883,9 @@ describe("#sdk SDK.Player", function()
                 end)
             end)
 
-            describe("when non-master simulation", function()
+            describe("when is non-master simulation", function()
                 before_each(function()
-                    _G.TheWorld = {
-                        ismastersim = false,
-                    }
+                    _G.TheWorld.ismastersim = false
                 end)
 
                 describe("and enabling", function()
