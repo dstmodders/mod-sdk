@@ -179,6 +179,87 @@ describe("#sdk SDK.World", function()
             end)
         end)
 
+        describe("SetDeltaTimeScale()", function()
+            local _fn
+
+            setup(function()
+                _fn = World.SetTimeScale
+            end)
+
+            teardown(function()
+                World.SetTimeScale = _fn
+            end)
+
+            local function TestValidDeltaIsPassed(delta, set, debug)
+                describe("when a valid delta is passed", function()
+                    describe("(" .. delta .. ")", function()
+                        describe("and SDK.World.SetTimeScale() returns true", function()
+                            before_each(function()
+                                World.SetTimeScale = spy.new(ReturnValueFn(true))
+                            end)
+
+                            it("should call SDK.World.SetTimeScale()", function()
+                                assert.spy(World.SetTimeScale).was_not_called()
+                                World.SetDeltaTimeScale(delta)
+                                assert.spy(World.SetTimeScale).was_called(1)
+                                assert.spy(World.SetTimeScale).was_called_with(set)
+                            end)
+
+                            it("should debug string", function()
+                                AssertDebugString(function()
+                                    World.SetDeltaTimeScale(delta)
+                                end, "[world]", "Delta time scale:", debug)
+                            end)
+
+                            it("should return true", function()
+                                assert.is_true(World.SetDeltaTimeScale(delta))
+                            end)
+                        end)
+
+                        describe("and SDK.World.SetTimeScale() returns false", function()
+                            before_each(function()
+                                World.SetTimeScale = spy.new(ReturnValueFn(false))
+                            end)
+
+                            it("should call SDK.World.SetTimeScale()", function()
+                                assert.spy(World.SetTimeScale).was_not_called()
+                                World.SetDeltaTimeScale(delta)
+                                assert.spy(World.SetTimeScale).was_called(1)
+                                assert.spy(World.SetTimeScale).was_called_with(set)
+                            end)
+
+                            it("should debug string", function()
+                                AssertDebugString(function()
+                                    World.SetDeltaTimeScale(delta)
+                                end, "[world]", "Delta time scale:", debug)
+                            end)
+
+                            it("should return false", function()
+                                assert.is_false(World.SetDeltaTimeScale(delta))
+                            end)
+                        end)
+                    end)
+                end)
+            end
+
+            describe("when an invalid delta is passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        World.SetDeltaTimeScale("foo")
+                    end, "SetDeltaTimeScale", "delta", "must be a number")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(World.SetDeltaTimeScale("foo"))
+                end)
+            end)
+
+            TestValidDeltaIsPassed(-5, 0, "-5.00")
+            TestValidDeltaIsPassed(-0.1, 0.9, "-0.10")
+            TestValidDeltaIsPassed(0.1, 1.1, "0.10")
+            TestValidDeltaIsPassed(5, 4.00, "5.00")
+        end)
+
         describe("SetTimeScale()", function()
             describe("when an invalid timescale is passed", function()
                 it("should debug error string", function()

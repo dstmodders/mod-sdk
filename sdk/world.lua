@@ -49,8 +49,12 @@ local function DebugString(...)
     end
 end
 
-local function DebugStringNotice(fn_name, ...)
+local function DebugNotice(fn_name, ...)
     DebugString("[notice]", string.format("%s.%s():", tostring(World), fn_name), ...)
+end
+
+local function DebugNoticeTimeScaleMismatch(fn_name)
+    DebugNotice(fn_name, "Other players will experience a client-side time scale mismatch")
 end
 
 --- General
@@ -108,8 +112,29 @@ function World.IsPointPassable(pt)
         or false
 end
 
+--- Sets a delta time scale.
+-- @see SDK.World.SetTimeScale
+-- @tparam number delta
+function World.SetDeltaTimeScale(delta)
+    delta = delta ~= nil and delta or 0
+
+    if not Value.IsNumber(delta) then
+        DebugErrorInvalidArg("delta", "must be a number", "SetDeltaTimeScale")
+        return false
+    end
+
+    local time_scale
+    time_scale = TheSim:GetTimeScale() + delta
+    time_scale = time_scale < 0 and 0 or time_scale
+    time_scale = time_scale >= 4 and 4 or time_scale
+
+    DebugString("Delta time scale:", Value.ToFloatString(delta))
+    return World.SetTimeScale(time_scale)
+end
+
 --- Sets a time scale.
 -- @see SDK.Remote.World.SetTimeScale
+-- @see SDK.World.SetDeltaTimeScale
 -- @treturn boolean
 function World.SetTimeScale(timescale)
     if not Value.IsUnsigned(timescale) or not Value.IsNumber(timescale) then
@@ -123,12 +148,9 @@ function World.SetTimeScale(timescale)
         return true
     end
 
-    if not World.IsMasterSim() and SDK.Remote.World.SetTimeScale(timescale) then
+    if SDK.Remote.World.SetTimeScale(timescale) then
         TheSim:SetTimeScale(timescale)
-        DebugStringNotice(
-            "SetTimeScale",
-            "Other players will experience a client-side time scale mismatch"
-        )
+        DebugNoticeTimeScaleMismatch("SetTimeScale")
         return true
     end
 
@@ -168,10 +190,7 @@ function World.Pause()
         World.timescale = timescale
         TheSim:SetTimeScale(0)
         SetPause(true, "console")
-        DebugStringNotice(
-            "Pause",
-            "Other players will experience a client-side time scale mismatch"
-        )
+        DebugNoticeTimeScaleMismatch("Pause")
         return true
     end
 
@@ -200,10 +219,7 @@ function World.Resume()
         DebugString("Resume game")
         TheSim:SetTimeScale(timescale)
         SetPause(false, "console")
-        DebugStringNotice(
-            "Resume",
-            "Other players will experience a client-side time scale mismatch"
-        )
+        DebugNoticeTimeScaleMismatch("Resume")
         return true
     end
 
