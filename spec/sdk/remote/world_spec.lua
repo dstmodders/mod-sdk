@@ -291,13 +291,13 @@ describe("#sdk SDK.Remote.World", function()
             TestRemoteInvalidArg("SetDeltaMoisture", "delta", "must be a number", "foo")
 
             TestRemoteValid("SetDeltaMoisture", {
-                "World delta moisture:",
-                "0",
+                "Delta moisture:",
+                "0.00",
             }, 'TheWorld:PushEvent("ms_deltamoisture", 0)')
 
             TestRemoteValid("SetDeltaMoisture", {
-                "World delta moisture:",
-                "1",
+                "Delta moisture:",
+                "1.00",
             }, 'TheWorld:PushEvent("ms_deltamoisture", 1)', 1)
         end)
 
@@ -305,13 +305,13 @@ describe("#sdk SDK.Remote.World", function()
             TestRemoteInvalidArg("SetDeltaWetness", "delta", "must be a number", "foo")
 
             TestRemoteValid("SetDeltaWetness", {
-                "World delta wetness:",
-                "0",
+                "Delta wetness:",
+                "0.00",
             }, 'TheWorld:PushEvent("ms_deltawetness", 0)')
 
             TestRemoteValid("SetDeltaWetness", {
-                "World delta wetness:",
-                "1",
+                "Delta wetness:",
+                "1.00",
             }, 'TheWorld:PushEvent("ms_deltawetness", 1)', 1)
         end)
 

@@ -120,7 +120,7 @@ function World.SetDeltaMoisture(delta)
         return false
     end
 
-    DebugString("World delta moisture:", tostring(delta))
+    DebugString("Delta moisture:", Value.ToFloatString(delta))
     SDK.Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
     return true
 end
@@ -136,7 +136,7 @@ function World.SetDeltaWetness(delta)
         return false
     end
 
-    DebugString("World delta wetness:", tostring(delta))
+    DebugString("Delta wetness:", Value.ToFloatString(delta))
     SDK.Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
     return true
 end
