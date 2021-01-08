@@ -210,6 +210,17 @@ function World.Resume()
     return false
 end
 
+--- Toggles a game pause.
+-- @see SDK.World.Pause
+-- @see SDK.World.Resume
+-- @treturn boolean
+function World.TogglePause()
+    if World.IsPaused() then
+        return World.Resume()
+    end
+    return World.Pause()
+end
+
 --- Phase
 -- @section phase
 
