@@ -112,6 +112,26 @@ function World.IsPointPassable(pt)
         or false
 end
 
+--- Rollbacks a world.
+-- @tparam number days
+-- @treturn boolean
+function World.Rollback(days)
+    days = days ~= nil and days or 0
+
+    if not Value.IsUnsigned(days) or not Value.IsInteger(days) then
+        DebugErrorInvalidArg("days", "must be an unsigned integer", "Rollback")
+        return false
+    end
+
+    if World.IsMasterSim() then
+        DebugString("Rollback:", Value.ToDaysString(days))
+        TheNet:SendWorldRollbackRequestToServer(days)
+        return true
+    end
+
+    return SDK.Remote.World.Rollback(days)
+end
+
 --- Sets a delta time scale.
 -- @see SDK.World.SetTimeScale
 -- @tparam number delta

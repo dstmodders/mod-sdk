@@ -15,6 +15,7 @@ describe("#sdk SDK.World", function()
     teardown(function()
         -- globals
         _G.SetPause = nil
+        _G.TheNet = nil
         _G.ThePlayer = nil
         _G.TheSim = nil
         _G.TheWorld = nil
@@ -26,6 +27,11 @@ describe("#sdk SDK.World", function()
     before_each(function()
         -- globals
         _G.SetPause = spy.new(Empty)
+
+        _G.TheNet = mock({
+            SendWorldRollbackRequestToServer = Empty,
+        })
+
         _G.ThePlayer = {}
 
         _G.TheSim = mock({
@@ -176,6 +182,120 @@ describe("#sdk SDK.World", function()
 
             it("should return true", function()
                 assert.is_true(World.IsPointPassable(pt))
+            end)
+        end)
+
+        describe("Rollback()", function()
+            describe("when invalid days are passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        World.Rollback("foo")
+                    end, "Rollback", "days", "must be an unsigned integer")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(World.Rollback("foo"))
+                end)
+            end)
+
+            describe("when valid days are passed", function()
+                describe("and is master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = true
+                    end)
+
+                    it("should debug string", function()
+                        AssertDebugString(function()
+                            World.Rollback(1)
+                        end, "[world]", "Rollback:", "1 day")
+                    end)
+
+                    it("should call TheNet:SendWorldRollbackRequestToServer()", function()
+                        assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_not_called()
+                        World.Rollback(1)
+                        assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_called(1)
+                        assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_called_with(
+                            match.is_ref(_G.TheNet),
+                            1
+                        )
+                    end)
+
+                    it("should return true", function()
+                        assert.is_true(World.SetTimeScale(1))
+                    end)
+                end)
+
+                describe("when is non-master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = false
+                    end)
+
+                    describe("and SDK.Remote.World.Rollback() returns false", function()
+                        local _fn
+
+                        setup(function()
+                            _fn = SDK.Remote.World.Rollback
+                        end)
+
+                        before_each(function()
+                            SDK.Remote.World.Rollback = spy.new(ReturnValueFn(false))
+                        end)
+
+                        teardown(function()
+                            SDK.Remote.World.Rollback = _fn
+                        end)
+
+                        it("should call SDK.Remote.World.Rollback()", function()
+                            assert.spy(SDK.Remote.World.Rollback).was_not_called()
+                            World.Rollback(1)
+                            assert.spy(SDK.Remote.World.Rollback).was_called(1)
+                            assert.spy(SDK.Remote.World.Rollback).was_called_with(1)
+                        end)
+
+                        it("shouldn't call TheSim:SendWorldRollbackRequestToServer()", function()
+                            assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_not_called()
+                            World.Rollback(1)
+                            assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_not_called()
+                        end)
+
+                        it("should return false", function()
+                            assert.is_false(World.Rollback(1))
+                        end)
+                    end)
+
+                    describe("and SDK.Remote.World.Rollback() returns true", function()
+                        local _fn
+
+                        setup(function()
+                            _fn = SDK.Remote.World.Rollback
+                        end)
+
+                        before_each(function()
+                            SDK.Remote.World.Rollback = spy.new(ReturnValueFn(true))
+                        end)
+
+                        teardown(function()
+                            SDK.Remote.World.Rollback = _fn
+                        end)
+
+                        it("should call SDK.Remote.World.Rollback()", function()
+                            assert.spy(SDK.Remote.World.Rollback).was_not_called()
+                            World.Rollback(1)
+                            assert.spy(SDK.Remote.World.Rollback).was_called(1)
+                            assert.spy(SDK.Remote.World.Rollback).was_called_with(1)
+                        end)
+
+                        it("shouldn't call TheSim:SendWorldRollbackRequestToServer()", function()
+                            assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_not_called()
+                            World.Rollback(1)
+                            assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_not_called()
+                        end)
+
+                        it("should return true", function()
+                            assert.is_true(World.Rollback(1))
+                        end)
+                    end)
+                end)
             end)
         end)
 

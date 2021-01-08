@@ -22,7 +22,6 @@ local Chain = {}
 --        and TheWorld.net.components
 --        and TheWorld.net.components.shardstate
 --        and TheWorld.net.components.shardstate.GetMasterSessionId
---        and TheWorld.net.components.shardstate:GetMasterSessionId
 --
 -- Or it's value:
 --
