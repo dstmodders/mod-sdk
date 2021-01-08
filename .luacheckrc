@@ -87,6 +87,7 @@ files["**/*.lua"] = {
         "SetPause",
         "shallowcopy",
         "softresolvefilepath",
+        "StartNextInstance",
         "StartThread",
         "STRINGS",
         "TableCount",

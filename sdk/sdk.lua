@@ -128,6 +128,12 @@ local function AddWorldPostInit()
     SDK._Info("Added world post initializer")
 end
 
+local function DebugString(...)
+    if SDK.Debug then
+        SDK.Debug.String(...)
+    end
+end
+
 local function RemoveTrailingSlashes(str)
     return str:gsub("(.)/*$", "%1")
 end
@@ -419,6 +425,22 @@ function SDK.LoadSubmodules(parent, submodules, global)
         end
     end
     return SDK
+end
+
+--- Reloads a game.
+-- @treturn boolean
+function SDK.Reload()
+    if not InGamePlay() then
+        DebugString("Reloading simulation...")
+        StartNextInstance()
+        return true
+    end
+
+    if SDK.World then
+        return SDK.World.Rollback(0)
+    end
+
+    return false
 end
 
 --- Sets a silent state.
