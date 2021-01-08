@@ -187,20 +187,18 @@ function SDK._DoInitModule(parent, module, name, global)
     }, {
         __index = function(_, k)
             local field = rawget(module, k)
-            if type(field) == "function" and not string.match(k, "^_") then -- function
-                if global and not _G[global] then
-                    SDK._DebugErrorNoCallWithoutGlobal(module, field, k, global)
-                end
-                return field
-            elseif type(field) == "table" and field.module then -- another module or submodule
-                if global and not _G[global] then
-                    SDK._DebugErrorNoCallWithoutGlobal(module, field, k, global)
-                end
-                return field
-            elseif field then
-                SDK._DebugErrorNoDirectUse(module, field, k)
+            if global and not _G[global] then
+                SDK._DebugErrorNoCallWithoutGlobal(module, field, k, global)
             else
-                SDK._DebugErrorNoFunction(module, k)
+                if type(field) == "function" and not string.match(k, "^_") then -- function
+                    return field
+                elseif type(field) == "table" and field.module then -- another module or submodule
+                    return field
+                elseif field then
+                    SDK._DebugErrorNoDirectUse(module, field, k)
+                else
+                    SDK._DebugErrorNoFunction(module, k)
+                end
             end
 
             return function()
