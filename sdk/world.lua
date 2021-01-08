@@ -133,6 +133,15 @@ function World.SetTimeScale(timescale)
     return false
 end
 
+--- Pausing
+-- @section pausing
+
+--- Checks if a game is paused.
+-- @treturn boolean
+function World.IsPaused()
+    return TheSim:GetTimeScale() == 0
+end
+
 --- Phase
 -- @section phase
 
