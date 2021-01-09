@@ -20,30 +20,16 @@ local Value
 --- Helpers
 -- @section helpers
 
-local function DebugError(fn_name, ...)
-    if SDK.Debug then
-        SDK.Debug.Error(string.format("%s.%s():", tostring(World), fn_name), ...)
-    end
+local function DebugErrorInvalidArg(fn_name, arg_name, explanation)
+    SDK._DebugErrorInvalidArg(World, fn_name, arg_name, explanation)
 end
 
-local function DebugErrorInvalidArg(arg_name, explanation, fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(
-        fn_name,
-        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
-        explanation and "(" .. explanation .. ")"
-    )
-end
-
-local function DebugErrorInvalidWorldType(explanation, fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(fn_name, "Invalid world type", explanation and "(" .. explanation .. ")")
+local function DebugErrorInvalidWorldType(fn_name, explanation)
+    SDK._DebugErrorInvalidWorldType(World, fn_name, explanation)
 end
 
 local function DebugString(...)
-    if SDK.Debug then
-        SDK.Debug.String("[remote]", "[world]", ...)
-    end
+    SDK._DebugString("[remote]", "[world]", ...)
 end
 
 --- General
@@ -64,7 +50,7 @@ end
 -- @treturn boolean
 function World.PushEvent(event)
     if not Value.IsString(event) then
-        DebugErrorInvalidArg("event", "must be a string", "PushEvent")
+        DebugErrorInvalidArg("PushEvent", "event", "must be a string")
         return false
     end
 
@@ -80,7 +66,7 @@ function World.Rollback(days)
     days = days ~= nil and days or 0
 
     if not Value.IsUnsigned(days) or not Value.IsInteger(days) then
-        DebugErrorInvalidArg("days", "must be an unsigned integer", "Rollback")
+        DebugErrorInvalidArg("Rollback", "days", "must be an unsigned integer")
         return false
     end
 
@@ -93,13 +79,15 @@ end
 -- @tparam Vector3 pt Point
 -- @treturn boolean
 function World.SendLightningStrike(pt)
+    local fn_name = "SendLightningStrike"
+
     if not TheWorld:HasTag("forest") then
-        DebugErrorInvalidWorldType("must be in a forest", "SendLightningStrike")
+        DebugErrorInvalidWorldType(fn_name, "must be in a forest")
         return false
     end
 
     if not Value.IsPoint(pt) then
-        DebugErrorInvalidArg("pt", "must be a point", "SendLightningStrike")
+        DebugErrorInvalidArg(fn_name, "pt", "must be a point")
         return false
     end
 
@@ -116,7 +104,7 @@ function World.SetDeltaMoisture(delta)
     delta = delta ~= nil and delta or 0
 
     if not Value.IsNumber(delta) then
-        DebugErrorInvalidArg("delta", "must be a number", "SetDeltaMoisture")
+        DebugErrorInvalidArg("SetDeltaMoisture", "delta", "must be a number")
         return false
     end
 
@@ -132,7 +120,7 @@ function World.SetDeltaWetness(delta)
     delta = delta ~= nil and delta or 0
 
     if not Value.IsNumber(delta) then
-        DebugErrorInvalidArg("delta", "must be a number", "SetDeltaWetness")
+        DebugErrorInvalidArg("SetDeltaWetness", "delta", "must be a number")
         return false
     end
 
@@ -147,9 +135,9 @@ end
 function World.SetSeason(season)
     if not Value.IsSeason(season) then
         DebugErrorInvalidArg(
+            "SetSeason",
             "season",
-            "must be a season: autumn, winter, spring or summer",
-            "SetSeason"
+            "must be a season: autumn, winter, spring or summer"
         )
         return false
     end
@@ -164,17 +152,19 @@ end
 -- @tparam number length
 -- @treturn boolean
 function World.SetSeasonLength(season, length)
+    local fn_name = "SetSeasonLength"
+
     if not Value.IsSeason(season) then
         DebugErrorInvalidArg(
+            fn_name,
             "season",
-            "must be a season: autumn, winter, spring or summer",
-            "SetSeasonLength"
+            "must be a season: autumn, winter, spring or summer"
         )
         return false
     end
 
     if not Value.IsUnsigned(length) or not Value.IsInteger(length) then
-        DebugErrorInvalidArg("length", "must be an unsigned integer", "SetSeasonLength")
+        DebugErrorInvalidArg(fn_name, "length", "must be an unsigned integer")
         return false
     end
 
@@ -193,8 +183,10 @@ end
 function World.SetSnowLevel(delta)
     delta = delta ~= nil and delta or 0
 
+    local fn_name = "SetSnowLevel"
+
     if TheWorld:HasTag("cave") then
-        DebugErrorInvalidWorldType("must be in a forest", "SetSnowLevel")
+        DebugErrorInvalidWorldType(fn_name, "must be in a forest")
         return false
     end
 
@@ -204,7 +196,7 @@ function World.SetSnowLevel(delta)
         return true
     end
 
-    DebugErrorInvalidArg("delta", "must be a unit interval", "SetSnowLevel")
+    DebugErrorInvalidArg(fn_name, "delta", "must be a unit interval")
     return false
 end
 
@@ -216,7 +208,7 @@ end
 -- @treturn boolean
 function World.SetTimeScale(timescale)
     if not Value.IsUnsigned(timescale) or not Value.IsNumber(timescale) then
-        DebugErrorInvalidArg("timescale", "must be an unsigned number", "SetTimeScale")
+        DebugErrorInvalidArg("SetTimeScale", "timescale", "must be an unsigned number")
         return false
     end
 

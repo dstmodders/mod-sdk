@@ -638,7 +638,6 @@ describe("#sdk SDK.World", function()
                             assert.spy(SDK.Debug.String).was_called(2)
                             assert.spy(SDK.Debug.String).was_called_with("[world]", "Pause game")
                             assert.spy(SDK.Debug.String).was_called_with(
-                                "[world]",
                                 "[notice]",
                                 "SDK.World.Pause():",
                                 "Other players will experience a client-side time scale mismatch"
@@ -797,7 +796,6 @@ describe("#sdk SDK.World", function()
                             assert.spy(SDK.Debug.String).was_called(2)
                             assert.spy(SDK.Debug.String).was_called_with("[world]", "Resume game")
                             assert.spy(SDK.Debug.String).was_called_with(
-                                "[world]",
                                 "[notice]",
                                 "SDK.World.Resume():",
                                 "Other players will experience a client-side time scale mismatch"

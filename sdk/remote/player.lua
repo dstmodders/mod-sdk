@@ -20,40 +20,29 @@ local Value
 --- Helpers
 -- @section helpers
 
-local function DebugError(fn_name, ...)
-    if SDK.Debug then
-        SDK.Debug.Error(string.format("%s.%s():", tostring(Player), fn_name), ...)
-    end
+local function DebugErrorFn(fn_name, ...)
+    SDK._DebugErrorFn(Player, fn_name, ...)
 end
 
-local function DebugErrorInvalidArg(arg_name, explanation, fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(
-        fn_name,
-        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
-        explanation and "(" .. explanation .. ")"
-    )
+local function DebugErrorInvalidArg(fn_name, arg_name, explanation)
+    SDK._DebugErrorInvalidArg(Player, fn_name, arg_name, explanation)
 end
 
-local function DebugErrorInvalidWorldType(explanation, fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(fn_name, "Invalid world type", explanation and "(" .. explanation .. ")")
+local function DebugErrorInvalidWorldType(fn_name, explanation)
+    SDK._DebugErrorInvalidWorldType(Player, fn_name, explanation)
 end
 
-local function DebugErrorPlayerIsGhost(fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(fn_name, "Player shouldn't be a ghost")
+local function DebugErrorNoPlayerGhost(fn_name)
+    SDK._DebugErrorNoPlayerGhost(Player, fn_name)
 end
 
 local function DebugString(...)
-    if SDK.Debug then
-        SDK.Debug.String("[remote]", "[player]", ...)
-    end
+    SDK._DebugString("[remote]", "[player]", ...)
 end
 
 local function IsValidPlayer(player, fn_name)
     if not Value.IsPlayer(player) then
-        DebugErrorInvalidArg("player", "must be a player", fn_name)
+        DebugErrorInvalidArg(fn_name, "player", "must be a player")
         return false
     end
     return true
@@ -65,7 +54,7 @@ local function IsValidPlayerAlive(player, fn_name)
     end
 
     if player:HasTag("playerghost") then
-        DebugErrorPlayerIsGhost(fn_name)
+        DebugErrorNoPlayerGhost(fn_name)
         return false
     end
 
@@ -74,7 +63,7 @@ end
 
 local function IsValidRecipe(recipe, fn_name)
     if not Value.IsRecipeValid(recipe) then
-        DebugErrorInvalidArg("recipe", "must be a valid recipe", fn_name)
+        DebugErrorInvalidArg(fn_name, "recipe", "must be a valid recipe")
         return false
     end
     return true
@@ -82,7 +71,7 @@ end
 
 local function IsValidSetAttributePercent(percent, player, fn_name)
     if not Value.IsPercent(percent) then
-        DebugErrorInvalidArg("percent", "must be a percent", fn_name)
+        DebugErrorInvalidArg(fn_name, "percent", "must be a percent")
         return false
     end
 
@@ -143,7 +132,7 @@ end
 -- @treturn boolean
 function Player.GoNext(prefab)
     if not Value.IsPrefab(prefab) then
-        DebugErrorInvalidArg("prefab", "must be a prefab", "GoNext")
+        DebugErrorInvalidArg("GoNext", "prefab", "must be a prefab")
         return false
     end
 
@@ -164,27 +153,29 @@ function Player.SendMiniEarthquake(radius, amount, duration, player)
     duration = duration ~= nil and duration or 2.5
     player = player ~= nil and player or ThePlayer
 
+    local fn_name = "SendMiniEarthquake"
+
     if not TheWorld:HasTag("cave") then
-        DebugErrorInvalidWorldType("must be in a cave", "SendMiniEarthquake")
+        DebugErrorInvalidWorldType(fn_name, "must be in a cave")
         return false
     end
 
     if not Value.IsUnsigned(radius) or not Value.IsInteger(radius) then
-        DebugErrorInvalidArg("radius", "must be an unsigned integer", "SendMiniEarthquake")
+        DebugErrorInvalidArg(fn_name, "radius", "must be an unsigned integer")
         return false
     end
 
     if not Value.IsUnsigned(amount) or not Value.IsInteger(amount) then
-        DebugErrorInvalidArg("amount", "must be an unsigned integer", "SendMiniEarthquake")
+        DebugErrorInvalidArg(fn_name, "amount", "must be an unsigned integer")
         return false
     end
 
     if not Value.IsUnsigned(duration) or not Value.IsNumber(duration) then
-        DebugErrorInvalidArg("duration", "must be an unsigned number", "SendMiniEarthquake")
+        DebugErrorInvalidArg(fn_name, "duration", "must be an unsigned number")
         return false
     end
 
-    if not IsValidPlayer(player, "SendMiniEarthquake") then
+    if not IsValidPlayer(player, fn_name) then
         return false
     end
 
@@ -194,7 +185,7 @@ function Player.SendMiniEarthquake(radius, amount, duration, player)
             .. 'rad = %d, '
             .. 'num = %d, '
             .. 'duration = %0.2f '
-        .. '})', -- luacheck: only
+        .. '})',
         { player.userid, radius, amount, duration })
 
     return true
@@ -295,12 +286,14 @@ end
 function Player.SetTemperature(temperature, player)
     player = player ~= nil and player or ThePlayer
 
+    local fn_name = "SetTemperature"
+
     if not Value.IsEntityTemperature(temperature) then
-        DebugErrorInvalidArg("temperature", "must be an entity temperature", "SetTemperature")
+        DebugErrorInvalidArg(fn_name, "temperature", "must be an entity temperature")
         return false
     end
 
-    if not IsValidPlayerAlive(player, "SetTemperature") then
+    if not IsValidPlayerAlive(player, fn_name) then
         return false
     end
 
@@ -329,7 +322,7 @@ function Player.SetWerenessPercent(percent, player)
         component = "wereness",
         post_validation_fn = function()
             if not player:HasTag("werehuman") then
-                DebugError("SetWerenessPercent", "Player should be a Woodie")
+                DebugErrorFn("SetWerenessPercent", "Player should be a Woodie")
                 return false
             end
             return true

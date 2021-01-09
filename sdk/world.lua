@@ -28,33 +28,20 @@ local _WETNESS_RATE
 --- Helpers
 -- @section helpers
 
-local function DebugError(fn_name, ...)
-    if SDK.Debug then
-        SDK.Debug.Error(string.format("%s.%s():", tostring(World), fn_name), ...)
-    end
+local function DebugErrorFn(fn_name, ...)
+    SDK._DebugErrorFn(World, fn_name, ...)
 end
 
-local function DebugErrorInvalidArg(arg_name, explanation, fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(
-        fn_name,
-        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
-        explanation and "(" .. explanation .. ")"
-    )
+local function DebugErrorInvalidArg(fn_name, arg_name, explanation)
+    SDK._DebugErrorInvalidArg(World, fn_name, arg_name, explanation)
 end
 
 local function DebugString(...)
-    if SDK.Debug then
-        SDK.Debug.String("[world]", ...)
-    end
-end
-
-local function DebugNotice(fn_name, ...)
-    DebugString("[notice]", string.format("%s.%s():", tostring(World), fn_name), ...)
+    SDK._DebugString("[world]", ...)
 end
 
 local function DebugNoticeTimeScaleMismatch(fn_name)
-    DebugNotice(fn_name, "Other players will experience a client-side time scale mismatch")
+    SDK._DebugNoticeTimeScaleMismatch(World, fn_name)
 end
 
 --- General
@@ -119,7 +106,7 @@ function World.Rollback(days)
     days = days ~= nil and days or 0
 
     if not Value.IsUnsigned(days) or not Value.IsInteger(days) then
-        DebugErrorInvalidArg("days", "must be an unsigned integer", "Rollback")
+        DebugErrorInvalidArg("Rollback", "days", "must be an unsigned integer")
         return false
     end
 
@@ -139,7 +126,7 @@ function World.SetDeltaTimeScale(delta)
     delta = delta ~= nil and delta or 0
 
     if not Value.IsNumber(delta) then
-        DebugErrorInvalidArg("delta", "must be a number", "SetDeltaTimeScale")
+        DebugErrorInvalidArg("SetDeltaTimeScale", "delta", "must be a number")
         return false
     end
 
@@ -158,7 +145,7 @@ end
 -- @treturn boolean
 function World.SetTimeScale(timescale)
     if not Value.IsUnsigned(timescale) or not Value.IsNumber(timescale) then
-        DebugErrorInvalidArg("timescale", "must be an unsigned number", "SetTimeScale")
+        DebugErrorInvalidArg("SetTimeScale", "timescale", "must be an unsigned number")
         return false
     end
 
@@ -191,7 +178,7 @@ end
 -- @treturn boolean
 function World.Pause()
     if World.IsPaused() then
-        DebugError("Pause", "Game is already paused")
+        DebugErrorFn("Pause", "Game is already paused")
         return false
     end
 
@@ -222,7 +209,7 @@ end
 -- @treturn boolean
 function World.Resume()
     if not World.IsPaused() then
-        DebugError("Resume", "Game is already resumed")
+        DebugErrorFn("Resume", "Game is already resumed")
         return false
     end
 

@@ -21,35 +21,25 @@ local Value
 --- Helpers
 -- @section helpers
 
-local function DebugError(fn_name, ...)
-    if SDK.Debug then
-        SDK.Debug.Error(string.format("%s.%s():", tostring(Player), fn_name), ...)
-    end
+local function DebugErrorFn(fn_name, ...)
+    SDK._DebugErrorFn(Player, fn_name, ...)
 end
 
-local function DebugErrorInvalidArg(arg_name, explanation, fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(
-        fn_name,
-        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
-        explanation and "(" .. explanation .. ")"
-    )
+local function DebugErrorInvalidArg(fn_name, arg_name, explanation)
+    SDK._DebugErrorInvalidArg(Player, fn_name, arg_name, explanation)
 end
 
-local function DebugErrorPlayerIsGhost(fn_name)
-    fn_name = fn_name ~= nil and fn_name or debug.getinfo(2).name
-    DebugError(fn_name, "Player shouldn't be a ghost")
+local function DebugErrorNoPlayerGhost(fn_name)
+    SDK._DebugErrorNoPlayerGhost(Player, fn_name)
 end
 
 local function DebugString(...)
-    if SDK.Debug then
-        SDK.Debug.String("[player]", ...)
-    end
+    SDK._DebugString("[player]", ...)
 end
 
 local function IsValidPlayer(player, fn_name)
     if not Value.IsPlayer(player) then
-        DebugErrorInvalidArg("player", "must be a player", fn_name)
+        DebugErrorInvalidArg(fn_name, "player", "must be a player")
         return false
     end
     return true
@@ -61,7 +51,7 @@ local function IsValidPlayerAlive(player, fn_name)
     end
 
     if player:HasTag("playerghost") then
-        DebugErrorPlayerIsGhost(fn_name)
+        DebugErrorNoPlayerGhost(fn_name)
         return false
     end
 
@@ -70,7 +60,7 @@ end
 
 local function IsValidSetAttributePercent(percent, player, fn_name)
     if not Value.IsPercent(percent) then
-        DebugErrorInvalidArg("percent", "must be a percent", fn_name)
+        DebugErrorInvalidArg(fn_name, "percent", "must be a percent")
         return false
     end
 
@@ -118,7 +108,7 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
         return SDK.Remote.Player[fn_name](percent, player)
     end
 
-    DebugError(fn_name, component:gsub("^%l", string.upper) .. " component is not available")
+    DebugErrorFn(fn_name, component:gsub("^%l", string.upper) .. " component is not available")
     return false
 end
 
@@ -511,12 +501,14 @@ end
 function Player.SetTemperature(temperature, player)
     player = player ~= nil and player or ThePlayer
 
+    local fn_name = "SetTemperature"
+
     if not Value.IsEntityTemperature(temperature) then
-        DebugErrorInvalidArg("temperature", "must be an entity temperature", "SetTemperature")
+        DebugErrorInvalidArg(fn_name, "temperature", "must be an entity temperature")
         return false
     end
 
-    if not IsValidPlayerAlive(player, "SetTemperature") then
+    if not IsValidPlayerAlive(player, fn_name) then
         return false
     end
 
@@ -535,7 +527,7 @@ function Player.SetTemperature(temperature, player)
         return SDK.Remote.Player.SetTemperature(temperature, player)
     end
 
-    DebugError("SetTemperature", "Temperature component is not available")
+    DebugErrorFn(fn_name, "Temperature component is not available")
     return false
 end
 
@@ -549,7 +541,7 @@ function Player.SetWerenessPercent(percent, player)
         component = "wereness",
         post_validation_fn = function(_, _player)
             if not _player:HasTag("werehuman") then
-                DebugError("SetWerenessPercent", "Player should be a Woodie")
+                DebugErrorFn("SetWerenessPercent", "Player should be a Woodie")
                 return false
             end
             return true
