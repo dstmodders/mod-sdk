@@ -147,6 +147,48 @@ end
 --- Internal
 -- @section internal
 
+--- Debugs an error function string.
+-- @tparam table module Module
+-- @tparam string fn_name Function name
+-- @tparam any ...
+function SDK._DebugErrorFn(module, fn_name, ...)
+    if SDK.Debug then
+        SDK.Debug.Error(string.format("%s.%s():", tostring(module), fn_name), ...)
+    end
+end
+
+--- Debugs an invalid argument error string.
+-- @tparam table module Module
+-- @tparam string fn_name Function name
+-- @tparam string arg_name Argument name
+-- @tparam[opt] string explanation Explanation
+function SDK._DebugErrorInvalidArg(module, fn_name, arg_name, explanation)
+    SDK._DebugErrorFn(
+        module,
+        fn_name,
+        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
+        explanation and "(" .. explanation .. ")"
+    )
+end
+
+--- Debugs an invalid world type error string.
+-- @tparam table module Module
+-- @tparam string fn_name Function name
+-- @tparam[opt] string explanation Explanation
+function SDK._DebugErrorInvalidWorldType(module, fn_name, explanation)
+    SDK._DebugErrorFn(
+        module,
+        fn_name,
+        "Invalid world type",
+        explanation and "(" .. explanation .. ")"
+    )
+end
+
+--- Debugs a calling without global error string.
+-- @tparam table module Module
+-- @tparam any field Field/Function
+-- @tparam string name Field/Function name
+-- @tparam string global Global name
 function SDK._DebugErrorNoCallWithoutGlobal(module, field, name, global)
     if SDK.Debug then
         SDK.Debug.Error(string.format(
@@ -160,6 +202,10 @@ function SDK._DebugErrorNoCallWithoutGlobal(module, field, name, global)
     end
 end
 
+--- Debugs a calling directly error string.
+-- @tparam table module Module
+-- @tparam any field Field/Function
+-- @tparam string name Field/Function name
 function SDK._DebugErrorNoDirectUse(module, field, name)
     if SDK.Debug then
         SDK.Debug.Error(string.format(
@@ -172,6 +218,9 @@ function SDK._DebugErrorNoDirectUse(module, field, name)
     end
 end
 
+--- Debugs a missing function error string.
+-- @tparam table module Module
+-- @tparam string name Field/Function name
 function SDK._DebugErrorNoFunction(module, name)
     if SDK.Debug then
         SDK.Debug.Error(string.format(
@@ -182,6 +231,51 @@ function SDK._DebugErrorNoFunction(module, name)
     end
 end
 
+--- Debugs a player is dead error string.
+-- @tparam table module Module
+-- @tparam string fn_name Function name
+function SDK._DebugErrorNoPlayerGhost(module, fn_name)
+    SDK._DebugErrorFn(module, fn_name, "Player shouldn't be a ghost")
+end
+
+--- Debugs a notice string.
+-- @tparam any ...
+function SDK._DebugNotice(...)
+    SDK._DebugString("[notice]", ...)
+end
+
+--- Debugs a missing function error string.
+-- @tparam table module Module
+-- @tparam string fn_name Function name
+-- @tparam any ...
+function SDK._DebugNoticeFn(module, fn_name, ...)
+    SDK._DebugNotice(string.format("%s.%s():", tostring(module), fn_name), ...)
+end
+
+--- Debugs a time scale mismatch notice string.
+-- @tparam table module Module
+-- @tparam string fn_name Function name
+function SDK._DebugNoticeTimeScaleMismatch(module, fn_name)
+    SDK._DebugNoticeFn(
+        module,
+        fn_name,
+        "Other players will experience a client-side time scale mismatch"
+    )
+end
+
+--- Debugs a string.
+-- @tparam any ...
+function SDK._DebugString(...)
+    if SDK.Debug then
+        SDK.Debug.String(...)
+    end
+end
+
+--- Initializes a module.
+-- @tparam table parent Parent module
+-- @tparam table module Module itself
+-- @tparam string name Module name
+-- @tparam[opt] string global Global
 function SDK._DoInitModule(parent, module, name, global)
     SDK._SetModuleName(parent, module, name)
 
@@ -218,10 +312,14 @@ function SDK._DoInitModule(parent, module, name, global)
     return mt
 end
 
+--- Prints an error string.
+-- @tparam any ...
 function SDK._Error(...)
     SDK._Info("[error]", ...)
 end
 
+--- Prints an info string.
+-- @tparam any ...
 function SDK._Info(...) -- luacheck: only
     if SDK.is_silent then
         return
@@ -237,6 +335,10 @@ function SDK._Info(...) -- luacheck: only
     print(msg)
 end
 
+--- Sets a module name.
+-- @tparam table parent Parent module
+-- @tparam table module Module itself
+-- @tparam string name Module name
 function SDK._SetModuleName(parent, module, name)
     local fn = function()
         return tostring(parent) .. "." .. name
