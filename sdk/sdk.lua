@@ -272,15 +272,27 @@ function SDK._DebugString(...)
 end
 
 --- Initializes a module.
+-- @usage SDK._DoInitModule(SDK, YourModule, "YourModule")
+-- @usage SDK._DoInitModule(SDK, YourModule, "YourModule", "TheWorld")
+-- @usage SDK._DoInitModule(SDK, YourModule, "YourModule", {
+--     global = "TheWorld",
+-- })
 -- @tparam table parent Parent module
--- @tparam table module Module itself
+-- @tparam table module Module
 -- @tparam string name Module name
--- @tparam[opt] string global Global
-function SDK._DoInitModule(parent, module, name, global)
+-- @tparam[opt] table|string options Options or a global name
+-- @treturn table
+function SDK._DoInitModule(parent, module, name, options)
+    options = options ~= nil and options or {}
+
     SDK._SetModuleName(parent, module, name)
 
-    local mt = setmetatable({
+    local global = type(options) == "string" and options or options.global
+    local t = setmetatable({
         module = module,
+        options = {
+            global = global,
+        },
         Has = function(field)
             return rawget(module, field) and true or false
         end,
@@ -301,15 +313,13 @@ function SDK._DoInitModule(parent, module, name, global)
                 end
             end
 
-            return function()
-                return nil
-            end
+            return function() end
         end,
     })
 
-    SDK._SetModuleName(parent, mt, name)
+    SDK._SetModuleName(parent, t, name)
 
-    return mt
+    return t
 end
 
 --- Prints an error string.
@@ -337,7 +347,7 @@ end
 
 --- Sets a module name.
 -- @tparam table parent Parent module
--- @tparam table module Module itself
+-- @tparam table module Module
 -- @tparam string name Module name
 function SDK._SetModuleName(parent, module, name)
     local fn = function()
@@ -425,21 +435,28 @@ function SDK.Load(env, path, modules)
 
     if softresolvefilepath(SDK.path_full .. "/sdk/sdk.lua") then
         package.path = SDK.path_full .. "/?.lua;" .. package.path
+
+        -- load all utilities first in all cases
         SDK.LoadModule("Utils", path .. _MODULES.Utils)
+
         if type(modules) == "table" and SDK.Utils.Table.Count(modules) > 0 then
+            -- load all only the provided modules (except utilities)
             for k, v in pairs(modules) do
                 if k ~= "Utils" then
                     if type(k) == "number" then
-                        SDK.LoadModule(v, path .. _MODULES[v])
+                        SDK.LoadModule(v, path .. (type(_MODULES[v]) == "string"
+                            and _MODULES[v]
+                            or _MODULES[v].path))
                     else
-                        SDK.LoadModule(k, v)
+                        SDK.LoadModule(k, type(v) == "string" and v or v.path)
                     end
                 end
             end
         else
+            -- load all modules (except utilities)
             for k, v in pairs(_MODULES) do
                 if k ~= "Utils" then
-                    SDK.LoadModule(k, path .. v)
+                    SDK.LoadModule(k, path .. (type(v) == "string" and v or v.path))
                 end
             end
         end
@@ -474,7 +491,9 @@ function SDK.LoadModule(name, path, submodules)
         SDK.loaded[name] = path
         module = require(SDK.loaded[name])
     elseif _MODULES[name] then
-        SDK.loaded[name] = SDK.path .. _MODULES[name]
+        SDK.loaded[name] = SDK.path .. (type(_MODULES[name]) == "string"
+            and _MODULES[name]
+            or _MODULES[name].path)
         module = require(SDK.loaded[name])
     end
 
@@ -717,7 +736,8 @@ end
 
 setmetatable(SDK, {
     __index = function(self, k)
-        if _MODULES[k] and not rawget(self, k) then
+        local module = rawget(self, k)
+        if not module and _MODULES[k] then
             local msg = string.format(
                 'SDK.%s is not loaded. Use SDK.LoadModule("%s") or SDK.Load()',
                 k,
@@ -727,7 +747,7 @@ setmetatable(SDK, {
             assert(false, msg)
             return
         end
-        return rawget(self, k)
+        return module
     end,
     __tostring = function()
         return "SDK"
