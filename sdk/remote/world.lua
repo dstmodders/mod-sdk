@@ -201,9 +201,9 @@ function World.SetSnowLevel(delta)
 end
 
 --- Sends a request to set a time scale.
--- @see SDK.World.Pause
+-- @see SDK.Pause
+-- @see SDK.Resume
 -- @see SDK.World.SetTimeScale
--- @see SDK.World.Resume
 -- @tparam string timescale
 -- @treturn boolean
 function World.SetTimeScale(timescale)

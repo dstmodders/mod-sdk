@@ -28,10 +28,6 @@ local _WETNESS_RATE
 --- Helpers
 -- @section helpers
 
-local function DebugErrorFn(fn_name, ...)
-    SDK._DebugErrorFn(World, fn_name, ...)
-end
-
 local function DebugErrorInvalidArg(fn_name, arg_name, explanation)
     SDK._DebugErrorInvalidArg(World, fn_name, arg_name, explanation)
 end
@@ -162,86 +158,6 @@ function World.SetTimeScale(timescale)
     end
 
     return false
-end
-
---- Pausing
--- @section pausing
-
---- Checks if a game is paused.
--- @treturn boolean
-function World.IsPaused()
-    return TheSim:GetTimeScale() == 0
-end
-
---- Pauses a game.
--- @see SDK.Remote.World.SetTimeScale
--- @treturn boolean
-function World.Pause()
-    if World.IsPaused() then
-        DebugErrorFn("Pause", "Game is already paused")
-        return false
-    end
-
-    local timescale = TheSim:GetTimeScale()
-
-    if World.IsMasterSim() then
-        DebugString("Pause game")
-        World.timescale = timescale
-        TheSim:SetTimeScale(0)
-        SetPause(true, "console")
-        return true
-    end
-
-    if SDK.Remote.World.SetTimeScale(0) then
-        DebugString("Pause game")
-        World.timescale = timescale
-        TheSim:SetTimeScale(0)
-        SetPause(true, "console")
-        DebugNoticeTimeScaleMismatch("Pause")
-        return true
-    end
-
-    return false
-end
-
---- Resumes a game from a pause.
--- @see SDK.Remote.World.SetTimeScale
--- @treturn boolean
-function World.Resume()
-    if not World.IsPaused() then
-        DebugErrorFn("Resume", "Game is already resumed")
-        return false
-    end
-
-    local timescale = World.timescale or 1
-
-    if World.IsMasterSim() then
-        DebugString("Resume game")
-        TheSim:SetTimeScale(timescale)
-        SetPause(false, "console")
-        return true
-    end
-
-    if SDK.Remote.World.SetTimeScale(timescale) then
-        DebugString("Resume game")
-        TheSim:SetTimeScale(timescale)
-        SetPause(false, "console")
-        DebugNoticeTimeScaleMismatch("Resume")
-        return true
-    end
-
-    return false
-end
-
---- Toggles a game pause.
--- @see SDK.World.Pause
--- @see SDK.World.Resume
--- @treturn boolean
-function World.TogglePause()
-    if World.IsPaused() then
-        return World.Resume()
-    end
-    return World.Pause()
 end
 
 --- Phase

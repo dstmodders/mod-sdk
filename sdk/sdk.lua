@@ -802,8 +802,8 @@ function SDK.Resume()
 end
 
 --- Toggles a game pause.
--- @see SDK.World.Pause
--- @see SDK.World.Resume
+-- @see SDK.Pause
+-- @see SDK.Resume
 -- @treturn boolean
 function SDK.TogglePause()
     if SDK.IsPaused() then
