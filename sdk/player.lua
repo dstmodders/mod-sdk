@@ -591,9 +591,7 @@ end
 -- @treturn boolean
 function Player.SetMovementPrediction(is_enabled, player)
     if TheWorld.ismastersim then
-        SDK.Debug.Error(
-            "SDK.Player.SetMovementPrediction: Can't be toggled on the master simulation"
-        )
+        DebugErrorFn("SetMovementPrediction", "Can't be toggled on the master simulation")
         return false
     end
 
@@ -610,7 +608,7 @@ function Player.SetMovementPrediction(is_enabled, player)
         player:EnableMovementPrediction(false)
     end
 
-    SDK.Debug.String("Movement prediction:", is_enabled and "enabled" or "disabled")
+    DebugString("Movement prediction:", is_enabled and "enabled" or "disabled")
     TheSim:SetSetting("misc", "movementprediction", tostring(is_enabled))
 
     return is_enabled

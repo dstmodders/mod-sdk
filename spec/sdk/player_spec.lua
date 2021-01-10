@@ -287,15 +287,19 @@ describe("#sdk SDK.Player", function()
         Player = require "yoursubdirectory/sdk/sdk/player"
 
         -- spies
-        SDK.Debug.Error = spy.on(SDK.Debug, "Error")
-        SDK.Debug.String = spy.on(SDK.Debug, "String")
+        if SDK.IsLoaded("Debug") then
+            SDK.Debug.Error = spy.on(SDK.Debug, "Error")
+            SDK.Debug.String = spy.on(SDK.Debug, "String")
+        end
     end)
 
     local function AssertDebugError(fn, ...)
-        assert.spy(SDK.Debug.Error).was_not_called()
-        fn()
-        assert.spy(SDK.Debug.Error).was_called(1)
-        assert.spy(SDK.Debug.Error).was_called_with(...)
+        if SDK.IsLoaded("Debug") then
+            assert.spy(SDK.Debug.Error).was_not_called()
+            fn()
+            assert.spy(SDK.Debug.Error).was_called(1)
+            assert.spy(SDK.Debug.Error).was_called_with(...)
+        end
     end
 
     local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
@@ -311,10 +315,12 @@ describe("#sdk SDK.Player", function()
     end
 
     local function AssertDebugString(fn, ...)
-        assert.spy(SDK.Debug.String).was_not_called()
-        fn()
-        assert.spy(SDK.Debug.String).was_called(1)
-        assert.spy(SDK.Debug.String).was_called_with(...)
+        if SDK.IsLoaded("Debug") then
+            assert.spy(SDK.Debug.String).was_not_called()
+            fn()
+            assert.spy(SDK.Debug.String).was_called(1)
+            assert.spy(SDK.Debug.String).was_called_with("[player]", ...)
+        end
     end
 
     describe("general", function()
@@ -1307,7 +1313,7 @@ describe("#sdk SDK.Player", function()
                 it("should debug string", function()
                     AssertDebugString(function()
                         Player[fn_name](25)
-                    end, "[player]", unpack(debug))
+                    end, unpack(debug))
                 end)
 
                 it(
@@ -1847,6 +1853,16 @@ describe("#sdk SDK.Player", function()
                 end)
 
                 describe("and enabling", function()
+                    it("should debug error string", function()
+                        AssertDebugError(
+                            function()
+                                Player.SetMovementPrediction(true, inst)
+                            end,
+                            "SDK.Player.SetMovementPrediction():",
+                            "Can't be toggled on the master simulation"
+                        )
+                    end)
+
                     it("shouldn't call [player].EnableMovementPrediction()", function()
                         assert.spy(inst.EnableMovementPrediction).was_not_called()
                         Player.SetMovementPrediction(true, inst)
@@ -1907,14 +1923,20 @@ describe("#sdk SDK.Player", function()
 
                     it("should call TheSim:SetSetting()", function()
                         assert.spy(_G.TheSim.SetSetting).was_not_called()
-                        Player.SetMovementPrediction(false, inst)
+                        Player.SetMovementPrediction(true, inst)
                         assert.spy(_G.TheSim.SetSetting).was_called(1)
                         assert.spy(_G.TheSim.SetSetting).was_called_with(
                             match.is_ref(_G.TheSim),
                             "misc",
                             "movementprediction",
-                            "false"
+                            "true"
                         )
+                    end)
+
+                    it("should debug string", function()
+                        AssertDebugString(function()
+                            Player.SetMovementPrediction(true, inst)
+                        end, "Movement prediction:", "enabled")
                     end)
 
                     it("should return true", function()
@@ -1952,6 +1974,12 @@ describe("#sdk SDK.Player", function()
                             "movementprediction",
                             "false"
                         )
+                    end)
+
+                    it("should debug string", function()
+                        AssertDebugString(function()
+                            Player.SetMovementPrediction(false, inst)
+                        end, "Movement prediction:", "disabled")
                     end)
 
                     it("should return false", function()
