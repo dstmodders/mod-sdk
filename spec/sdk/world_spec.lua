@@ -63,15 +63,19 @@ describe("#sdk SDK.World", function()
         World = require "yoursubdirectory/sdk/sdk/world"
 
         -- spies
-        SDK.Debug.Error = spy.on(SDK.Debug, "Error")
-        SDK.Debug.String = spy.on(SDK.Debug, "String")
+        if SDK.IsLoaded("Debug") then
+            SDK.Debug.Error = spy.on(SDK.Debug, "Error")
+            SDK.Debug.String = spy.on(SDK.Debug, "String")
+        end
     end)
 
     local function AssertDebugError(fn, ...)
-        assert.spy(SDK.Debug.Error).was_not_called()
-        fn()
-        assert.spy(SDK.Debug.Error).was_called(1)
-        assert.spy(SDK.Debug.Error).was_called_with(...)
+        if SDK.IsLoaded("Debug") then
+            assert.spy(SDK.Debug.Error).was_not_called()
+            fn()
+            assert.spy(SDK.Debug.Error).was_called(1)
+            assert.spy(SDK.Debug.Error).was_called_with(...)
+        end
     end
 
     local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
@@ -87,10 +91,12 @@ describe("#sdk SDK.World", function()
     end
 
     local function AssertDebugString(fn, ...)
-        assert.spy(SDK.Debug.String).was_not_called()
-        fn()
-        assert.spy(SDK.Debug.String).was_called(1)
-        assert.spy(SDK.Debug.String).was_called_with(...)
+        if SDK.IsLoaded("Debug") then
+            assert.spy(SDK.Debug.String).was_not_called()
+            fn()
+            assert.spy(SDK.Debug.String).was_called(1)
+            assert.spy(SDK.Debug.String).was_called_with(...)
+        end
     end
 
     describe("general", function()
@@ -633,15 +639,21 @@ describe("#sdk SDK.World", function()
                         end)
 
                         it("should debug strings", function()
-                            assert.spy(SDK.Debug.String).was_not_called()
-                            World.Pause()
-                            assert.spy(SDK.Debug.String).was_called(2)
-                            assert.spy(SDK.Debug.String).was_called_with("[world]", "Pause game")
-                            assert.spy(SDK.Debug.String).was_called_with(
-                                "[notice]",
-                                "SDK.World.Pause():",
-                                "Other players will experience a client-side time scale mismatch"
-                            )
+                            if SDK.IsLoaded("Debug") then
+                                assert.spy(SDK.Debug.String).was_not_called()
+                                World.Pause()
+                                assert.spy(SDK.Debug.String).was_called(2)
+                                assert.spy(SDK.Debug.String).was_called_with(
+                                    "[world]",
+                                    "Pause game"
+                                )
+                                assert.spy(SDK.Debug.String).was_called_with(
+                                    "[notice]",
+                                    "SDK.World.Pause():",
+                                    "Other players will experience a client-side time scale "
+                                        .. "mismatch"
+                                )
+                            end
                         end)
 
                         it("should set World.timescale field", function()
@@ -791,15 +803,21 @@ describe("#sdk SDK.World", function()
                         end)
 
                         it("should debug strings", function()
-                            assert.spy(SDK.Debug.String).was_not_called()
-                            World.Resume()
-                            assert.spy(SDK.Debug.String).was_called(2)
-                            assert.spy(SDK.Debug.String).was_called_with("[world]", "Resume game")
-                            assert.spy(SDK.Debug.String).was_called_with(
-                                "[notice]",
-                                "SDK.World.Resume():",
-                                "Other players will experience a client-side time scale mismatch"
-                            )
+                            if SDK.IsLoaded("Debug") then
+                                assert.spy(SDK.Debug.String).was_not_called()
+                                World.Resume()
+                                assert.spy(SDK.Debug.String).was_called(2)
+                                assert.spy(SDK.Debug.String).was_called_with(
+                                    "[world]",
+                                    "Resume game"
+                                )
+                                assert.spy(SDK.Debug.String).was_called_with(
+                                    "[notice]",
+                                    "SDK.World.Resume():",
+                                    "Other players will experience a client-side time scale "
+                                        .. "mismatch"
+                                )
+                            end
                         end)
 
                         it("should call TheSim:SetTimeScale()", function()

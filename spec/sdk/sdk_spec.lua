@@ -23,13 +23,30 @@ describe("#sdk SDK", function()
             Module = require("spec/module")
 
             -- spies
-            SDK.Debug.Error = spy.new(Empty)
+            if SDK.IsLoaded("Debug") then
+                SDK.Debug.Error = spy.new(Empty)
+            end
         end)
 
         after_each(function()
             SDK.UnloadModule("Module")
             SDK.UnloadModule("Debug")
         end)
+
+        local function AssertDebugErrorCalls(fn, calls, ...)
+            if SDK.IsLoaded("Debug") then
+                assert.spy(SDK.Debug.Error).was_not_called()
+                fn()
+                assert.spy(SDK.Debug.Error).was_called(calls)
+                if calls > 0 then
+                    assert.spy(SDK.Debug.Error).was_called_with(...)
+                end
+            end
+        end
+
+        local function AssertDebugError(fn, ...)
+            AssertDebugErrorCalls(fn, 1, ...)
+        end
 
         describe("when calling a module through SDK", function()
             it("should have a module field pointing to the module itself", function()
@@ -49,9 +66,9 @@ describe("#sdk SDK", function()
 
                 describe("when referencing an existent function", function()
                     it("shouldn't debug error string", function()
-                        assert.spy(SDK.Debug.Error).was_not_called()
-                        SDK.Module.Foo()
-                        assert.spy(SDK.Debug.Error).was_not_called()
+                        AssertDebugErrorCalls(function()
+                            SDK.Module.Foo()
+                        end, 0)
                     end)
 
                     it("should return a function itself", function()
@@ -62,12 +79,9 @@ describe("#sdk SDK", function()
 
                 describe("and referencing a non-existent function", function()
                     it("should debug error string", function()
-                        assert.spy(SDK.Debug.Error).was_not_called()
-                        SDK.Module.FooBar()
-                        assert.spy(SDK.Debug.Error).was_called(1)
-                        assert.spy(SDK.Debug.Error).was_called_with(
-                            "Function or field SDK.Module.FooBar doesn't exist"
-                        )
+                        AssertDebugError(function()
+                            SDK.Module.FooBar()
+                        end, "Function or field SDK.Module.FooBar doesn't exist")
                     end)
 
                     it("should return a function that returns nil", function()
@@ -78,12 +92,9 @@ describe("#sdk SDK", function()
 
                 describe("and referencing an internal function", function()
                     it("should debug error string", function()
-                        assert.spy(SDK.Debug.Error).was_not_called()
-                        SDK.Module._DoInit()
-                        assert.spy(SDK.Debug.Error).was_called(1)
-                        assert.spy(SDK.Debug.Error).was_called_with(
-                            "Function SDK.Module._DoInit() shouldn't be used directly"
-                        )
+                        AssertDebugError(function()
+                            SDK.Module._DoInit()
+                        end, "Function SDK.Module._DoInit() shouldn't be used directly")
                     end)
 
                     it("should return a function that returns nil", function()
@@ -98,12 +109,9 @@ describe("#sdk SDK", function()
                     end)
 
                     it("should debug error string", function()
-                        assert.spy(SDK.Debug.Error).was_not_called()
-                        assert.is_not_nil(SDK.Module.foo)
-                        assert.spy(SDK.Debug.Error).was_called(1)
-                        assert.spy(SDK.Debug.Error).was_called_with(
-                            "Field SDK.Module.foo shouldn't be used directly"
-                        )
+                        AssertDebugError(function()
+                            assert.is_not_nil(SDK.Module.foo)
+                        end, "Field SDK.Module.foo shouldn't be used directly")
                     end)
 
                     it("should return a function that returns nil", function()
@@ -119,11 +127,10 @@ describe("#sdk SDK", function()
                 end)
 
                 it("should debug error string", function()
-                    assert.spy(SDK.Debug.Error).was_not_called()
-                    SDK.Module.Foo()
-                    assert.spy(SDK.Debug.Error).was_called(1)
-                    assert.spy(SDK.Debug.Error).was_called_with("Function SDK.Module.Foo() "
-                        .. "shouldn't be called when ThePlayer global is not available")
+                    AssertDebugError(function()
+                        SDK.Module.Foo()
+                    end, "Function SDK.Module.Foo() shouldn't be called when ThePlayer global is "
+                        .. "not available")
                 end)
 
                 it("should return a function that returns nil", function()
