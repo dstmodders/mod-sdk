@@ -34,6 +34,7 @@ local SDK = {
     modname = nil,
     path = nil,
     path_full = nil,
+    time_scale_prev = 1,
 
     -- constants
     OVERRIDE = {
@@ -729,6 +730,86 @@ function SDK.OverrideComponentMethod(component, method, fn, override)
     else
         SDK.OverrideMethod(component, method, fn, override)
     end
+end
+
+--- Pausing
+-- @section pausing
+
+--- Checks if a game is paused.
+-- @treturn boolean
+function SDK.IsPaused()
+    return TheSim:GetTimeScale() == 0
+end
+
+--- Pauses a game.
+-- @see SDK.Remote.World.SetTimeScale
+-- @treturn boolean
+function SDK.Pause()
+    if SDK.IsPaused() then
+        SDK._DebugErrorFn(SDK, "Pause", "Game is already paused")
+        return false
+    end
+
+    local time_scale = TheSim:GetTimeScale()
+    local pause_fn = function()
+        SDK._DebugString("Pause game")
+        SDK.time_scale_prev = time_scale
+        TheSim:SetTimeScale(0)
+        SetPause(true, "console")
+        return true
+    end
+
+    if InGamePlay()
+        and TheWorld
+        and not TheWorld.ismastersim
+        and SDK.IsLoaded("Remote")
+        and SDK.Remote.World.SetTimeScale(0)
+    then
+        SDK._DebugNoticeTimeScaleMismatch(SDK, "Pause")
+    end
+
+    return pause_fn()
+end
+
+--- Resumes a game from a pause.
+-- @see SDK.Remote.World.SetTimeScale
+-- @treturn boolean
+function SDK.Resume()
+    if not SDK.IsPaused() then
+        SDK._DebugErrorFn(SDK, "Resume", "Game is already resumed")
+        return false
+    end
+
+    local time_scale = SDK.time_scale_prev or 1
+    local resume_fn = function()
+        SDK._DebugString("Resume game")
+        SDK.time_scale_prev = 0
+        TheSim:SetTimeScale(time_scale)
+        SetPause(false, "console")
+        return true
+    end
+
+    if InGamePlay()
+        and TheWorld
+        and not TheWorld.ismastersim
+        and SDK.IsLoaded("Remote")
+        and SDK.Remote.World.SetTimeScale(time_scale)
+    then
+        SDK._DebugNoticeTimeScaleMismatch(SDK, "Resume")
+    end
+
+    return resume_fn()
+end
+
+--- Toggles a game pause.
+-- @see SDK.World.Pause
+-- @see SDK.World.Resume
+-- @treturn boolean
+function SDK.TogglePause()
+    if SDK.IsPaused() then
+        return SDK.Resume()
+    end
+    return SDK.Pause()
 end
 
 setmetatable(SDK, {
