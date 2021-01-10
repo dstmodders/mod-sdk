@@ -144,7 +144,7 @@ end
 --- Debugs an error string.
 -- @tparam any ...
 function SDK._DebugError(...)
-    if SDK.Debug then
+    if SDK.IsLoaded("Debug") then
         SDK.Debug.Error(...)
     end
 end
@@ -190,16 +190,14 @@ end
 -- @tparam string name Field/Function name
 -- @tparam string global Global name
 function SDK._DebugErrorNoCallWithoutGlobal(module, field, name, global)
-    if SDK.Debug then
-        SDK.Debug.Error(string.format(
-            type(field) == "function"
-                and "Function %s.%s() shouldn't be called when %s global is not available"
-                or "Field %s.%s shouldn't be called when %s global is not available",
-            tostring(module),
-            name,
-            global
-        ))
-    end
+    SDK._DebugError(string.format(
+        type(field) == "function"
+            and "Function %s.%s() shouldn't be called when %s global is not available"
+            or "Field %s.%s shouldn't be called when %s global is not available",
+        tostring(module),
+        name,
+        global
+    ))
 end
 
 --- Debugs a calling directly error string.
@@ -207,28 +205,20 @@ end
 -- @tparam any field Field/Function
 -- @tparam string name Field/Function name
 function SDK._DebugErrorNoDirectUse(module, field, name)
-    if SDK.Debug then
-        SDK.Debug.Error(string.format(
-            type(field) == "function"
-                and "Function %s.%s() shouldn't be used directly"
-                or "Field %s.%s shouldn't be used directly",
-            tostring(module),
-            name
-        ))
-    end
+    SDK._DebugError(string.format(
+        type(field) == "function"
+            and "Function %s.%s() shouldn't be used directly"
+            or "Field %s.%s shouldn't be used directly",
+        tostring(module),
+        name
+    ))
 end
 
 --- Debugs a missing function error string.
 -- @tparam table module Module
 -- @tparam string name Field/Function name
 function SDK._DebugErrorNoFunction(module, name)
-    if SDK.Debug then
-        SDK.Debug.Error(string.format(
-            "Function or field %s.%s doesn't exist",
-            tostring(module),
-            name
-        ))
-    end
+    SDK._DebugError(string.format("Function or field %s.%s doesn't exist", tostring(module), name))
 end
 
 --- Debugs a player is dead error string.
@@ -266,7 +256,7 @@ end
 --- Debugs a string.
 -- @tparam any ...
 function SDK._DebugString(...)
-    if SDK.Debug then
+    if SDK.IsLoaded("Debug") then
         SDK.Debug.String(...)
     end
 end
@@ -390,6 +380,13 @@ end
 -- @treturn string
 function SDK.GetPathFull()
     return SDK.path_full
+end
+
+--- Checks if a module is loaded.
+-- @tparam string name Module name
+-- @treturn boolean
+function SDK.IsLoaded(name)
+    return SDK.loaded[name] and true or false
 end
 
 --- Checks if in a silent state.
@@ -736,8 +733,7 @@ end
 
 setmetatable(SDK, {
     __index = function(self, k)
-        local module = rawget(self, k)
-        if not module and _MODULES[k] then
+        if not self.IsLoaded() and _MODULES[k] then
             local msg = string.format(
                 'SDK.%s is not loaded. Use SDK.LoadModule("%s") or SDK.Load()',
                 k,
@@ -747,7 +743,7 @@ setmetatable(SDK, {
             assert(false, msg)
             return
         end
-        return module
+        return rawget(self, k)
     end,
     __tostring = function()
         return "SDK"
