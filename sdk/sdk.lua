@@ -128,12 +128,6 @@ local function AddWorldPostInit()
     SDK._Info("Added world post initializer")
 end
 
-local function DebugString(...)
-    if SDK.Debug then
-        SDK.Debug.String(...)
-    end
-end
-
 local function RemoveTrailingSlashes(str)
     return str:gsub("(.)/*$", "%1")
 end
@@ -147,14 +141,20 @@ end
 --- Internal
 -- @section internal
 
+--- Debugs an error string.
+-- @tparam any ...
+function SDK._DebugError(...)
+    if SDK.Debug then
+        SDK.Debug.Error(...)
+    end
+end
+
 --- Debugs an error function string.
 -- @tparam table module Module
 -- @tparam string fn_name Function name
 -- @tparam any ...
 function SDK._DebugErrorFn(module, fn_name, ...)
-    if SDK.Debug then
-        SDK.Debug.Error(string.format("%s.%s():", tostring(module), fn_name), ...)
-    end
+    SDK._DebugError(string.format("%s.%s():", tostring(module), fn_name), ...)
 end
 
 --- Debugs an invalid argument error string.
@@ -552,7 +552,7 @@ end
 -- @treturn boolean
 function SDK.Reload()
     if not InGamePlay() then
-        DebugString("Reloading simulation...")
+        SDK._DebugString("Reloading simulation...")
         StartNextInstance()
         return true
     end
