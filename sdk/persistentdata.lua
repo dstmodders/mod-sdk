@@ -76,6 +76,14 @@ local SDK
 --- Helpers
 -- @section helpers
 
+local function DebugError(...)
+    SDK._DebugError("[persistent_data]", ...)
+end
+
+local function DebugString(...)
+    SDK._DebugString("[persistent_data]", ...)
+end
+
 local function RefreshLastSeen(server)
     if server and server.lastseen then
         server.lastseen = os.time()
@@ -212,7 +220,7 @@ function PersistentData.Get(key, dest, field)
 
         local value = PersistentData.data.general[key]
         if value then
-            SDK.Debug.String("[persistent_data]", "[get]", key)
+            DebugString("[get]", key)
             if dest then
                 field = field ~= nil and field or key
                 dest[field] = value
@@ -220,7 +228,7 @@ function PersistentData.Get(key, dest, field)
             return value
         end
 
-        SDK.Debug.Error("[persistent_data]", "[get]", key)
+        DebugError("[get]", key)
     elseif PersistentData.mode == PersistentData.SERVER then
         local server = PersistentData.GetServer()
         if not server or not server.data then
@@ -229,22 +237,15 @@ function PersistentData.Get(key, dest, field)
 
         local value = server.data[key]
         if value then
-            SDK.Debug.String(
-                "[persistent_data]",
-                "[get]",
-                "[" .. PersistentData.server_id .. "]",
-                key
-            )
-
+            DebugString("[get]", "[" .. PersistentData.server_id .. "]", key)
             if dest then
                 field = field ~= nil and field or key
                 dest[field] = value
             end
-
             return value
         end
 
-        SDK.Debug.Error("[persistent_data]", "[get]", "[" .. PersistentData.server_id .. "]", key)
+        DebugError("[get]", "[" .. PersistentData.server_id .. "]", key)
     end
 end
 
@@ -262,18 +263,13 @@ function PersistentData.Set(key, value)
             PersistentData.data.general = {}
         end
 
-        SDK.Debug.String("[persistent_data]", "[set]", key .. ":", value)
+        DebugString("[set]", key .. ":", value)
         PersistentData.data.general[key] = value
         PersistentData.is_dirty = true
     elseif PersistentData.mode == PersistentData.SERVER then
         local data = PersistentData.GetServerData()
         if data then
-            SDK.Debug.String(
-                "[persistent_data]",
-                "[set]",
-                "[" .. PersistentData.server_id .. "]",
-                key .. ":", value
-            )
+            DebugString("[set]", "[" .. PersistentData.server_id .. "]", key .. ":", value)
             PersistentData.data.servers[PersistentData.server_id].data[key] = value
             PersistentData.is_dirty = true
         end
@@ -298,7 +294,7 @@ function PersistentData.CleanServers()
             i = i + 1
             if server and server.lastseen then
                 if os.difftime(time, server.lastseen) > PersistentData.server_expire_time then
-                    SDK.Debug.String("[persistent_data]", "[remove]", "[" .. id .. "]")
+                    DebugString("[remove]", "[" .. id .. "]")
                     PersistentData.data.servers[id] = nil
                     PersistentData.is_dirty = true
                 end
@@ -329,7 +325,7 @@ function PersistentData.GetServer()
             return server
         end
     end
-    SDK.Debug.Error("[persistent_data]", "No server data")
+    DebugError("No server data")
 end
 
 --- Gets a server ID.
@@ -393,12 +389,7 @@ end
 --
 -- @tparam[opt] function cb Callback
 function PersistentData.Load(cb)
-    SDK.Debug.String(
-        "[persistent_data]",
-        "[load]",
-        string.format("Loading %s...", PersistentData.GetSaveName())
-    )
-
+    DebugString("[load]", string.format("Loading %s...", PersistentData.GetSaveName()))
     TheSim:GetPersistentString(PersistentData.GetSaveName(), function(_, str)
         PersistentData.OnLoad(str, cb)
     end, false)
@@ -415,14 +406,14 @@ end
 -- @tparam[opt] function cb Callback
 function PersistentData.OnLoad(str, cb)
     if str == nil or string.len(str) == 0 then
-        SDK.Debug.Error("[persistent_data]", "[load]", "Failure", "(empty string)")
+        DebugError("[load]", "Failure", "(empty string)")
         if cb then
             cb(false)
         end
         return
     end
 
-    SDK.Debug.String("[persistent_data]", "[load]", "Success", "(length: " .. #str .. ")")
+    DebugString("[load]", "Success", "(length: " .. #str .. ")")
 
     local data = TrackedAssert(
         "TheSim:GetPersistentString " .. PersistentData.name,
@@ -452,13 +443,10 @@ end
 
 --- Saves.
 -- @tparam[opt] function cb Callback
--- @tparam[opt] string name SDK.Debug name
+-- @tparam[opt] string name Debug name
 function PersistentData.Save(cb, name)
     if PersistentData.is_dirty then
-        SDK.Debug.String("[persistent_data]", "[save]", name ~= nil
-            and string.format("Saved (%s)", name)
-            or "Saved"
-        )
+        DebugString("[save]", name ~= nil and string.format("Saved (%s)", name) or "Saved")
 
         SavePersistentString(
             PersistentData.GetSaveName(),
