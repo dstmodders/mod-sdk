@@ -87,7 +87,7 @@ local function AddWorldPostInit()
             end
         end
 
-        if SDK.World then
+        if SDK.IsLoaded("World") and SDK.IsLoaded("DebugUpvalue") then
             SDK.OnLoadComponent(
                 SDK.World.IsCave() and "caveweather" or "weather",
                 SDK.World.WeatherOnUpdate
