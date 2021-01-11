@@ -1,9 +1,9 @@
 ----
--- Different inventory functionality.
+-- Different player inventory functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
--- @module SDK.Inventory
+-- @module SDK.Player.Inventory
 -- @see SDK
 --
 -- @author Victor Popkov
@@ -171,10 +171,10 @@ end
 
 --- Initializes.
 -- @tparam SDK sdk
--- @treturn SDK.Inventory
+-- @treturn SDK.Player.Inventory
 function Inventory._DoInit(sdk)
     SDK = sdk
-    return SDK._DoInitModule(SDK, Inventory, "Inventory", "ThePlayer")
+    return Inventory
 end
 
 return Inventory

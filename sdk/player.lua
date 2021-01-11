@@ -354,6 +354,7 @@ function Player._DoInit(sdk, submodules)
 
     submodules = submodules ~= nil and submodules or {
         Attribute = "sdk/player/attribute",
+        Inventory = "sdk/player/inventory",
     }
 
     SDK._SetModuleName(SDK, Player, "Player")

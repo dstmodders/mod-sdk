@@ -55,7 +55,6 @@ local _MODULES = {
     Entity = "sdk/entity",
     FrontEnd = "sdk/frontend",
     Input = "sdk/input",
-    Inventory = "sdk/inventory",
     Method = "sdk/method",
     ModMain = "sdk/modmain",
     PersistentData = "sdk/persistentdata",
