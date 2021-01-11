@@ -24,6 +24,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/modmain"] = "sdk/modmain",
     ["yoursubdirectory/sdk/sdk/persistentdata"] = "sdk/persistentdata",
     ["yoursubdirectory/sdk/sdk/player"] = "sdk/player",
+    ["yoursubdirectory/sdk/sdk/player/attribute"] = "sdk/player/attribute",
     ["yoursubdirectory/sdk/sdk/remote"] = "sdk/remote",
     ["yoursubdirectory/sdk/sdk/remote/player"] = "sdk/remote/player",
     ["yoursubdirectory/sdk/sdk/remote/world"] = "sdk/remote/world",

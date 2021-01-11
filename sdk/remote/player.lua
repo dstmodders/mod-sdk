@@ -214,7 +214,7 @@ end
 -- @section attributes
 
 --- Sends a request to set a health limit percent.
--- @see SDK.Player.SetHealthLimitPercent
+-- @see SDK.Player.Attribute.SetHealthLimitPercent
 -- @tparam number percent Health limit percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -230,7 +230,7 @@ function Player.SetHealthLimitPercent(percent, player)
 end
 
 --- Sends a request to set a health penalty percent.
--- @see SDK.Player.SetHealthPenaltyPercent
+-- @see SDK.Player.Attribute.SetHealthPenaltyPercent
 -- @tparam number percent Health penalty percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -243,7 +243,7 @@ function Player.SetHealthPenaltyPercent(percent, player)
 end
 
 --- Sends a request to set a health percent.
--- @see SDK.Player.SetHealthPercent
+-- @see SDK.Player.Attribute.SetHealthPercent
 -- @tparam number percent Health percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -252,7 +252,7 @@ function Player.SetHealthPercent(percent, player)
 end
 
 --- Sends a request to set a hunger percent.
--- @see SDK.Player.SetHungerPercent
+-- @see SDK.Player.Attribute.SetHungerPercent
 -- @tparam number percent Hunger percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -261,7 +261,7 @@ function Player.SetHungerPercent(percent, player)
 end
 
 --- Sends a request to set a moisture percent.
--- @see SDK.Player.SetMoisturePercent
+-- @see SDK.Player.Attribute.SetMoisturePercent
 -- @tparam number percent Moisture percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -270,7 +270,7 @@ function Player.SetMoisturePercent(percent, player)
 end
 
 --- Sends a request to set a sanity percent.
--- @see SDK.Player.SetSanityPercent
+-- @see SDK.Player.Attribute.SetSanityPercent
 -- @tparam number percent Sanity percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -279,7 +279,7 @@ function Player.SetSanityPercent(percent, player)
 end
 
 --- Sends a request to set a temperature.
--- @see SDK.Player.SetTemperature
+-- @see SDK.Player.Attribute.SetTemperature
 -- @tparam number temperature Temperature percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -313,7 +313,7 @@ function Player.SetTemperature(temperature, player)
 end
 
 --- Sends a request to set a wereness percent.
--- @see SDK.Player.SetWerenessPercent
+-- @see SDK.Player.Attribute.SetWerenessPercent
 -- @tparam number percent Wereness percent
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
