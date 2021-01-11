@@ -17,6 +17,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/debugupvalue"] = "sdk/debugupvalue",
     ["yoursubdirectory/sdk/sdk/dump"] = "sdk/dump",
     ["yoursubdirectory/sdk/sdk/entity"] = "sdk/entity",
+    ["yoursubdirectory/sdk/sdk/frontend"] = "sdk/frontend",
     ["yoursubdirectory/sdk/sdk/input"] = "sdk/input",
     ["yoursubdirectory/sdk/sdk/inventory"] = "sdk/inventory",
     ["yoursubdirectory/sdk/sdk/method"] = "sdk/method",

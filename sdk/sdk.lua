@@ -53,6 +53,7 @@ local _MODULES = {
     DebugUpvalue = "sdk/debugupvalue",
     Dump = "sdk/dump",
     Entity = "sdk/entity",
+    FrontEnd = "sdk/frontend",
     Input = "sdk/input",
     Inventory = "sdk/inventory",
     Method = "sdk/method",
