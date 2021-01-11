@@ -19,7 +19,7 @@ local SDK
 -- @section general
 
 --- Checks if a key can be handled.
--- @see SDK.Player.CanPressKeyInGamePlay
+-- @see SDK.Player.CanHandleKey
 -- @treturn boolean
 function FrontEnd.CanHandleKey()
     if ThePlayer then

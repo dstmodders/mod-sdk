@@ -324,14 +324,14 @@ describe("#sdk SDK.Player", function()
     end
 
     describe("general", function()
-        describe("CanPressKeyInGamePlay()", function()
+        describe("CanHandleKey()", function()
             describe("when not in a gameplay", function()
                 before_each(function()
                     _G.InGamePlay = spy.new(ReturnValueFn(false))
                 end)
 
                 it("should return false", function()
-                    assert.is_false(Player.CanPressKeyInGamePlay())
+                    assert.is_false(Player.CanHandleKey())
                 end)
             end)
 
@@ -353,7 +353,7 @@ describe("#sdk SDK.Player", function()
                     end)
 
                     it("should return false", function()
-                        assert.is_false(Player.CanPressKeyInGamePlay())
+                        assert.is_false(Player.CanHandleKey())
                     end)
                 end)
 
@@ -370,7 +370,7 @@ describe("#sdk SDK.Player", function()
                     end)
 
                     it("should return false", function()
-                        assert.is_false(Player.CanPressKeyInGamePlay())
+                        assert.is_false(Player.CanHandleKey())
                     end)
                 end)
 
@@ -387,7 +387,7 @@ describe("#sdk SDK.Player", function()
                     end)
 
                     it("should return false", function()
-                        assert.is_false(Player.CanPressKeyInGamePlay())
+                        assert.is_false(Player.CanHandleKey())
                     end)
                 end)
             end)
