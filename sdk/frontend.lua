@@ -32,8 +32,7 @@ function FrontEnd.CanHandleKey()
         end
     end
 
-    return not (FrontEnd.HasModConfigurationScreenInputFocus()
-        or FrontEnd.HasTextFocus()
+    return not (FrontEnd.HasInputFocus()
         or FrontEnd.IsScreenOpen("ChatInputScreen")
         or FrontEnd.IsScreenOpen("ConsoleScreen"))
 end
@@ -69,12 +68,13 @@ function FrontEnd.HasImageFocus(texture)
     return widget and widget.name == "Image"
 end
 
---- Checks if a mod config screen has an input focus.
+--- Checks if has an input focus.
 -- @treturn boolean
-function FrontEnd.HasModConfigurationScreenInputFocus()
-    return FrontEnd.IsScreenOpen("ModConfigurationScreen") and (FrontEnd.HasImageFocus("spinner")
+function FrontEnd.HasInputFocus()
+    return FrontEnd.HasTextFocus()
+        or FrontEnd.HasImageFocus("spinner")
         or FrontEnd.HasImageFocus("arrow")
-        or FrontEnd.HasImageFocus("scrollbar"))
+        or FrontEnd.HasImageFocus("scrollbar")
 end
 
 --- Checks if a text widget is focused.
