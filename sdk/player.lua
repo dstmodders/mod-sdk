@@ -116,6 +116,7 @@ end
 -- @section general
 
 --- Checks if a user can press a key in a gameplay.
+-- @see SDK.FrontEnd.CanHandleKey
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.CanPressKeyInGamePlay(player)

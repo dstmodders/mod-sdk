@@ -18,6 +18,26 @@ local SDK
 --- General
 -- @section general
 
+--- Checks if a key can be handled.
+-- @see SDK.Player.CanPressKeyInGamePlay
+-- @treturn boolean
+function FrontEnd.CanHandleKey()
+    if ThePlayer then
+        if SDK.Utils.Chain.Get(ThePlayer, "HUD", "HasInputFocus", true) then
+            return false
+        end
+
+        if ThePlayer.HUD and FrontEnd.GetActiveScreen() == ThePlayer.HUD.writeablescreen then
+            return false
+        end
+    end
+
+    return not (FrontEnd.HasModConfigurationScreenInputFocus()
+        or FrontEnd.HasTextFocus()
+        or FrontEnd.IsScreenOpen("ChatInputScreen")
+        or FrontEnd.IsScreenOpen("ConsoleScreen"))
+end
+
 --- Gets an active screen
 -- @treturn boolean
 function FrontEnd.GetActiveScreen()
