@@ -732,8 +732,8 @@ function SDK.OverrideComponentMethod(component, method, fn, override)
     end
 end
 
---- Pausing
--- @section pausing
+--- Time Scale
+-- @section time-scale
 
 --- Checks if a game is paused.
 -- @treturn boolean
@@ -751,13 +751,11 @@ function SDK.Pause()
     end
 
     local time_scale = TheSim:GetTimeScale()
-    local pause_fn = function()
-        SDK._DebugString("Pause game")
-        SDK.time_scale_prev = time_scale
-        TheSim:SetTimeScale(0)
-        SetPause(true, "console")
-        return true
-    end
+
+    SDK._DebugString("Pause game")
+    SDK.time_scale_prev = time_scale
+    TheSim:SetTimeScale(0)
+    SetPause(true, "console")
 
     if InGamePlay()
         and TheWorld
@@ -768,7 +766,7 @@ function SDK.Pause()
         SDK._DebugNoticeTimeScaleMismatch(SDK, "Pause")
     end
 
-    return pause_fn()
+    return true
 end
 
 --- Resumes a game from a pause.
@@ -781,13 +779,11 @@ function SDK.Resume()
     end
 
     local time_scale = SDK.time_scale_prev or 1
-    local resume_fn = function()
-        SDK._DebugString("Resume game")
-        SDK.time_scale_prev = 0
-        TheSim:SetTimeScale(time_scale)
-        SetPause(false, "console")
-        return true
-    end
+
+    SDK._DebugString("Resume game")
+    SDK.time_scale_prev = 0
+    TheSim:SetTimeScale(time_scale)
+    SetPause(false, "console")
 
     if InGamePlay()
         and TheWorld
@@ -798,7 +794,54 @@ function SDK.Resume()
         SDK._DebugNoticeTimeScaleMismatch(SDK, "Resume")
     end
 
-    return resume_fn()
+    return true
+end
+
+--- Sets a delta time scale.
+-- @see SDK.SetTimeScale
+-- @tparam number delta
+-- @treturn boolean
+function SDK.SetDeltaTimeScale(delta)
+    delta = delta ~= nil and delta or 0
+
+    if not SDK.Utils.Value.IsNumber(delta) then
+        SDK._DebugErrorInvalidArg(SDK, "SetDeltaTimeScale", "delta", "must be a number")
+        return false
+    end
+
+    local time_scale
+    time_scale = TheSim:GetTimeScale() + delta
+    time_scale = time_scale < 0 and 0 or time_scale
+    time_scale = time_scale >= 4 and 4 or time_scale
+
+    SDK._DebugString("Delta time scale:", SDK.Utils.Value.ToFloatString(delta))
+    return SDK.SetTimeScale(time_scale)
+end
+
+--- Sets a time scale.
+-- @see SDK.Remote.World.SetTimeScale
+-- @see SDK.SetDeltaTimeScale
+-- @tparam number time_scale
+-- @treturn boolean
+function SDK.SetTimeScale(time_scale)
+    if not SDK.Utils.Value.IsUnsigned(time_scale) or not SDK.Utils.Value.IsNumber(time_scale) then
+        SDK._DebugErrorInvalidArg(SDK, "SetTimeScale", "time_scale", "must be an unsigned number")
+        return false
+    end
+
+    SDK._DebugString("Time scale:", SDK.Utils.Value.ToFloatString(time_scale))
+    TheSim:SetTimeScale(time_scale)
+
+    if InGamePlay()
+        and TheWorld
+        and not TheWorld.ismastersim
+        and SDK.IsLoaded("Remote")
+        and SDK.Remote.World.SetTimeScale(time_scale)
+    then
+        SDK._DebugNoticeTimeScaleMismatch(SDK, "SetTimeScale")
+    end
+
+    return true
 end
 
 --- Toggles a game pause.

@@ -69,6 +69,18 @@ describe("#sdk SDK", function()
         AssertDebugErrorCalls(fn, 1, ...)
     end
 
+    local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
+        AssertDebugError(
+            fn,
+            string.format("SDK.%s():", fn_name),
+            string.format(
+                "Invalid argument%s is passed",
+                arg_name and ' (' .. arg_name .. ")" or ""
+            ),
+            explanation and "(" .. explanation .. ")"
+        )
+    end
+
     local function AssertDebugString(fn, ...)
         if SDK.IsLoaded("Debug") then
             assert.spy(SDK.Debug.String).was_not_called()
@@ -798,6 +810,172 @@ describe("#sdk SDK", function()
 
                             TestLocal()
                         end)
+                    end)
+                end)
+            end)
+        end)
+
+        describe("SetDeltaTimeScale()", function()
+            local _fn
+
+            setup(function()
+                _fn = SDK.SetTimeScale
+            end)
+
+            teardown(function()
+                SDK.SetTimeScale = _fn
+            end)
+
+            local function TestValidDeltaIsPassed(delta, set, debug)
+                describe("when a valid delta is passed", function()
+                    describe("(" .. delta .. ")", function()
+                        describe("and SDK.SetTimeScale() returns true", function()
+                            before_each(function()
+                                SDK.SetTimeScale = spy.new(ReturnValueFn(true))
+                            end)
+
+                            it("should call SDK.SetTimeScale()", function()
+                                assert.spy(SDK.SetTimeScale).was_not_called()
+                                SDK.SetDeltaTimeScale(delta)
+                                assert.spy(SDK.SetTimeScale).was_called(1)
+                                assert.spy(SDK.SetTimeScale).was_called_with(set)
+                            end)
+
+                            it("should debug string", function()
+                                AssertDebugString(function()
+                                    SDK.SetDeltaTimeScale(delta)
+                                end, "Delta time scale:", debug)
+                            end)
+
+                            it("should return true", function()
+                                assert.is_true(SDK.SetDeltaTimeScale(delta))
+                            end)
+                        end)
+
+                        describe("and SDK.SetTimeScale() returns false", function()
+                            before_each(function()
+                                SDK.SetTimeScale = spy.new(ReturnValueFn(false))
+                            end)
+
+                            it("should call SDK.SetTimeScale()", function()
+                                assert.spy(SDK.SetTimeScale).was_not_called()
+                                SDK.SetDeltaTimeScale(delta)
+                                assert.spy(SDK.SetTimeScale).was_called(1)
+                                assert.spy(SDK.SetTimeScale).was_called_with(set)
+                            end)
+
+                            it("should debug string", function()
+                                AssertDebugString(function()
+                                    SDK.SetDeltaTimeScale(delta)
+                                end, "Delta time scale:", debug)
+                            end)
+
+                            it("should return false", function()
+                                assert.is_false(SDK.SetDeltaTimeScale(delta))
+                            end)
+                        end)
+                    end)
+                end)
+            end
+
+            describe("when an invalid delta is passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        SDK.SetDeltaTimeScale("foo")
+                    end, "SetDeltaTimeScale", "delta", "must be a number")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(SDK.SetDeltaTimeScale("foo"))
+                end)
+            end)
+
+            TestValidDeltaIsPassed(-5, 0, "-5.00")
+            TestValidDeltaIsPassed(-0.1, 0.9, "-0.10")
+            TestValidDeltaIsPassed(0.1, 1.1, "0.10")
+            TestValidDeltaIsPassed(5, 4.00, "5.00")
+        end)
+
+        describe("SetTimeScale()", function()
+            local function TestLocal()
+                it("should call TheSim:SetTimeScale()", function()
+                    assert.spy(_G.TheSim.SetTimeScale).was_not_called()
+                    SDK.SetTimeScale(1)
+                    assert.spy(_G.TheSim.SetTimeScale).was_called(1)
+                    assert.spy(_G.TheSim.SetTimeScale).was_called_with(match.is_ref(_G.TheSim), 1)
+                end)
+
+                it("should return true", function()
+                    assert.is_true(SDK.SetTimeScale(1))
+                end)
+            end
+
+            describe("when an invalid timescale is passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        SDK.SetTimeScale("foo")
+                    end, "SetTimeScale", "time_scale", "must be an unsigned number")
+                end)
+
+                it("should return false", function()
+                    assert.is_false(SDK.SetTimeScale("foo"))
+                end)
+            end)
+
+            describe("and in a game play", function()
+                before_each(function()
+                    _G.InGamePlay = spy.new(ReturnValueFn(true))
+                end)
+
+                describe("and is master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = true
+                    end)
+
+                    TestLocal()
+                end)
+
+                describe("and is non-master simulation", function()
+                    setup(function()
+                        SDK.LoadModule("Remote")
+                    end)
+
+                    teardown(function()
+                        SDK.UnloadModule("Remote")
+                    end)
+
+                    before_each(function()
+                        _G.TheWorld.ismastersim = false
+                    end)
+
+                    describe("and SDK.Remote.World.SetTimeScale() returns false", function()
+                        before_each(function()
+                            SDK.Remote.World.SetTimeScale = spy.new(ReturnValueFn(false))
+                        end)
+
+                        it("should call SDK.Remote.World.SetTimeScale()", function()
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_not_called()
+                            SDK.SetTimeScale(1)
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_called(1)
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_called_with(1)
+                        end)
+
+                        TestLocal()
+                    end)
+
+                    describe("and SDK.Remote.World.SetTimeScale() returns true", function()
+                        before_each(function()
+                            SDK.Remote.World.SetTimeScale = spy.new(ReturnValueFn(true))
+                        end)
+
+                        it("should call SDK.Remote.World.SetTimeScale()", function()
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_not_called()
+                            SDK.SetTimeScale(1)
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_called(1)
+                            assert.spy(SDK.Remote.World.SetTimeScale).was_called_with(1)
+                        end)
+
+                        TestLocal()
                     end)
                 end)
             end)
