@@ -39,12 +39,17 @@ end
 --- Adds a config key handler.
 -- @tparam string config
 -- @tparam function fn
-function Input.AddConfigKeyHandler(config, fn)
+-- @tparam[opt] boolean can_handle_key
+function Input.AddConfigKeyHandler(config, fn, can_handle_key)
     local config_key = GetKeyFromConfig(config)
     if fn and config_key then
         TheInput:AddKeyHandler(function(key, down)
             if key == config_key then
-                fn(down)
+                if can_handle_key ~= nil and SDK.FrontEnd.CanHandleKey() then
+                    return fn(down)
+                else
+                    fn(down)
+                end
             end
         end)
     end
@@ -53,22 +58,30 @@ end
 --- Adds a config key down handler.
 -- @tparam string config
 -- @tparam function fn
-function Input.AddConfigKeyDownHandler(config, fn)
+-- @tparam[opt] boolean can_handle_key
+function Input.AddConfigKeyDownHandler(config, fn, can_handle_key)
     local config_key = GetKeyFromConfig(config)
     if fn and config_key then
-        TheInput:AddKeyDownHandler(config_key, fn)
+        TheInput:AddKeyDownHandler(config_key, can_handle_key ~= nil and function()
+            if SDK.FrontEnd.CanHandleKey() then
+                return fn()
+            end
+        end or fn)
     end
 end
 
 --- Adds a config key up handler.
 -- @tparam string config
 -- @tparam function fn
-function Input.AddConfigKeyUpHandler(config, fn)
+-- @tparam[opt] boolean can_handle_key
+function Input.AddConfigKeyUpHandler(config, fn, can_handle_key)
     local config_key = GetKeyFromConfig(config)
     if fn and config_key then
-        TheInput:AddKeyUpHandler(config_key, function()
-            fn()
-        end)
+        TheInput:AddKeyUpHandler(config_key, can_handle_key ~= nil and function()
+            if SDK.FrontEnd.CanHandleKey() then
+                return fn()
+            end
+        end or fn)
     end
 end
 
