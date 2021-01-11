@@ -36,10 +36,6 @@ local function DebugString(...)
     SDK._DebugString("[world]", ...)
 end
 
-local function DebugNoticeTimeScaleMismatch(fn_name)
-    SDK._DebugNoticeTimeScaleMismatch(World, fn_name)
-end
-
 --- General
 -- @section general
 
@@ -113,51 +109,6 @@ function World.Rollback(days)
     end
 
     return SDK.Remote.World.Rollback(days)
-end
-
---- Sets a delta time scale.
--- @see SDK.World.SetTimeScale
--- @tparam number delta
-function World.SetDeltaTimeScale(delta)
-    delta = delta ~= nil and delta or 0
-
-    if not Value.IsNumber(delta) then
-        DebugErrorInvalidArg("SetDeltaTimeScale", "delta", "must be a number")
-        return false
-    end
-
-    local time_scale
-    time_scale = TheSim:GetTimeScale() + delta
-    time_scale = time_scale < 0 and 0 or time_scale
-    time_scale = time_scale >= 4 and 4 or time_scale
-
-    DebugString("Delta time scale:", Value.ToFloatString(delta))
-    return World.SetTimeScale(time_scale)
-end
-
---- Sets a time scale.
--- @see SDK.Remote.World.SetTimeScale
--- @see SDK.World.SetDeltaTimeScale
--- @treturn boolean
-function World.SetTimeScale(timescale)
-    if not Value.IsUnsigned(timescale) or not Value.IsNumber(timescale) then
-        DebugErrorInvalidArg("SetTimeScale", "timescale", "must be an unsigned number")
-        return false
-    end
-
-    if World.IsMasterSim() then
-        DebugString("Time scale:", Value.ToFloatString(timescale))
-        TheSim:SetTimeScale(timescale)
-        return true
-    end
-
-    if SDK.Remote.World.SetTimeScale(timescale) then
-        TheSim:SetTimeScale(timescale)
-        DebugNoticeTimeScaleMismatch("SetTimeScale")
-        return true
-    end
-
-    return false
 end
 
 --- Phase

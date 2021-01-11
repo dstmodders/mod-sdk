@@ -203,7 +203,7 @@ end
 --- Sends a request to set a time scale.
 -- @see SDK.Pause
 -- @see SDK.Resume
--- @see SDK.World.SetTimeScale
+-- @see SDK.SetTimeScale
 -- @tparam string timescale
 -- @treturn boolean
 function World.SetTimeScale(timescale)

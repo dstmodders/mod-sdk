@@ -17,7 +17,6 @@ describe("#sdk SDK.World", function()
         _G.SetPause = nil
         _G.TheNet = nil
         _G.ThePlayer = nil
-        _G.TheSim = nil
         _G.TheWorld = nil
 
         -- sdk
@@ -33,11 +32,6 @@ describe("#sdk SDK.World", function()
         })
 
         _G.ThePlayer = {}
-
-        _G.TheSim = mock({
-            GetTimeScale = ReturnValueFn(1),
-            SetTimeScale = Empty,
-        })
 
         _G.TheWorld = mock({
             meta = {
@@ -227,7 +221,7 @@ describe("#sdk SDK.World", function()
                     end)
 
                     it("should return true", function()
-                        assert.is_true(World.SetTimeScale(1))
+                        assert.is_true(World.Rollback(1))
                     end)
                 end)
 
@@ -258,7 +252,7 @@ describe("#sdk SDK.World", function()
                             assert.spy(SDK.Remote.World.Rollback).was_called_with(1)
                         end)
 
-                        it("shouldn't call TheSim:SendWorldRollbackRequestToServer()", function()
+                        it("shouldn't call TheNet:SendWorldRollbackRequestToServer()", function()
                             assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_not_called()
                             World.Rollback(1)
                             assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_not_called()
@@ -291,7 +285,7 @@ describe("#sdk SDK.World", function()
                             assert.spy(SDK.Remote.World.Rollback).was_called_with(1)
                         end)
 
-                        it("shouldn't call TheSim:SendWorldRollbackRequestToServer()", function()
+                        it("shouldn't call TheNet:SendWorldRollbackRequestToServer()", function()
                             assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_not_called()
                             World.Rollback(1)
                             assert.spy(_G.TheNet.SendWorldRollbackRequestToServer).was_not_called()
@@ -300,194 +294,6 @@ describe("#sdk SDK.World", function()
                         it("should return true", function()
                             assert.is_true(World.Rollback(1))
                         end)
-                    end)
-                end)
-            end)
-        end)
-
-        describe("SetDeltaTimeScale()", function()
-            local _fn
-
-            setup(function()
-                _fn = World.SetTimeScale
-            end)
-
-            teardown(function()
-                World.SetTimeScale = _fn
-            end)
-
-            local function TestValidDeltaIsPassed(delta, set, debug)
-                describe("when a valid delta is passed", function()
-                    describe("(" .. delta .. ")", function()
-                        describe("and SDK.World.SetTimeScale() returns true", function()
-                            before_each(function()
-                                World.SetTimeScale = spy.new(ReturnValueFn(true))
-                            end)
-
-                            it("should call SDK.World.SetTimeScale()", function()
-                                assert.spy(World.SetTimeScale).was_not_called()
-                                World.SetDeltaTimeScale(delta)
-                                assert.spy(World.SetTimeScale).was_called(1)
-                                assert.spy(World.SetTimeScale).was_called_with(set)
-                            end)
-
-                            it("should debug string", function()
-                                AssertDebugString(function()
-                                    World.SetDeltaTimeScale(delta)
-                                end, "[world]", "Delta time scale:", debug)
-                            end)
-
-                            it("should return true", function()
-                                assert.is_true(World.SetDeltaTimeScale(delta))
-                            end)
-                        end)
-
-                        describe("and SDK.World.SetTimeScale() returns false", function()
-                            before_each(function()
-                                World.SetTimeScale = spy.new(ReturnValueFn(false))
-                            end)
-
-                            it("should call SDK.World.SetTimeScale()", function()
-                                assert.spy(World.SetTimeScale).was_not_called()
-                                World.SetDeltaTimeScale(delta)
-                                assert.spy(World.SetTimeScale).was_called(1)
-                                assert.spy(World.SetTimeScale).was_called_with(set)
-                            end)
-
-                            it("should debug string", function()
-                                AssertDebugString(function()
-                                    World.SetDeltaTimeScale(delta)
-                                end, "[world]", "Delta time scale:", debug)
-                            end)
-
-                            it("should return false", function()
-                                assert.is_false(World.SetDeltaTimeScale(delta))
-                            end)
-                        end)
-                    end)
-                end)
-            end
-
-            describe("when an invalid delta is passed", function()
-                it("should debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        World.SetDeltaTimeScale("foo")
-                    end, "SetDeltaTimeScale", "delta", "must be a number")
-                end)
-
-                it("should return false", function()
-                    assert.is_false(World.SetDeltaTimeScale("foo"))
-                end)
-            end)
-
-            TestValidDeltaIsPassed(-5, 0, "-5.00")
-            TestValidDeltaIsPassed(-0.1, 0.9, "-0.10")
-            TestValidDeltaIsPassed(0.1, 1.1, "0.10")
-            TestValidDeltaIsPassed(5, 4.00, "5.00")
-        end)
-
-        describe("SetTimeScale()", function()
-            describe("when an invalid timescale is passed", function()
-                it("should debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        World.SetTimeScale("foo")
-                    end, "SetTimeScale", "timescale", "must be an unsigned number")
-                end)
-
-                it("should return false", function()
-                    assert.is_false(World.SetTimeScale("foo"))
-                end)
-            end)
-
-            describe("when is master simulation", function()
-                before_each(function()
-                    _G.TheWorld.ismastersim = true
-                end)
-
-                it("should call TheSim:SetTimeScale()", function()
-                    assert.spy(_G.TheSim.SetTimeScale).was_not_called()
-                    World.SetTimeScale(1)
-                    assert.spy(_G.TheSim.SetTimeScale).was_called(1)
-                    assert.spy(_G.TheSim.SetTimeScale).was_called_with(match.is_ref(_G.TheSim), 1)
-                end)
-
-                it("should return true", function()
-                    assert.is_true(World.SetTimeScale(1))
-                end)
-            end)
-
-            describe("when is non-master simulation", function()
-                before_each(function()
-                    _G.TheWorld.ismastersim = false
-                end)
-
-                describe("and SDK.Remote.World.SetTimeScale() returns false", function()
-                    local _fn
-
-                    setup(function()
-                        _fn = SDK.Remote.World.SetTimeScale
-                    end)
-
-                    before_each(function()
-                        SDK.Remote.World.SetTimeScale = spy.new(ReturnValueFn(false))
-                    end)
-
-                    teardown(function()
-                        SDK.Remote.World.SetTimeScale = _fn
-                    end)
-
-                    it("should call SDK.Remote.World.SetTimeScale()", function()
-                        assert.spy(SDK.Remote.World.SetTimeScale).was_not_called()
-                        World.SetTimeScale(1)
-                        assert.spy(SDK.Remote.World.SetTimeScale).was_called(1)
-                        assert.spy(SDK.Remote.World.SetTimeScale).was_called_with(1)
-                    end)
-
-                    it("shouldn't call TheSim:SetTimeScale()", function()
-                        assert.spy(_G.TheSim.SetTimeScale).was_not_called()
-                        World.SetTimeScale(1)
-                        assert.spy(_G.TheSim.SetTimeScale).was_not_called()
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(World.SetTimeScale(1))
-                    end)
-                end)
-
-                describe("and SDK.Remote.World.SetTimeScale() returns true", function()
-                    local _fn
-
-                    setup(function()
-                        _fn = SDK.Remote.World.SetTimeScale
-                    end)
-
-                    before_each(function()
-                        SDK.Remote.World.SetTimeScale = spy.new(ReturnValueFn(true))
-                    end)
-
-                    teardown(function()
-                        SDK.Remote.World.SetTimeScale = _fn
-                    end)
-
-                    it("should call SDK.Remote.World.SetTimeScale()", function()
-                        assert.spy(SDK.Remote.World.SetTimeScale).was_not_called()
-                        World.SetTimeScale(1)
-                        assert.spy(SDK.Remote.World.SetTimeScale).was_called(1)
-                        assert.spy(SDK.Remote.World.SetTimeScale).was_called_with(1)
-                    end)
-
-                    it("should call TheSim:SetTimeScale()", function()
-                        assert.spy(_G.TheSim.SetTimeScale).was_not_called()
-                        World.SetTimeScale(1)
-                        assert.spy(_G.TheSim.SetTimeScale).was_called(1)
-                        assert.spy(_G.TheSim.SetTimeScale).was_called_with(
-                            match.is_ref(_G.TheSim),
-                            1
-                        )
-                    end)
-
-                    it("should return true", function()
-                        assert.is_true(World.SetTimeScale(1))
                     end)
                 end)
             end)
