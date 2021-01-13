@@ -529,7 +529,11 @@ describe("#sdk SDK.Player.Craft", function()
             })
 
             it("should return filtered recipes", function()
-                assert.is_same({ "bar" }, Craft.FilterRecipesByNotLearned())
+                assert.is_same({
+                    bar = {
+                        placer = "placer",
+                    },
+                }, Craft.FilterRecipesByNotLearned())
             end)
         end)
 

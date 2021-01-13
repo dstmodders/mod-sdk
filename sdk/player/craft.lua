@@ -177,14 +177,14 @@ function Craft.FilterRecipesByNotLearned(recipes, player)
         return {}
     end
 
-    local names = {}
-    for name, _ in pairs(recipes) do
+    local t = {}
+    for name, data in pairs(recipes) do
         if not Craft.IsLearnedRecipe(name, player) then
-            table.insert(names, name)
+            t[name] = data
         end
     end
 
-    return names
+    return t
 end
 
 --- Filters all recipes that include a certain field.
