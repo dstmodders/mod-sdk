@@ -45,6 +45,13 @@ files["**/*.lua"] = {
 
     -- globals
     globals = {
+        "AssertDebugError",
+        "AssertDebugErrorCalls",
+        "AssertDebugErrorInvalidArg",
+        "AssertDebugErrorInvalidArgCalls",
+        "AssertDebugErrorInvalidArgCalls",
+        "AssertDebugString",
+        "AssertDebugStringCalls",
         "ClassRegistry",
         "KnownModIndex",
         "LoadSDK",

@@ -54,7 +54,7 @@ end
 --
 
 function LoadSDK()
-    require("sdk/sdk").UnloadAllModules().SetIsSilent(true).Load({
+    return require("sdk/sdk").UnloadAllModules().SetIsSilent(true).Load({
         modname = "dst-mod-sdk",
         AddPrefabPostInit = function() end
     }, "", {
@@ -63,4 +63,56 @@ function LoadSDK()
     })
 end
 
-LoadSDK()
+local SDK = LoadSDK()
+
+--
+-- Asserts
+--
+
+function AssertDebugError(fn, ...)
+    AssertDebugErrorCalls(fn, 1, ...)
+end
+
+function AssertDebugErrorCalls(fn, calls, ...)
+    local args = { ... }
+    if SDK.IsLoaded("Debug") then
+        local assert = require "luassert.assert"
+        assert.spy(SDK.Debug.Error).was_not_called()
+        fn()
+        assert.spy(SDK.Debug.Error).was_called(calls)
+        if calls > 0 and #args > 0 then
+            assert.spy(SDK.Debug.Error).was_called_with(unpack(args))
+        end
+    end
+end
+
+function AssertDebugErrorInvalidArg(fn, module, fn_name, arg_name, explanation)
+    AssertDebugErrorInvalidArgCalls(fn, 1, module, fn_name, arg_name, explanation)
+end
+
+function AssertDebugErrorInvalidArgCalls(fn, calls, module, fn_name, arg_name, explanation)
+    AssertDebugErrorCalls(
+        fn,
+        calls,
+        string.format("%s.%s():", tostring(module), fn_name),
+        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
+        explanation and "(" .. explanation .. ")"
+    )
+end
+
+function AssertDebugString(fn, ...)
+    AssertDebugStringCalls(fn, 1, ...)
+end
+
+function AssertDebugStringCalls(fn, calls, ...)
+    local args = { ... }
+    if SDK.IsLoaded("Debug") then
+        local assert = require "luassert.assert"
+        assert.spy(SDK.Debug.String).was_not_called()
+        fn()
+        assert.spy(SDK.Debug.String).was_called(calls)
+        if calls > 0 and #args > 0 then
+            assert.spy(SDK.Debug.String).was_called_with(unpack(args))
+        end
+    end
+end

@@ -66,23 +66,11 @@ describe("#sdk SDK.PersistentData", function()
     end)
 
     local function AssertDebugError(fn, ...)
-        if SDK.IsLoaded("Debug") then
-            assert.spy(SDK.Debug.Error).was_not_called()
-            fn()
-            assert.spy(SDK.Debug.Error).was_called(1)
-            assert.spy(SDK.Debug.Error).was_called_with("[persistent_data]", ...)
-        end
+        _G.AssertDebugError(fn, "[persistent_data]", ...)
     end
 
     local function AssertDebugStringCalls(fn, calls, ...)
-        if SDK.IsLoaded("Debug") then
-            assert.spy(SDK.Debug.String).was_not_called()
-            fn()
-            assert.spy(SDK.Debug.String).was_called(calls)
-            if calls > 0 then
-                assert.spy(SDK.Debug.String).was_called_with("[persistent_data]", ...)
-            end
-        end
+        _G.AssertDebugStringCalls(fn, calls, "[persistent_data]", ...)
     end
 
     local function AssertDebugString(fn, ...)

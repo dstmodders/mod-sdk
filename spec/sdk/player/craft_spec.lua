@@ -93,46 +93,16 @@ describe("#sdk SDK.Player.Craft", function()
         end
     end)
 
-    local function AssertDebugErrorCalls(fn, calls, ...)
-        local args = { ... }
-        if SDK.IsLoaded("Debug") then
-            assert.spy(SDK.Debug.Error).was_not_called()
-            fn()
-            assert.spy(SDK.Debug.Error).was_called(calls)
-            if calls > 0 and #args > 0 then
-                assert.spy(SDK.Debug.Error).was_called_with(unpack(args))
-            end
-        end
-    end
-
-    local function AssertDebugError(fn, ...)
-        AssertDebugErrorCalls(fn, 1, ...)
-    end
-
     local function AssertDebugErrorInvalidArgCalls(fn, calls, fn_name, arg_name, explanation)
-        AssertDebugErrorCalls(
-            fn,
-            calls,
-            string.format("SDK.Player.Craft.%s():", fn_name),
-            string.format(
-                "Invalid argument%s is passed",
-                arg_name and ' (' .. arg_name .. ")" or ""
-            ),
-            explanation and "(" .. explanation .. ")"
-        )
+        _G.AssertDebugErrorInvalidArgCalls(fn, calls, Craft, fn_name, arg_name, explanation)
     end
 
     local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
-        AssertDebugErrorInvalidArgCalls(fn, 1, fn_name, arg_name, explanation)
+        _G.AssertDebugErrorInvalidArg(fn, Craft, fn_name, arg_name, explanation)
     end
 
     local function AssertDebugString(fn, ...)
-        if SDK.IsLoaded("Debug") then
-            assert.spy(SDK.Debug.String).was_not_called()
-            fn()
-            assert.spy(SDK.Debug.String).was_called(1)
-            assert.spy(SDK.Debug.String).was_called_with("[player]", "[craft]", ...)
-        end
+        _G.AssertDebugString(fn, "[player]", "[craft]", ...)
     end
 
     local function TestDebugError(fn, ...)

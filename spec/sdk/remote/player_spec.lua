@@ -85,30 +85,8 @@ describe("#sdk SDK.Remote.Player", function()
         SDK.Debug.String = spy.on(SDK.Debug, "String")
     end)
 
-    local function AssertDebugError(fn, ...)
-        assert.spy(SDK.Debug.Error).was_not_called()
-        fn()
-        assert.spy(SDK.Debug.Error).was_called(1)
-        assert.spy(SDK.Debug.Error).was_called_with(...)
-    end
-
     local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
-        AssertDebugError(
-            fn,
-            string.format("SDK.Remote.Player.%s():", fn_name),
-            string.format(
-                "Invalid argument%s is passed",
-                arg_name and ' (' .. arg_name .. ")" or ""
-            ),
-            explanation and "(" .. explanation .. ")"
-        )
-    end
-
-    local function AssertDebugString(fn, ...)
-        assert.spy(SDK.Debug.String).was_not_called()
-        fn()
-        assert.spy(SDK.Debug.String).was_called(1)
-        assert.spy(SDK.Debug.String).was_called_with(...)
+        _G.AssertDebugErrorInvalidArg(fn, Player, fn_name, arg_name, explanation)
     end
 
     local function AssertSendWasCalled(fn, ...)

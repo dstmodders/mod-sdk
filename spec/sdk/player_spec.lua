@@ -249,22 +249,8 @@ describe("#sdk SDK.Player", function()
         end
     end)
 
-    local function AssertDebugError(fn, ...)
-        if SDK.IsLoaded("Debug") then
-            assert.spy(SDK.Debug.Error).was_not_called()
-            fn()
-            assert.spy(SDK.Debug.Error).was_called(1)
-            assert.spy(SDK.Debug.Error).was_called_with(...)
-        end
-    end
-
     local function AssertDebugString(fn, ...)
-        if SDK.IsLoaded("Debug") then
-            assert.spy(SDK.Debug.String).was_not_called()
-            fn()
-            assert.spy(SDK.Debug.String).was_called(1)
-            assert.spy(SDK.Debug.String).was_called_with("[player]", ...)
-        end
+        _G.AssertDebugString(fn, "[player]", ...)
     end
 
     describe("general", function()
