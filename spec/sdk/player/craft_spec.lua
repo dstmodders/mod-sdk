@@ -491,7 +491,11 @@ describe("#sdk SDK.Player.Craft", function()
             })
 
             it("should return filtered recipes", function()
-                assert.is_same({ "foo" }, Craft.FilterRecipesByLearned())
+                assert.is_same({
+                    foo = {
+                        builder_tag = "builder_tag",
+                    },
+                }, Craft.FilterRecipesByLearned())
             end)
         end)
 

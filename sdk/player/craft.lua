@@ -154,14 +154,14 @@ function Craft.FilterRecipesByLearned(recipes, player)
         return {}
     end
 
-    local names = {}
-    for name, _ in pairs(recipes) do
+    local t = {}
+    for name, data in pairs(recipes) do
         if Craft.IsLearnedRecipe(name, player) then
-            table.insert(names, name)
+            t[name] = data
         end
     end
 
-    return names
+    return t
 end
 
 --- Filters all recipes that haven't been learned.
@@ -354,10 +354,20 @@ function Craft.UnlockAllCharacterRecipes(player)
     if #Craft.character_recipes[player.userid] == 0 then
         local recipes = Craft.FilterRecipesWith("builder_tag")
         local learned = Craft.FilterRecipesByLearned(recipes, player)
+        local learned_total = SDK.Utils.Table.Count(learned)
 
-        if #learned > 0 then
-            DebugString("Storing", tostring(#learned), "previously learned character recipes...")
-            Craft.character_recipes[player.userid] = learned
+        if learned_total > 0 then
+            DebugString(
+                "Storing",
+                tostring(learned_total),
+                "previously learned character recipes..."
+            )
+
+            local t = {}
+            for name, _ in pairs(learned) do
+                table.insert(t, name)
+            end
+            Craft.character_recipes[player.userid] = t
         end
 
         if SDK.Utils.Table.Count(recipes) > 0 then
