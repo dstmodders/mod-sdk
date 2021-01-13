@@ -130,15 +130,15 @@ end
 -- @treturn table
 function Craft.FilterRecipesBy(fn, recipes)
     recipes = ArgRecipes("FilterRecipesBy", recipes)
-    local names = {}
+    local t = {}
     if type(recipes) == "table" then
         for name, data in pairs(recipes) do
             if fn(name, data) then
-                table.insert(names, name)
+                t[name] = data
             end
         end
     end
-    return names
+    return t
 end
 
 --- Filters all recipes that have been learned.
@@ -278,11 +278,11 @@ function Craft.LockAllCharacterRecipes(player)
     end
 
     local recipes = Craft.FilterRecipesWith("builder_tag")
-    if #recipes > 0 then
+    if SDK.Utils.Table.Count(recipes) > 0 then
         DebugString("Locking and restoring all character recipes...")
-        for _, recipe in pairs(recipes) do
-            if not SDK.Utils.Table.HasValue(Craft.character_recipes[player.userid], recipe) then
-                Craft.LockRecipe(recipe, player)
+        for name, _ in pairs(recipes) do
+            if not SDK.Utils.Table.HasValue(Craft.character_recipes[player.userid], name) then
+                Craft.LockRecipe(name, player)
             end
         end
         Craft.character_recipes[player.userid] = {}
@@ -360,10 +360,10 @@ function Craft.UnlockAllCharacterRecipes(player)
             Craft.character_recipes[player.userid] = learned
         end
 
-        if #recipes > 0 then
+        if SDK.Utils.Table.Count(recipes) > 0 then
             DebugString("Unlocking all character recipes...")
-            for _, recipe in pairs(recipes) do
-                Craft.UnlockRecipe(recipe, player)
+            for name, _ in pairs(recipes) do
+                Craft.UnlockRecipe(name, player)
             end
         end
 

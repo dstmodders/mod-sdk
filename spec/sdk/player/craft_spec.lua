@@ -440,14 +440,22 @@ describe("#sdk SDK.Player.Craft", function()
             })
 
             it("should return filtered recipes", function()
-                assert.is_equal(2, #Craft.FilterRecipesBy(ReturnValueFn(true)))
+                assert.is_equal(2, TableCount(Craft.FilterRecipesBy(ReturnValueFn(true))))
                 assert.is_same({}, Craft.FilterRecipesBy(ReturnValueFn(false)))
 
-                assert.is_same({ "foo" }, Craft.FilterRecipesBy(function(name)
+                assert.is_same({
+                    foo = {
+                        builder_tag = "builder_tag",
+                    },
+                }, Craft.FilterRecipesBy(function(name)
                     return name == "foo"
                 end))
 
-                assert.is_same({ "bar" }, Craft.FilterRecipesBy(function(name)
+                assert.is_same({
+                    bar = {
+                        placer = "placer",
+                    },
+                }, Craft.FilterRecipesBy(function(name)
                     return name == "bar"
                 end))
             end)
@@ -529,8 +537,16 @@ describe("#sdk SDK.Player.Craft", function()
             })
 
             it("should return filtered recipes", function()
-                assert.is_same({ "foo" }, Craft.FilterRecipesWith("builder_tag"))
-                assert.is_same({ "bar" }, Craft.FilterRecipesWith("placer"))
+                assert.is_same({
+                    foo = {
+                        builder_tag = "builder_tag",
+                    },
+                }, Craft.FilterRecipesWith("builder_tag"))
+                assert.is_same({
+                    bar = {
+                        placer = "placer",
+                    },
+                }, Craft.FilterRecipesWith("placer"))
                 assert.is_same({}, Craft.FilterRecipesWith("foo"))
             end)
         end)
@@ -543,9 +559,17 @@ describe("#sdk SDK.Player.Craft", function()
             })
 
             it("should return filtered recipes", function()
-                assert.is_same({ "bar" }, Craft.FilterRecipesWithout("builder_tag"))
-                assert.is_same({ "foo" }, Craft.FilterRecipesWithout("placer"))
-                assert.is_equal(2, #Craft.FilterRecipesWithout("foo"))
+                assert.is_same({
+                    bar = {
+                        placer = "placer",
+                    },
+                }, Craft.FilterRecipesWithout("builder_tag"))
+                assert.is_same({
+                    foo = {
+                        builder_tag = "builder_tag",
+                    },
+                }, Craft.FilterRecipesWithout("placer"))
+                assert.is_equal(2, TableCount(Craft.FilterRecipesWithout("foo")))
             end)
         end)
 
@@ -980,10 +1004,7 @@ describe("#sdk SDK.Player.Craft", function()
             end)
 
             TestArgPlayer("UnlockAllCharacterRecipes", {
-                empty = {
-                    args = {},
-                    calls = 1,
-                },
+                empty = {},
                 invalid = { "foo" },
                 valid = {
                     args = { _G.ThePlayer },
