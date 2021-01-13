@@ -154,14 +154,9 @@ function Craft.FilterRecipesByLearned(recipes, player)
         return {}
     end
 
-    local t = {}
-    for name, data in pairs(recipes) do
-        if Craft.IsLearnedRecipe(name, player) then
-            t[name] = data
-        end
-    end
-
-    return t
+    return Craft.FilterRecipesBy(function(name)
+        return Craft.IsLearnedRecipe(name, player)
+    end)
 end
 
 --- Filters all recipes that haven't been learned.
@@ -177,14 +172,9 @@ function Craft.FilterRecipesByNotLearned(recipes, player)
         return {}
     end
 
-    local t = {}
-    for name, data in pairs(recipes) do
-        if not Craft.IsLearnedRecipe(name, player) then
-            t[name] = data
-        end
-    end
-
-    return t
+    return Craft.FilterRecipesBy(function(name)
+        return not Craft.IsLearnedRecipe(name, player)
+    end)
 end
 
 --- Filters all recipes that include a certain field.
