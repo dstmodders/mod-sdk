@@ -330,8 +330,8 @@ function Player.SetWerenessPercent(percent, player)
     }, percent, player)
 end
 
---- Recipe
--- @section recipe
+--- Recipes
+-- @section recipes
 
 --- Sends a request to lock a recipe.
 -- @tparam string recipe Valid recipe
@@ -358,7 +358,7 @@ function Player.LockRecipe(recipe, player)
 end
 
 --- Sends a request to unlock a recipe.
--- @tparam string recipe
+-- @tparam string recipe Valid recipe
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.UnlockRecipe(recipe, player)

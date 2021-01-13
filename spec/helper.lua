@@ -24,6 +24,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/persistentdata"] = "sdk/persistentdata",
     ["yoursubdirectory/sdk/sdk/player"] = "sdk/player",
     ["yoursubdirectory/sdk/sdk/player/attribute"] = "sdk/player/attribute",
+    ["yoursubdirectory/sdk/sdk/player/craft"] = "sdk/player/craft",
     ["yoursubdirectory/sdk/sdk/player/inventory"] = "sdk/player/inventory",
     ["yoursubdirectory/sdk/sdk/remote"] = "sdk/remote",
     ["yoursubdirectory/sdk/sdk/remote/player"] = "sdk/remote/player",

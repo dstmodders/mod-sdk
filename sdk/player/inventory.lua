@@ -5,6 +5,7 @@
 --
 -- @module SDK.Player.Inventory
 -- @see SDK
+-- @see SDK.Player
 --
 -- @author Victor Popkov
 -- @copyright 2020

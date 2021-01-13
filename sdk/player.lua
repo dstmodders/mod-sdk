@@ -7,6 +7,9 @@
 --
 -- @module SDK.Player
 -- @see SDK
+-- @see SDK.Player.Attribute
+-- @see SDK.Player.Craft
+-- @see SDK.Player.Inventory
 --
 -- @author Victor Popkov
 -- @copyright 2020
@@ -172,7 +175,7 @@ function Player.IsIdle(player)
 end
 
 --- Checks if a player is invincible.
--- @tparam[opt] EntityScript player Player instance (the selected one by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsInvincible(player)
     player = player ~= nil and player or ThePlayer
@@ -180,7 +183,7 @@ function Player.IsInvincible(player)
 end
 
 --- Checks if a player is on a platform.
--- @tparam[opt] EntityScript player Player instance (the selected one by default)
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.IsOnPlatform(player)
     player = player ~= nil and player or ThePlayer
@@ -354,6 +357,7 @@ function Player._DoInit(sdk, submodules)
 
     submodules = submodules ~= nil and submodules or {
         Attribute = "sdk/player/attribute",
+        Craft = "sdk/player/craft",
         Inventory = "sdk/player/inventory",
     }
 

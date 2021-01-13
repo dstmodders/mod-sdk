@@ -209,7 +209,8 @@ describe("#sdk SDK.Player.Attribute", function()
                             match.is_ref(_G.ThePlayer.components[name]),
                             value
                         )
-                    end)
+                    end
+                )
 
                 it("should return true", function()
                     assert.is_true(Attribute[fn_name](25))
