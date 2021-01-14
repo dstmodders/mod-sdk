@@ -120,6 +120,25 @@ function Inventory.HasEquippedItemWithTag(slot, tag, player)
     return item and item:HasTag(tag)
 end
 
+--- Checks if enough ingredients to craft from a recipe.
+--
+-- **NB!** Free crafting doesn't affect this so it should be handled separately.
+--
+-- @tparam table recipe
+-- @treturn boolean
+function Inventory.HasIngredientsForRecipe(recipe)
+    local inventory = Inventory.GetInventory()
+    if inventory and recipe then
+        for _, ingredient in pairs(recipe.ingredients) do
+            if not inventory:Has(ingredient.type, ingredient.amount) then
+                return false
+            end
+        end
+        return true
+    end
+    return false
+end
+
 --- Backpack
 -- @section backpack
 
