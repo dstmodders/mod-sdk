@@ -26,61 +26,28 @@ local function DebugErrorFn(fn_name, ...)
     SDK._DebugErrorFn(Craft, fn_name, ...)
 end
 
-local function DebugErrorInvalidArg(fn_name, arg_name, explanation)
-    SDK._DebugErrorInvalidArg(Craft, fn_name, arg_name, explanation)
-end
-
 local function DebugString(...)
     SDK._DebugString("[player]", "[craft]", ...)
 end
 
-local function ArgPlayer(fn_name, player)
-    player = player ~= nil and player or ThePlayer
-    if Value.IsPlayer(player) then
-        return player
-    end
-    DebugErrorInvalidArg(fn_name, "player", "must be a player")
+local function ArgPlayer(fn_name, value)
+    return SDK._ArgPlayer(Craft, fn_name, value)
 end
 
-local function ArgRecipe(fn_name, recipe)
-    if Value.IsRecipeValid(recipe) then
-        return recipe
-    end
-    DebugErrorInvalidArg(fn_name, "recipe", "must be a valid recipe")
+local function ArgRecipe(fn_name, value)
+    return SDK._ArgRecipe(Craft, fn_name, value)
 end
 
-local function ArgRecipes(fn_name, recipes)
-    recipes = recipes ~= nil and recipes or AllRecipes
-    if type(recipes) == "table" then
-        return recipes
-    end
-    DebugErrorInvalidArg(fn_name, "recipes", "must be valid recipes")
+local function ArgRecipes(fn_name, value)
+    return SDK._ArgRecipes(Craft, fn_name, value)
 end
 
 local function GetComponent(fn_name, entity, name)
-    local component = SDK.Utils.Chain.Get(entity, "components", name)
-    if component then
-        return component
-    end
-    DebugErrorFn(
-        fn_name,
-        name:gsub("^%l", string.upper),
-        "component is not available",
-        entity.GetDisplayName and "(" .. entity:GetDisplayName() .. ")"
-    )
+    return SDK._GetComponent(Craft, fn_name, entity, name)
 end
 
 local function GetReplica(fn_name, entity, name)
-    local replica = SDK.Utils.Chain.Get(entity, "replica", name)
-    if replica then
-        return replica
-    end
-    DebugErrorFn(
-        fn_name,
-        name:gsub("^%l", string.upper),
-        "replica is not available",
-        entity.GetDisplayName and "(" .. entity:GetDisplayName() .. ")"
-    )
+    return SDK._GetReplica(Craft, fn_name, entity, name)
 end
 
 --- Free Crafting
