@@ -142,6 +142,41 @@ end
 --- Internal
 -- @section internal
 
+--- Checks if a player argument is valid.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+function SDK._ArgPlayer(module, fn_name, value)
+    value = value ~= nil and value or ThePlayer
+    if SDK.Utils.Value.IsPlayer(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, "player", "must be a player")
+end
+
+--- Checks if a recipe argument is valid.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+function SDK._ArgRecipe(module, fn_name, value)
+    if SDK.Utils.Value.IsRecipeValid(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, "recipe", "must be a valid recipe")
+end
+
+--- Checks if a recipes argument is valid.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+function SDK._ArgRecipes(module, fn_name, value)
+    value = value ~= nil and value or AllRecipes
+    if type(value) == "table" then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, "recipes", "must be valid recipes")
+end
+
 --- Debugs an error string.
 -- @tparam any ...
 function SDK._DebugError(...)
@@ -317,6 +352,56 @@ end
 -- @tparam any ...
 function SDK._Error(...)
     SDK._Info("[error]", ...)
+end
+
+--- Gets a component.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam EntityScript entity
+-- @tparam string name
+function SDK._GetComponent(module, fn_name, entity, name)
+    local component = SDK.Utils.Chain.Get(entity, "components", name)
+    if component then
+        return component
+    end
+
+    local _name = name:gsub("^%l", string.upper)
+    if entity then
+        SDK._DebugErrorFn(
+            module,
+            fn_name,
+            _name,
+            "component is not available",
+            entity.GetDisplayName and "(" .. entity:GetDisplayName() .. ")"
+        )
+    else
+        SDK._DebugErrorFn(module, fn_name, _name, "component is not available")
+    end
+end
+
+--- Gets a replica.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam EntityScript entity
+-- @tparam string name
+function SDK._GetReplica(module, fn_name, entity, name)
+    local replica = SDK.Utils.Chain.Get(entity, "replica", name)
+    if replica then
+        return replica
+    end
+
+    local _name = name:gsub("^%l", string.upper)
+    if entity then
+        SDK._DebugErrorFn(
+            module,
+            fn_name,
+            _name,
+            "replica is not available",
+            entity.GetDisplayName and "(" .. entity:GetDisplayName() .. ")"
+        )
+    else
+        SDK._DebugErrorFn(module, fn_name, _name, "replica is not available")
+    end
 end
 
 --- Prints an info string.
