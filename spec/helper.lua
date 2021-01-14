@@ -116,3 +116,132 @@ function AssertDebugStringCalls(fn, calls, ...)
         end
     end
 end
+
+--
+-- Tests
+--
+
+function TestArgPlayer(module, fn_name, args)
+    local describe = require "busted".describe
+    local it = require "busted".it
+
+    if args.empty then
+        local _args = args.empty.args or args.empty
+        local calls = args.empty.calls or 0
+        describe("when no player is passed", function()
+            it("shouldn't debug error string", function()
+                AssertDebugErrorCalls(function()
+                    module[fn_name](unpack(_args))
+                end, calls)
+            end)
+        end)
+    end
+
+    if args.invalid then
+        local _args = args.invalid.args or args.invalid
+        local calls = args.invalid.calls or 1
+        describe("when an invalid player is passed", function()
+            it("should debug error string", function()
+                AssertDebugErrorInvalidArgCalls(function()
+                    module[fn_name](unpack(_args))
+                end, calls, module, fn_name, "player", "must be a player")
+            end)
+        end)
+    end
+
+    if args.valid then
+        local _args = args.valid.args or args.valid
+        local calls = args.valid.calls or 0
+        describe("when a valid player is passed", function()
+            it("shouldn't debug error string", function()
+                AssertDebugErrorCalls(function()
+                    module[fn_name](unpack(_args))
+                end, calls)
+            end)
+        end)
+    end
+end
+
+function TestArgRecipe(module, fn_name, args)
+    local describe = require "busted".describe
+    local it = require "busted".it
+
+    if args.empty then
+        local _args = args.empty.args or args.empty
+        local calls = args.empty.calls or 1
+        describe("when no recipe is passed", function()
+            it("should debug error string", function()
+                AssertDebugErrorInvalidArgCalls(function()
+                    module[fn_name](unpack(_args))
+                end, calls, module, fn_name, "recipe", "must be a valid recipe")
+            end)
+        end)
+    end
+
+    if args.invalid then
+        local _args = args.invalid.args or args.invalid
+        local calls = args.invalid.calls or 1
+        describe("when an invalid recipe is passed", function()
+            it("should debug error string", function()
+                AssertDebugErrorInvalidArgCalls(function()
+                    module[fn_name](unpack(_args))
+                end, calls, module, fn_name, "recipe", "must be a valid recipe")
+            end)
+        end)
+    end
+
+    if args.valid then
+        local _args = args.valid.args or args.valid
+        local calls = args.valid.calls or 0
+        describe("when a valid recipe is passed", function()
+            it("shouldn't debug error string", function()
+                AssertDebugErrorCalls(function()
+                    module[fn_name](unpack(_args))
+                end, calls)
+            end)
+        end)
+    end
+end
+
+function TestArgRecipes(module, fn_name, args)
+    local describe = require "busted".describe
+    local it = require "busted".it
+
+    if args.empty then
+        local calls = args.empty.calls or 0
+        describe("when no recipes are passed", function()
+            it("shouldn't debug error string", function()
+                AssertDebugErrorCalls(function()
+                    module[fn_name](unpack(args.empty))
+                end, calls)
+            end)
+        end)
+    end
+
+    if args.invalid then
+        describe("when invalid recipes are passed", function()
+            it("should debug error string", function()
+                if args.invalid.calls then
+                    AssertDebugErrorInvalidArgCalls(function()
+                        module[fn_name](unpack(args.invalid.args))
+                    end, args.invalid.calls, module, fn_name, "recipes", "must be valid recipes")
+                else
+                    AssertDebugErrorInvalidArg(function()
+                        module[fn_name](unpack(args.invalid))
+                    end, module, fn_name, "recipes", "must be valid recipes")
+                end
+            end)
+        end)
+    end
+
+    if args.valid then
+        local calls = args.valid.calls or 0
+        describe("when valid recipes are passed", function()
+            it("shouldn't debug error string", function()
+                AssertDebugErrorCalls(function()
+                    module[fn_name](unpack(args.valid))
+                end, calls)
+            end)
+        end)
+    end
+end
