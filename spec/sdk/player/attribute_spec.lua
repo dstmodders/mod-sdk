@@ -152,13 +152,17 @@ describe("#sdk SDK.Player.Attribute", function()
         _G.AssertDebugString(fn, "[player]", "[attribute]", ...)
     end
 
+    local function TestArgPlayer(...)
+        _G.TestArgPlayer(Attribute, ...)
+    end
+
     describe("attributes", function()
         local function TestComponentIsAvailable(fn_name, name, setter, debug, value)
             describe("and a " .. name .. " component is available", function()
-                local component
+                local _component
 
                 setup(function()
-                    component = _G.ThePlayer.components[name]
+                    _component = _G.ThePlayer.components[name]
                 end)
 
                 before_each(function()
@@ -168,7 +172,7 @@ describe("#sdk SDK.Player.Attribute", function()
                 end)
 
                 teardown(function()
-                    _G.ThePlayer.components[name] = component
+                    _G.ThePlayer.components[name] = _component
                 end)
 
                 it("should debug string", function()
@@ -198,10 +202,10 @@ describe("#sdk SDK.Player.Attribute", function()
 
         local function TestComponentIsNotAvailable(fn_name, name)
             describe("and a " .. name .. " component is not available", function()
-                local component
+                local _component
 
                 setup(function()
-                    component = _G.ThePlayer.components[name]
+                    _component = _G.ThePlayer.components[name]
                 end)
 
                 before_each(function()
@@ -209,7 +213,7 @@ describe("#sdk SDK.Player.Attribute", function()
                 end)
 
                 teardown(function()
-                    _G.ThePlayer.components[name] = component
+                    _G.ThePlayer.components[name] = _component
                 end)
 
                 it("should debug error string", function()
@@ -218,7 +222,9 @@ describe("#sdk SDK.Player.Attribute", function()
                             Attribute[fn_name](25)
                         end,
                         "SDK.Player.Attribute." .. fn_name .. "():",
-                        name:gsub("^%l", string.upper) .. " component is not available"
+                        name:gsub("^%l", string.upper),
+                        "component is not available",
+                        "(" .. _G.ThePlayer:GetDisplayName() .. ")"
                     )
                 end)
 
@@ -230,6 +236,12 @@ describe("#sdk SDK.Player.Attribute", function()
 
         local function TestGetAttribute(name, fn_name)
             describe(name .. "()", function()
+                TestArgPlayer(name, {
+                    empty = {},
+                    invalid = { "foo" },
+                    valid = { _G.ThePlayer },
+                })
+
                 it("should return [player]." .. fn_name .. "() value", function()
                     assert.is_equal(_G.ThePlayer[fn_name](_G.ThePlayer), Attribute[name]())
                 end)
@@ -255,6 +267,11 @@ describe("#sdk SDK.Player.Attribute", function()
 
         local function TestGetReplicaAttributePercent(name, component, component_fn_name, value)
             describe(name .. "()", function()
+                TestArgPlayer(name, {
+                    empty = {},
+                    invalid = { "foo" },
+                })
+
                 describe("when [player].replica.health is available", function()
                     it("should call the [player].replica.health:GetPercent()", function()
                         EachPlayer(function(player)
