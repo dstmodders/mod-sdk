@@ -77,6 +77,7 @@ files["**/*.lua"] = {
         "ENCODE_SAVES",
         "EQUIPSLOTS",
         "GetModConfigData",
+        "GetValidRecipe",
         "GROUND",
         "InGamePlay",
         "IsRecipeValid",
