@@ -156,7 +156,7 @@ function Craft.FilterRecipesByLearned(recipes, player)
 
     return Craft.FilterRecipesBy(function(name)
         return Craft.IsLearnedRecipe(name, player)
-    end)
+    end, recipes)
 end
 
 --- Filters all recipes that haven't been learned.
@@ -174,7 +174,7 @@ function Craft.FilterRecipesByNotLearned(recipes, player)
 
     return Craft.FilterRecipesBy(function(name)
         return not Craft.IsLearnedRecipe(name, player)
-    end)
+    end, recipes)
 end
 
 --- Filters all recipes that include a certain field.
@@ -335,10 +335,6 @@ function Craft.UnlockAllCharacterRecipes(player)
 
     if not player then
         return false
-    end
-
-    if not Craft.character_recipes[player.userid] then
-        Craft.character_recipes[player.userid] = {}
     end
 
     if #Craft.character_recipes[player.userid] == 0 then
