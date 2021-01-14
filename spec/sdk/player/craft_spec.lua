@@ -93,16 +93,20 @@ describe("#sdk SDK.Player.Craft", function()
         end
     end)
 
-    local function AssertDebugErrorInvalidArgCalls(fn, calls, fn_name, arg_name, explanation)
-        _G.AssertDebugErrorInvalidArgCalls(fn, calls, Craft, fn_name, arg_name, explanation)
-    end
-
-    local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
-        _G.AssertDebugErrorInvalidArg(fn, Craft, fn_name, arg_name, explanation)
-    end
-
     local function AssertDebugString(fn, ...)
         _G.AssertDebugString(fn, "[player]", "[craft]", ...)
+    end
+
+    local function TestArgPlayer(...)
+        _G.TestArgPlayer(Craft, ...)
+    end
+
+    local function TestArgRecipe(...)
+        _G.TestArgRecipe(Craft, ...)
+    end
+
+    local function TestArgRecipes(...)
+        _G.TestArgRecipes(Craft, ...)
     end
 
     local function TestDebugError(fn, ...)
@@ -149,127 +153,10 @@ describe("#sdk SDK.Player.Craft", function()
         end)
     end
 
-    local function TestArgPlayer(fn_name, args)
-        if args.empty then
-            local calls = args.empty.calls or 0
-            describe("when no player is passed", function()
-                it("shouldn't debug error string", function()
-                    AssertDebugErrorCalls(function()
-                        Craft[fn_name](unpack(args.empty))
-                    end, calls)
-                end)
-            end)
-        end
-
-        if args.invalid then
-            describe("when an invalid player is passed", function()
-                it("should debug error string", function()
-                    if args.invalid.calls then
-                        AssertDebugErrorInvalidArgCalls(function()
-                            Craft[fn_name](unpack(args.invalid.args))
-                        end, args.invalid.calls, fn_name, "player", "must be a player")
-                    else
-                        AssertDebugErrorInvalidArg(function()
-                            Craft[fn_name](unpack(args.invalid))
-                        end, fn_name, "player", "must be a player")
-                    end
-                end)
-            end)
-        end
-
-        if args.valid then
-            local calls = args.valid.calls or 0
-            describe("when a valid player is passed", function()
-                it("shouldn't debug error string", function()
-                    AssertDebugErrorCalls(function()
-                        Craft[fn_name](unpack(args.valid))
-                    end, calls)
-                end)
-            end)
-        end
-    end
-
-    local function TestArgRecipe(fn_name, args)
-        if args.empty then
-            describe("when no recipe is passed", function()
-                it("shouldn't debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        Craft[fn_name](unpack(args.empty))
-                    end, fn_name, "recipe", "must be a valid recipe")
-                end)
-            end)
-        end
-
-        if args.invalid then
-            describe("when an invalid recipe is passed", function()
-                it("should debug error string", function()
-                    if args.invalid.calls then
-                        AssertDebugErrorInvalidArgCalls(function()
-                            Craft[fn_name](unpack(args.invalid.args))
-                        end, args.invalid.calls, fn_name, "recipe", "must be valid recipe")
-                    else
-                        AssertDebugErrorInvalidArg(function()
-                            Craft[fn_name](unpack(args.invalid))
-                        end, fn_name, "recipe", "must be a valid recipe")
-                    end
-                end)
-            end)
-        end
-
-        if args.valid then
-            local calls = args.valid.calls or 0
-            describe("when a valid recipe is passed", function()
-                it("shouldn't debug error string", function()
-                    AssertDebugErrorCalls(function()
-                        Craft[fn_name](unpack(args.valid))
-                    end, calls)
-                end)
-            end)
-        end
-    end
-
-    local function TestArgRecipes(fn_name, args)
-        if args.empty then
-            local calls = args.empty.calls or 0
-            describe("when no recipes are passed", function()
-                it("shouldn't debug error string", function()
-                    AssertDebugErrorCalls(function()
-                        Craft[fn_name](unpack(args.empty))
-                    end, calls)
-                end)
-            end)
-        end
-
-        if args.invalid then
-            describe("when invalid recipes are passed", function()
-                it("should debug error string", function()
-                    if args.invalid.calls then
-                        AssertDebugErrorInvalidArgCalls(function()
-                            Craft[fn_name](unpack(args.invalid.args))
-                        end, args.invalid.calls, fn_name, "recipes", "must be valid recipes")
-                    else
-                        AssertDebugErrorInvalidArg(function()
-                            Craft[fn_name](unpack(args.invalid))
-                        end, fn_name, "recipes", "must be valid recipes")
-                    end
-                end)
-            end)
-        end
-
-        if args.valid then
-            local calls = args.valid.calls or 0
-            describe("when valid recipes are passed", function()
-                it("shouldn't debug error string", function()
-                    AssertDebugErrorCalls(function()
-                        Craft[fn_name](unpack(args.valid))
-                    end, calls)
-                end)
-            end)
-        end
-    end
-
     describe("free crafting", function()
         describe("HasFreeCrafting()", function()
+            Craft = require "yoursubdirectory/sdk/sdk/player/craft"
+
             TestArgPlayer("HasFreeCrafting", {
                 empty = {},
                 invalid = { "foo" },
