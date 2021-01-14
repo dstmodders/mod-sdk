@@ -18,6 +18,29 @@ local SDK
 --- General
 -- @section general
 
+--- Add string names to the values table.
+-- @tparam table t Values table
+-- @tparam[opt] boolean is_sorted Should be sorted alphabetically?
+-- @treturn table
+function Constant.AddStringNamesToTable(t, is_sorted)
+    local result = {}
+
+    for _, v in pairs(t) do
+        table.insert(result, {
+            name = Constant.GetStringName(v),
+            value = v,
+        })
+    end
+
+    if is_sorted then
+        table.sort(result, function(a, b)
+            return a.name:lower() < b.name:lower()
+        end)
+    end
+
+    return result
+end
+
 --- Gets a skin index.
 -- @see GetStringSkinName
 -- @see GetStringName
