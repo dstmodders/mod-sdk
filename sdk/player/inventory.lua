@@ -16,6 +16,17 @@ local Inventory = {}
 
 local SDK
 
+--- Helpers
+-- @section helpers
+
+local function ArgPlayer(fn_name, value)
+    return SDK._ArgPlayer(Inventory, fn_name, value)
+end
+
+local function ArgRecipe(fn_name, value)
+    return SDK._ArgRecipe(Inventory, fn_name, value)
+end
+
 --- General
 -- @section general
 
@@ -53,7 +64,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetActiveItem(player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("GetActiveItem", player)
+
+    if not player then
+        return
+    end
+
     local inventory = Inventory.GetInventory(player)
     return inventory and inventory:GetActiveItem()
 end
@@ -62,7 +78,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetInventory(player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("GetInventory", player)
+
+    if not player then
+        return
+    end
+
     return SDK.Utils.Chain.Get(player, "replica", "inventory")
 end
 
@@ -70,7 +91,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetInventoryItems(player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("GetInventoryItems", player)
+
+    if not player then
+        return
+    end
+
     local inventory = Inventory.GetInventory(player)
     return inventory and inventory:GetItems()
 end
@@ -80,7 +106,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedItem(slot, player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("GetEquippedItem", player)
+
+    if not player then
+        return
+    end
+
     local inventory = Inventory.GetInventory(player)
     return inventory and inventory:GetEquippedItem(slot)
 end
@@ -89,7 +120,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedBodyItem(player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("GetEquippedBodyItem", player)
+
+    if not player then
+        return
+    end
+
     return Inventory.GetEquippedItem(EQUIPSLOTS.BODY, player)
 end
 
@@ -97,7 +133,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedHandsItem(player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("GetEquippedHandsItem", player)
+
+    if not player then
+        return
+    end
+
     return Inventory.GetEquippedItem(EQUIPSLOTS.HANDS, player)
 end
 
@@ -105,7 +146,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedHeadItem(player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("GetEquippedHeadItem", player)
+
+    if not player then
+        return
+    end
+
     return Inventory.GetEquippedItem(EQUIPSLOTS.HEAD, player)
 end
 
@@ -115,7 +161,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Inventory.HasEquippedItemWithTag(slot, tag, player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("HasEquippedItemWithTag", player)
+
+    if not player then
+        return
+    end
+
     local item = Inventory.GetEquippedItem(slot, player)
     return item and item:HasTag(tag)
 end
@@ -139,16 +190,24 @@ end
 -- @tparam table recipe
 -- @treturn boolean
 function Inventory.HasIngredientsForRecipe(recipe)
-    local inventory = Inventory.GetInventory()
-    if inventory and recipe then
-        for _, ingredient in pairs(recipe.ingredients) do
-            if not inventory:Has(ingredient.type, ingredient.amount) then
-                return false
-            end
-        end
-        return true
+    recipe = ArgRecipe("HasIngredientsForRecipe", recipe)
+
+    if not recipe then
+        return false
     end
-    return false
+
+    local inventory = Inventory.GetInventory()
+    if not inventory then
+        return false
+    end
+
+    for _, ingredient in pairs(recipe.ingredients) do
+        if not inventory:Has(ingredient.type, ingredient.amount) then
+            return false
+        end
+    end
+
+    return true
 end
 
 --- Backpack
@@ -158,7 +217,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedBackpack(player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("GetEquippedBackpack", player)
+
+    if not player then
+        return
+    end
+
     local item = Inventory.GetEquippedBodyItem(player)
     return item and item:HasTag("backpack") and item
 end
@@ -167,18 +231,26 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedBackpackContainer(player)
-    local backpack = Inventory.GetEquippedBackpack(player)
-    if backpack then
-        local container = SDK.World.IsMasterSim()
-            and SDK.Utils.Chain.Get(backpack, "components", "container")
-            or SDK.Utils.Chain.Get(backpack, "replica", "container", "classified")
+    player = ArgPlayer("GetEquippedBackpackContainer", player)
 
-        if not container then
-            SDK.Debug.Error(
-                "SDK.Inventory.GetEquippedBackpackContainer():",
-                "container not available"
-            )
-        end
+    if not player then
+        return
+    end
+
+    local backpack = Inventory.GetEquippedBackpack(player)
+    if not backpack then
+        return
+    end
+
+    local container = SDK.World.IsMasterSim()
+        and SDK.Utils.Chain.Get(backpack, "components", "container")
+        or SDK.Utils.Chain.Get(backpack, "replica", "container", "classified")
+
+    if not container then
+        SDK.Debug.Error(
+            "SDK.Inventory.GetEquippedBackpackContainer():",
+            "container not available"
+        )
     end
 end
 
@@ -186,6 +258,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.GetEquippedBackpackItems(player)
+    player = ArgPlayer("GetEquippedBackpackItems", player)
+
+    if not player then
+        return
+    end
+
     local container = Inventory.GetEquippedBackpackContainer(player)
     return container and SDK.World.IsMasterSim() and container.slots or container:GetItems()
 end
@@ -194,6 +272,12 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Inventory.IsEquippedBackpackFull(player)
+    player = ArgPlayer("IsEquippedBackpackFull", player)
+
+    if not player then
+        return
+    end
+
     local container = Inventory.GetEquippedBackpackContainer(player)
     return container and container:IsFull()
 end
