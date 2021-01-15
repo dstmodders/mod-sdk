@@ -313,8 +313,8 @@ the repository.
 
 ### Makefile
 
-_Currently, only Linux is supported. However, the Windows support has also been
-under consideration by incorporating a [CMake][] or [NMake][] equivalents._
+_Currently, only Linux is supported. However, the Windows support is under
+consideration._
 
 This project uses [Makefile][] so the most common tasks have been wrapped inside
 the corresponding rules:
@@ -326,22 +326,17 @@ $ make help
 ```
 Please use 'make <target>' where '<target>' is one of:
 
-   citest          to run Busted tests for CI
-   dev             to run reinstall + ldoc + lint + test
-   gitrelease      to commit modinfo.lua and CHANGELOG.md + add a new tag
-   install         to install the mod
-   ldoc            to generate an LDoc documentation
-   lint            to run code linting
-   modicon         to pack modicon
-   reinstall       to uninstall and then install the mod
-   release         to update version
-   test            to run Busted tests
-   testclean       to clean up after tests
-   testcoverage    to print the tests coverage report
-   testlist        to list all existing tests
-   uninstall       to uninstall the mod
-   workshop        to prepare the Steam Workshop directory + archive
-   workshopclean   to clean up Steam Workshop directory + archive
+   citest                to run Busted tests for CI
+   dev                   to run ldoc + lint + testclean + test
+   ldoc                  to generate an LDoc documentation
+   lint                  to run code linting
+   luacheckglobals       to print Luacheck globals (mutating/setting)
+   luacheckreadglobals   to print Luacheck read_globals (reading)
+   release               to update version
+   test                  to run Busted tests
+   testclean             to clean up after tests
+   testcoverage          to print the tests coverage report
+   testlist              to list all existing tests
 ```
 
 [agile]: https://en.wikipedia.org/wiki/Agile_software_development

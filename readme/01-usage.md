@@ -7,8 +7,7 @@ In order to start using this SDK you need to first add it in your mod directory.
 A recommended way is to add a Git submodule into your repository:
 
 ```shell script
-git submodule add https://github.com/victorpopkov/dst-mod-sdk \
-  scripts/<your subdirectory>/sdk --name sdk
+git submodule add https://github.com/victorpopkov/dst-mod-sdk scripts/<your subdirectory>/sdk --name sdk
 ```
 
 However, you can download the latest release from the [Releases][] page or clone
@@ -79,8 +78,8 @@ To see a real world examples of using this SDK, check out the following mods:
 - [Dev Tools][]
 - [Keep Following][]
 
-_**NB!** At the current stage, the mentioned mods are in the process of
-migration to SDK. Check out their `sdk` branches first._
+_**NB!** The mentioned mods are currently in the process of migration to SDK.
+Check out their `sdk` branches first._
 
 [auto join]: https://github.com/victorpopkov/dst-mod-auto-join
 [dev tools]: https://github.com/victorpopkov/dst-mod-dev-tools
