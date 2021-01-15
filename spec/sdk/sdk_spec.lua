@@ -170,94 +170,7 @@ describe("#sdk SDK", function()
         end)
     end)
 
-    describe("internal", function()
-        local _print
-
-        setup(function()
-            _print = _G.print
-        end)
-
-        teardown(function()
-            _G.print = _print
-            SDK.SetIsSilent(true)
-        end)
-
-        before_each(function()
-            _G.print = spy.new(Empty)
-            SDK.SetIsSilent(false)
-        end)
-
-        describe("Info()", function()
-            describe("when SDK.env is available", function()
-                before_each(function()
-                    SDK.env = {
-                        modname = "dst-mod-sdk",
-                    }
-                end)
-
-                it("should print error", function()
-                    assert.spy(_G.print).was_not_called()
-                    SDK._Info("one", "two", "three")
-                    assert.spy(_G.print).was_called(1)
-                    assert.spy(_G.print).was_called_with(
-                        "[sdk] [dst-mod-sdk] one two three"
-                    )
-                end)
-            end)
-
-            describe("when SDK.env is not available", function()
-                before_each(function()
-                    SDK.env = nil
-                end)
-
-                it("should print error", function()
-                    assert.spy(_G.print).was_not_called()
-                    SDK._Info("one", "two", "three")
-                    assert.spy(_G.print).was_called(1)
-                    assert.spy(_G.print).was_called_with("[sdk] one two three")
-                end)
-            end)
-        end)
-
-        describe("Error()", function()
-            describe("when SDK.env is available", function()
-                before_each(function()
-                    SDK.env = {
-                        modname = "dst-mod-sdk",
-                    }
-                end)
-
-                it("should print error", function()
-                    assert.spy(_G.print).was_not_called()
-                    SDK._Error("one", "two", "three")
-                    assert.spy(_G.print).was_called(1)
-                    assert.spy(_G.print).was_called_with(
-                        "[sdk] [dst-mod-sdk] [error] one two three"
-                    )
-                end)
-            end)
-
-            describe("when SDK.env is not available", function()
-                before_each(function()
-                    SDK.env = nil
-                end)
-
-                it("should print error", function()
-                    assert.spy(_G.print).was_not_called()
-                    SDK._Error("one", "two", "three")
-                    assert.spy(_G.print).was_called(1)
-                    assert.spy(_G.print).was_called_with("[sdk] [error] one two three")
-                end)
-            end)
-        end)
-    end)
-
     describe("general", function()
-        before_each(function()
-            SDK._Error = spy.new(Empty)
-            SDK._Info = spy.new(Empty)
-        end)
-
         describe("should have a", function()
             describe("getter", function()
                 local getters = {
@@ -273,6 +186,25 @@ describe("#sdk SDK", function()
                     end)
                 end
             end)
+        end)
+    end)
+
+    describe("load", function()
+        local _Error, _Info
+
+        setup(function()
+            _Error = SDK._Error
+            _Info = SDK._Info
+        end)
+
+        teardown(function()
+            SDK._Error = _Error
+            SDK._Info = _Info
+        end)
+
+        before_each(function()
+            SDK._Error = spy.new(Empty)
+            SDK._Info = spy.new(Empty)
         end)
 
         describe("Load()", function()
@@ -1100,6 +1032,88 @@ describe("#sdk SDK", function()
                     assert.spy(SDK.Resume).was_not_called()
                     SDK.TogglePause()
                     assert.spy(SDK.Resume).was_not_called()
+                end)
+            end)
+        end)
+    end)
+
+    describe("internal", function()
+        local _fn
+
+        setup(function()
+            _fn = _G.print
+        end)
+
+        teardown(function()
+            _G.print = _fn
+            SDK.SetIsSilent(true)
+        end)
+
+        before_each(function()
+            _G.print = spy.new(Empty)
+            SDK.SetIsSilent(false)
+        end)
+
+        describe("_Error()", function()
+            describe("when SDK.env is available", function()
+                before_each(function()
+                    SDK.env = {
+                        modname = "dst-mod-sdk",
+                    }
+                end)
+
+                it("should print error", function()
+                    assert.spy(_G.print).was_not_called()
+                    SDK._Error("one", "two", "three")
+                    assert.spy(_G.print).was_called(1)
+                    assert.spy(_G.print).was_called_with(
+                        "[sdk] [dst-mod-sdk] [error] one two three"
+                    )
+                end)
+            end)
+
+            describe("when SDK.env is not available", function()
+                before_each(function()
+                    SDK.env = nil
+                end)
+
+                it("should print error", function()
+                    assert.spy(_G.print).was_not_called()
+                    SDK._Error("one", "two", "three")
+                    assert.spy(_G.print).was_called(1)
+                    assert.spy(_G.print).was_called_with("[sdk] [error] one two three")
+                end)
+            end)
+        end)
+
+        describe("_Info()", function()
+            describe("when SDK.env is available", function()
+                before_each(function()
+                    SDK.env = {
+                        modname = "dst-mod-sdk",
+                    }
+                end)
+
+                it("should print error", function()
+                    assert.spy(_G.print).was_not_called()
+                    SDK._Info("one", "two", "three")
+                    assert.spy(_G.print).was_called(1)
+                    assert.spy(_G.print).was_called_with(
+                        "[sdk] [dst-mod-sdk] one two three"
+                    )
+                end)
+            end)
+
+            describe("when SDK.env is not available", function()
+                before_each(function()
+                    SDK.env = nil
+                end)
+
+                it("should print error", function()
+                    assert.spy(_G.print).was_not_called()
+                    SDK._Info("one", "two", "three")
+                    assert.spy(_G.print).was_called(1)
+                    assert.spy(_G.print).was_called_with("[sdk] one two three")
                 end)
             end)
         end)
