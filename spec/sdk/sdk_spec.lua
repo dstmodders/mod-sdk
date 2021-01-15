@@ -58,7 +58,6 @@ describe("#sdk SDK", function()
         local Module
 
         before_each(function()
-            -- initialization
             SDK.LoadModule("Module", "spec/module")
             Module = require("spec/module")
         end)
@@ -80,7 +79,11 @@ describe("#sdk SDK", function()
 
             describe("and the required global is available", function()
                 before_each(function()
-                    _G.ThePlayer = {}
+                    _G.TheWorld = {}
+                end)
+
+                it("should have submodules", function()
+                    assert.is_table(SDK.Module.Submodule)
                 end)
 
                 describe("when referencing an existent function", function()
@@ -138,17 +141,24 @@ describe("#sdk SDK", function()
                         assert.is_nil(SDK.Module.foo())
                     end)
                 end)
+
+                describe("and referencing a function from a submodule", function()
+                    it("should return a function value", function()
+                        assert.is_function(SDK.Module.Submodule.Bar)
+                        assert.is_equal("bar", SDK.Module.Submodule.Bar())
+                    end)
+                end)
             end)
 
             describe("and the required global is not available", function()
                 before_each(function()
-                    _G.ThePlayer = nil
+                    _G.TheWorld = nil
                 end)
 
                 it("should debug error string", function()
                     AssertDebugError(function()
                         SDK.Module.Foo()
-                    end, "Function SDK.Module.Foo() shouldn't be called when ThePlayer global is "
+                    end, "Function SDK.Module.Foo() shouldn't be called when TheWorld global is "
                         .. "not available")
                 end)
 
@@ -335,63 +345,6 @@ describe("#sdk SDK", function()
                     assert.is_equal("dst-mod-sdk/scripts/yoursubdirectory/sdk/", SDK.path_full)
                 end)
 
-                describe("when path is resolved", function()
-                    setup(function()
-                        _G.softresolvefilepath = spy.new(ReturnValueFn(true))
-                        SDK.UnloadAllModules()
-                    end)
-
-                    teardown(function()
-                        LoadSDK()
-                    end)
-
-                    it("should print info", function()
-                        assert.spy(SDK._Info).was_not_called()
-                        SDK.Load(env, "yoursubdirectory/sdk")
-                        assert.spy(SDK._Info).was_called(30)
-                        assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Value")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Chain")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.ModMain")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Thread")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Constant")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Entity")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.RPC")
-                        assert.spy(SDK._Info).was_called_with("Unloaded", "SDK.Debug")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Debug")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.FrontEnd")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.DebugUpvalue")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote.World")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote.Player")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.PersistentData")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Test")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Input")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Attribute")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Inventory")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Craft")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Method")
-                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Dump")
-                        assert.spy(SDK._Info).was_called_with("Added world post initializer")
-                    end)
-
-                    it("shouldn't print error", function()
-                        assert.spy(SDK._Error).was_not_called()
-                        SDK.Load(env, "yoursubdirectory/sdk")
-                        assert.spy(SDK._Error).was_not_called()
-                    end)
-
-                    it("should return self", function()
-                        assert.is_equal(SDK, SDK.Load(env, "yoursubdirectory/sdk"))
-                    end)
-                end)
-
                 describe("when path is not resolved", function()
                     setup(function()
                         _G.softresolvefilepath = spy.new(ReturnValueFn(false))
@@ -415,6 +368,134 @@ describe("#sdk SDK", function()
                         assert.is_false(SDK.Load(env, "yoursubdirectory/sdk"))
                     end)
                 end)
+
+                describe("when path is resolved", function()
+                    setup(function()
+                        _G.softresolvefilepath = spy.new(ReturnValueFn(true))
+                    end)
+
+                    teardown(function()
+                        LoadSDK()
+                    end)
+
+                    before_each(function()
+                        SDK.UnloadAllModules()
+                        SDK._Info:clear()
+                    end)
+
+                    local function TestLoad(...)
+                        local args = { ... }
+                        it("shouldn't print error", function()
+                            assert.spy(SDK._Error).was_not_called()
+                            SDK.Load(unpack(args))
+                            assert.spy(SDK._Error).was_not_called()
+                        end)
+
+                        it("should return self", function()
+                            AssertReturnSelf(SDK, "Load", unpack(args))
+                        end)
+                    end
+
+                    local function TestPrintInfoAll(fn)
+                        it("should print info", function()
+                            assert.spy(SDK._Info).was_not_called()
+                            fn()
+                            assert.spy(SDK._Info).was_called(29)
+                            assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Constant")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Debug")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.DebugUpvalue")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Dump")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Entity")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.FrontEnd")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Input")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Method")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.ModMain")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.PersistentData")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Attribute")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Craft")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Inventory")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote.Player")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote.World")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.RPC")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Test")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Thread")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Chain")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Value")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World")
+                            assert.spy(SDK._Info).was_called_with("Added world post initializer")
+                        end)
+                    end
+
+                    describe("and no modules are passed", function()
+                        TestLoad(env, "yoursubdirectory/sdk")
+                        TestPrintInfoAll(function()
+                            SDK.Load(env, "yoursubdirectory/sdk")
+                        end)
+                    end)
+
+                    describe("and all modules are passed", function()
+                        local modules = {
+                            "Config",
+                            "Console",
+                            "Constant",
+                            "Debug",
+                            "DebugUpvalue",
+                            "Dump",
+                            "Entity",
+                            "FrontEnd",
+                            "Input",
+                            "Method",
+                            "ModMain",
+                            "PersistentData",
+                            "Player",
+                            "Remote",
+                            "RPC",
+                            "Test",
+                            "Thread",
+                            "World",
+                        }
+
+                        TestLoad(env, "yoursubdirectory/sdk", modules)
+                        TestPrintInfoAll(function()
+                            SDK.Load(env, "yoursubdirectory/sdk", modules)
+                        end)
+                    end)
+
+                    describe("and only some modules/submodules are passed", function()
+                        local modules = {
+                            "Config",
+                            "Dump",
+                            "Player",
+                            "Remote",
+                        }
+
+                        TestLoad(env, "yoursubdirectory/sdk", modules)
+
+                        it("should print info", function()
+                            assert.spy(SDK._Info).was_not_called()
+                            SDK.Load(env, "yoursubdirectory/sdk", modules)
+                            assert.spy(SDK._Info).was_called(15)
+                            assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Dump")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Attribute")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Chain")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Value")
+                            assert.spy(SDK._Info).was_called_with("Added world post initializer")
+                        end)
+                    end)
+                end)
             end)
         end)
 
@@ -423,68 +504,98 @@ describe("#sdk SDK", function()
                 SDK.UnloadModule("Module")
             end)
 
-            describe("when name is not passed", function()
-                it("shouldn't add SDK.[name]", function()
-                    assert.is_nil(SDK.Module)
-                    SDK.LoadModule(nil, "spec/module")
-                    assert.is_nil(SDK.Module)
-                end)
-
-                it("should return false", function()
-                    assert.is_false(SDK.LoadModule(nil, "spec/module"))
-                end)
-            end)
-
-            describe("when path is not passed", function()
-                it("shouldn't add SDK.[name]", function()
-                    assert.is_nil(SDK.Module)
-                    SDK.LoadModule("Module")
-                    assert.is_nil(SDK.Module)
-                end)
-
-                it("should return false", function()
-                    assert.is_false(SDK.LoadModule("Module"))
-                end)
-            end)
-
-            describe("when both name and path are are passed", function()
-                it("shouldn't add SDK.[name]", function()
-                    assert.is_nil(SDK.Module)
-                    SDK.LoadModule()
-                    assert.is_nil(SDK.Module)
-                end)
-
-                it("should return false", function()
-                    assert.is_false(SDK.LoadModule())
-                end)
-            end)
-
-            describe("when both name and path are passed", function()
-                before_each(function()
-                    SDK.Module = nil
-                end)
-
+            local function TestAddModule(fn)
                 it("should load package", function()
                     assert.is_nil(package.loaded["spec/module"])
-                    SDK.LoadModule("Module", "spec/module")
+                    fn()
                     assert.is_not_nil(package.loaded["spec/module"])
                 end)
 
                 it("should add SDK.[name]", function()
                     assert.is_nil(SDK.Module)
-                    SDK.LoadModule("Module", "spec/module")
+                    fn()
                     assert.is_not_nil(SDK.Module)
                 end)
 
-                it("should print info", function()
-                    assert.spy(SDK._Info).was_not_called()
-                    SDK.LoadModule("Module", "spec/module")
-                    assert.spy(SDK._Info).was_called(1)
-                    assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Module")
+                it("should return true", function()
+                    assert.is_true(fn())
+                end)
+            end
+
+            local function TestNoAddModule(fn)
+                it("shouldn't add SDK.[name]", function()
+                    assert.is_nil(SDK.Module)
+                    fn()
+                    assert.is_nil(SDK.Module)
                 end)
 
-                it("should return true", function()
-                    assert.is_true(SDK.LoadModule("Module", "spec/module"))
+                it("should return false", function()
+                    assert.is_false(fn())
+                end)
+            end
+
+            local function TestPrintInfoSubmodules(fn)
+                it("should print info", function()
+                    assert.spy(SDK._Info).was_not_called()
+                    fn()
+                    assert.spy(SDK._Info).was_called(2)
+                    assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Module.Submodule")
+                    assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Module")
+                end)
+            end
+
+            describe("when name is not passed", function()
+                TestNoAddModule(function()
+                    return SDK.LoadModule(nil, "spec/module")
+                end)
+            end)
+
+            describe("when path is not passed", function()
+                TestNoAddModule(function()
+                    return SDK.LoadModule("Module")
+                end)
+            end)
+
+            describe("when both name and path are are passed", function()
+                TestNoAddModule(function()
+                    return SDK.LoadModule()
+                end)
+            end)
+
+            describe("when both name and path are passed", function()
+                describe("and no submodules are passed", function()
+                    TestAddModule(function()
+                        return SDK.LoadModule("Module", "spec/module")
+                    end)
+
+                    TestPrintInfoSubmodules(function()
+                        SDK.LoadModule("Module", "spec/module")
+                    end)
+                end)
+
+                describe("and submodules are passed", function()
+                    TestAddModule(function()
+                        return SDK.LoadModule("Module", "spec/module", {
+                            Submodule = "spec/submodule",
+                        })
+                    end)
+
+                    TestPrintInfoSubmodules(function()
+                        SDK.LoadModule("Module", "spec/module", { Submodule = "spec/submodule" })
+                    end)
+                end)
+
+                describe("and empty submodules are passed", function()
+                    TestAddModule(function()
+                        return SDK.LoadModule("Module", "spec/module", {})
+                    end)
+
+                    it("should print info", function()
+                        assert.spy(SDK._Info).was_not_called()
+                        SDK.LoadModule("Module", "spec/module", {})
+                        assert.spy(SDK._Info).was_called(1)
+                        assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Module")
+                    end)
                 end)
             end)
         end)

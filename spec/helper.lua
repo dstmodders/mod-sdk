@@ -40,6 +40,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/utils/value"] = "sdk/utils/value",
     ["yoursubdirectory/sdk/sdk/world"] = "sdk/world",
     ["yoursubdirectory/sdk/spec/class"] = "spec/class",
+    ["yoursubdirectory/sdk/spec/submodule"] = "spec/submodule",
     ["yoursubdirectory/sdk/spec/vector3"] = "spec/vector3",
 }
 
