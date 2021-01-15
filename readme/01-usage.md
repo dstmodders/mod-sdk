@@ -44,8 +44,8 @@ SDK.Load(env, "<your subdirectory>/sdk", {
     "DebugUpvalue",
     "Dump",
     "Entity",
+    "FrontEnd",
     "Input",
-    "Inventory",
     "Method",
     "ModMain",
     "PersistentData",
@@ -78,6 +78,9 @@ To see a real world examples of using this SDK, check out the following mods:
 - [Auto Join][]
 - [Dev Tools][]
 - [Keep Following][]
+
+_**NB!** At the current stage, the mentioned mods are in the process of
+migration to SDK. Check out their `sdk` branches first._
 
 [auto join]: https://github.com/victorpopkov/dst-mod-auto-join
 [dev tools]: https://github.com/victorpopkov/dst-mod-dev-tools
