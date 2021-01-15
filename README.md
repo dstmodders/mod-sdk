@@ -18,17 +18,17 @@ SDK for making [Don't Starve Together][] mods.
 
 The story is always the same...
 
-Since I've made a few mods for this game the amount of code that could be reused
-has kept growing and the maintenance costs have started to increase. The feeling
-that I keep writing more or less the same solutions over and over again has
-started to pop into my head more frequently, so I've decided to make a separate
-repository to store all the existing solutions and wrap it in a form of an SDK.
+As I was making a few mods for the game, the amount of code that could be reused
+has kept growing. The maintenance cost has increased, and the feeling of writing
+the same solutions has started to pop into my head more frequently. So, I've
+decided to make a separate repository to store all the existing solutions and
+wrap it in an SDK.
 
-I don't really know what final form this project will end up with as I don't
-really have an aim in covering everything except extending it based on my own
-needs. However, even though I don't really think that this project will be
-useful to anyone else, you can always open an issue or a pull request in order
-to extend it. It's always appreciated!
+I don't know what final form this project ends up with. At this stage I have no
+aim in covering everything and just planning to extend it based on my own needs.
+However, even though I don't think that this project will be useful to anyone
+else, you can open an issue or a pull request to extend it. I appreciate any
+contributions!
 
 ### Pros
 
@@ -44,21 +44,20 @@ to extend it. It's always appreciated!
 ## Quick Start
 
 First, this project is still in active development, so I can't guarantee
-anything at this stage. But if you are one of those who likes to live
-dangerously and has decided to try it out, then it could be done in 3 steps:
+anything at this stage. But if you are one of those who likes living on the
+verge and has decided to try it out, then it could be done in 3 steps:
 
 **Step 1/3**. Clone it into your unique mod subdirectory:
 
 ```shell script
-git submodule add https://github.com/victorpopkov/dst-mod-sdk scripts/<your subdirectory>/sdk --name sdk
+git submodule add https://github.com/victorpopkov/dst-mod-sdk \
+  scripts/<your subdirectory>/sdk --name sdk
 ```
 
 **Step 2/3**. Require and load it is your `modmain.lua`:
 
 ```lua
-local SDK = require "<your subdirectory>/sdk/sdk/sdk"
-
-SDK.Load(env, "<your subdirectory>/sdk")
+local SDK = require("<your subdirectory>/sdk/sdk/sdk").Load(env, "<your subdirectory>/sdk")
 ```
 
 **Step 3/3**. Start using it directly in your `modmain.lua` or in any other file
@@ -66,7 +65,6 @@ by requiring it:
 
 ```lua
 local SDK = require "<your subdirectory>/sdk/sdk/sdk"
-
 dumptable(SDK.Entity.GetTags(ThePlayer))
 ```
 
