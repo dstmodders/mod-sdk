@@ -50,8 +50,7 @@ dangerously and has decided to try it out, then it could be done in 3 steps:
 **Step 1/3**. Clone it into your unique mod subdirectory:
 
 ```shell script
-git submodule add https://github.com/victorpopkov/dst-mod-sdk \
-  scripts/<your subdirectory>/sdk --name sdk
+git submodule add https://github.com/victorpopkov/dst-mod-sdk scripts/<your subdirectory>/sdk --name sdk
 ```
 
 **Step 2/3**. Require and load it is your `modmain.lua`:
@@ -75,8 +74,8 @@ To learn more, explore the [usage][].
 
 ## Examples
 
-_**NB!** At the current stage, the mentioned mods are in the process of
-migration to SDK. Check out their `sdk` branches first._
+_**NB!** The mentioned mods are currently in the process of migration to SDK.
+Check out their `sdk` branches first._
 
 The best way to see if this project is worth it, check out my following mods
 which use this SDK:
