@@ -2,7 +2,7 @@
 
 ## Step 1. Install
 
-To start using this SDK you need to first add it in your mod directory.
+To use this SDK, you need to first add it in your mod directory.
 
 A recommended way is to add a Git submodule into your repository:
 
@@ -14,21 +14,19 @@ git submodule add https://github.com/victorpopkov/dst-mod-sdk \
 However, you can download the latest release from the [Releases][] page,
 or clone the repository to add it manually.
 
-_**NB!** Keep in mind, that your mod SDK path must be unique to avoid having
-conflicts with another mod which may be using the same SDK. It's a good practice
-in general to eliminate potential override conflicts. For example, you should
-always put your code into a unique subdirectory within your mod scrips:_
-`scripts/<your subdirectory>/`
+_**NB!** Keep in mind that your mod SDK path must be unique to avoid having
+conflicts with another mod which may use the same SDK. It's a good practice to
+eliminate potential override conflicts. For example, always put your code into a
+unique subdirectory within your mod scrips:_ `scripts/<your subdirectory>/`
 
 ## Step 2. Load
 
-The next step after successful installation is to load it. For this you'll need
-to require it as any other Lua module and load it by calling the corresponding
+The next step after a successful installation is to load it. For this you must
+require it as any other Lua module and load it by calling the corresponding
 `SDK.Load()` function.
 
 ```lua
 local SDK = require "<your subdirectory>/sdk/sdk/sdk"
-
 SDK.Load(env, "<your subdirectory>/sdk")
 ```
 
@@ -49,8 +47,15 @@ SDK.Load(env, "<your subdirectory>/sdk", {
     "Method",
     "ModMain",
     "PersistentData",
-    "Player",
-    "Remote",
+    Player = {
+        "Attribute",
+        "Craft",
+        "Inventory",
+    },
+    Remote = {
+        "Player",
+        "World",
+    },
     "RPC",
     "Test",
     "Thread",
@@ -58,25 +63,17 @@ SDK.Load(env, "<your subdirectory>/sdk", {
 })
 ```
 
-In some cases you can remove the unused modules from production version to
-decrease the amount of bundled code. However, as some may use other modules as
-well, you should always verify if your mod works as expected after removing
-them.
+You can remove the unused modules from production version to decrease the amount
+of bundled code. However, as some may use other modules as well, always verify
+if your mod works as expected after removing them.
 
 ## Step 3. Use
 
-That's it! You may now start using SDK directly in your `modmain.lua` after
-loading:
-
-```lua
-dumptable(SDK.Entity.GetTags(ThePlayer))
-```
-
-Or in any other file:
+That's it! Start using it directly in your `modmain.lua` or in any other file by
+requiring it:
 
 ```lua
 local SDK = require "<your subdirectory>/sdk/sdk/sdk"
-
 dumptable(SDK.Entity.GetTags(ThePlayer))
 ```
 
@@ -87,7 +84,7 @@ To see a real world examples of using this SDK, check out the following mods:
 - [Keep Following][]
 
 _**NB!** The mentioned mods are currently in the process of migration to SDK.
-Check out their `sdk` branches first._
+Check out their_ `sdk` _branches first._
 
 [auto join]: https://github.com/victorpopkov/dst-mod-auto-join
 [dev tools]: https://github.com/victorpopkov/dst-mod-dev-tools
