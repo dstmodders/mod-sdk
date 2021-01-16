@@ -76,7 +76,14 @@ local _MODULES = {
     RPC = "sdk/rpc",
     Test = "sdk/test",
     Thread = "sdk/thread",
-    Utils = "sdk/utils",
+    Utils = {
+        path = "sdk/utils",
+        submodules = {
+            Chain = "sdk/utils/chain",
+            Table = "sdk/utils/table",
+            Value = "sdk/utils/value",
+        }
+    },
     World = "sdk/world",
 }
 
@@ -276,26 +283,22 @@ function SDK.Load(env, path, modules)
         package.path = SDK.path_full .. "/?.lua;" .. package.path
 
         -- load all utilities first in all cases
-        SDK.LoadModule("Utils", path .. _MODULES.Utils)
+        SDK.LoadModule("Utils", path .. _MODULES.Utils.path)
 
         if type(modules) == "table" and SDK.Utils.Table.Count(modules) > 0 then
             -- load all only the provided modules (except utilities)
+            modules = SDK.SanitizeModules(modules)
             for k, v in pairs(modules) do
                 if k ~= "Utils" then
-                    if type(k) == "number" then
-                        SDK.LoadModule(v, path .. (type(_MODULES[v]) == "string"
-                            and _MODULES[v]
-                            or _MODULES[v].path))
-                    else
-                        SDK.LoadModule(k, type(v) == "string" and v or v.path)
-                    end
+                    SDK.LoadModule(k, v.path, v.submodules)
                 end
             end
         else
             -- load all modules (except utilities)
-            for k, v in pairs(_MODULES) do
+            modules = SDK.SanitizeModules(_MODULES)
+            for k, v in pairs(modules) do
                 if k ~= "Utils" then
-                    SDK.LoadModule(k, path .. (type(v) == "string" and v or v.path))
+                    SDK.LoadModule(k, v.path, v.submodules)
                 end
             end
         end
@@ -380,8 +383,9 @@ end
 -- @treturn SDK
 function SDK.LoadSubmodules(parent, submodules, global)
     if parent and type(submodules) == "table" then
+        submodules = SDK.SanitizeSubmodules(parent._name, submodules)
         for k, v in pairs(submodules) do
-            SDK.LoadSubmodule(parent, k, v, global)
+            SDK.LoadSubmodule(parent, k, v.path, global)
         end
     end
     return SDK
@@ -574,13 +578,18 @@ end
 -- @tparam[opt] table submodules Submodules
 -- @treturn table
 function SDK.SanitizeSubmodules(module, submodules)
-    if not _MODULES[module] or not _MODULES[module].submodules then
+    if _MODULES[module] and not _MODULES[module].submodules then
         return
     end
 
-    local modules = _MODULES[module].submodules
-    if not submodules then
-        submodules = modules
+    local modules
+    if _MODULES[module] then
+        modules = _MODULES[module].submodules
+        if not submodules then
+            submodules = modules
+        end
+    else
+        modules = submodules
     end
 
     local t = {}
@@ -1016,6 +1025,8 @@ function SDK._SetModuleName(parent, module, name)
         return tostring(parent) .. "." .. name
     end
 
+    module._name = name
+
     local mt = getmetatable(module)
     if mt then
         mt.__tostring = fn
@@ -1029,7 +1040,7 @@ end
 
 setmetatable(SDK, {
     __index = function(self, k)
-        if not self.IsLoaded() and _MODULES[k] then
+        if not self.IsLoaded(k) and _MODULES[k] then
             local msg = string.format(
                 'SDK.%s is not loaded. Use SDK.LoadModule("%s") or SDK.Load()',
                 k,

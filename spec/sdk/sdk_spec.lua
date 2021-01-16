@@ -386,8 +386,15 @@ describe("#sdk SDK", function()
                             "Method",
                             "ModMain",
                             "PersistentData",
-                            "Player",
-                            "Remote",
+                            Player = {
+                                "Attribute",
+                                "Craft",
+                                "Inventory",
+                            },
+                            Remote = {
+                                "Player",
+                                "World",
+                            },
                             "RPC",
                             "Test",
                             "Thread",
@@ -402,10 +409,17 @@ describe("#sdk SDK", function()
 
                     describe("and only some modules/submodules are passed", function()
                         local modules = {
-                            "Config",
-                            "Dump",
-                            "Player",
-                            "Remote",
+                            Player = {
+                                path = "sdk/player",
+                                submodules = {
+                                    Attribute = "sdk/player/attribute",
+                                },
+                            },
+                            Remote = {},
+                            "RPC",
+                            "Test",
+                            "Thread",
+                            "World",
                         }
 
                         TestLoad(env, "yoursubdirectory/sdk", modules)
@@ -413,17 +427,19 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             SDK.Load(env, "yoursubdirectory/sdk", modules)
-                            assert.spy(SDK._Info).was_called(15)
+                            assert.spy(SDK._Info).was_called(13)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
-                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
-                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Dump")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Attribute")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.RPC")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Test")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Thread")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Chain")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Value")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World")
                             assert.spy(SDK._Info).was_called_with("Added world post initializer")
                         end)
                     end)

@@ -18,7 +18,7 @@ local SDK
 --- General
 -- @section general
 
---- Adds world prediction dictionaries.
+--- Adds word prediction dictionaries.
 -- @tparam table dictionaries
 function Console.AddWordPredictionDictionaries(dictionaries)
     SDK.env.AddClassPostConstruct("screens/consolescreen", function(self, ...)

@@ -30,16 +30,19 @@ end
 
 --- Initializes.
 -- @tparam SDK sdk
+-- @tparam table submodules
 -- @treturn SDK.Utils
-function Utils._DoInit(sdk)
+function Utils._DoInit(sdk, submodules)
     SDK = sdk
 
-    SDK._SetModuleName(SDK, Utils, "Utils")
-    SDK.LoadSubmodules(Utils, {
+    submodules = submodules ~= nil and submodules or {
         Chain = "sdk/utils/chain",
         Table = "sdk/utils/table",
         Value = "sdk/utils/value",
-    })
+    }
+
+    SDK._SetModuleName(SDK, Utils, "Utils")
+    SDK.LoadSubmodules(Utils, submodules)
 
     return SDK._DoInitModule(SDK, Utils, "Utils")
 end
