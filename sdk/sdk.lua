@@ -534,6 +534,41 @@ end
 --- Sanitize
 -- @section sanitize
 
+--- Sanitizes modules.
+-- @tparam table modules
+-- @treturn table
+function SDK.SanitizeModules(modules)
+    if type(modules) ~= "table" then
+        return
+    end
+
+    local t = {}
+    for k, v in pairs(modules) do
+        if type(k) == "number" then
+            t[v] = {
+                path = (SDK.path or "") .. (type(_MODULES[v]) == "string"
+                    and _MODULES[v]
+                    or _MODULES[v].path),
+                submodules = SDK.SanitizeSubmodules(v),
+            }
+        else
+            t[k] = {
+                path = type(v) ~= "string" and v.path or (type(_MODULES[k]) ~= "string"
+                    and (SDK.path or "") .. _MODULES[k].path
+                    or _MODULES[k]) or v,
+            }
+
+            t[k].submodules = SDK.SanitizeSubmodules(k, v.submodules)
+
+            if type(v) == "table" and not v.submodules and not v.path then
+                t[k].submodules = SDK.SanitizeSubmodules(k, v)
+            end
+        end
+    end
+
+    return t
+end
+
 --- Sanitizes submodules.
 -- @tparam string module Module name
 -- @tparam[opt] table submodules Submodules

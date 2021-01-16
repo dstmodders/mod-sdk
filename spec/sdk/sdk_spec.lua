@@ -534,6 +534,170 @@ describe("#sdk SDK", function()
     end)
 
     describe("sanitize", function()
+        describe("SanitizeModules()", function()
+            local modules = {
+                Config = {
+                    path = "sdk/config",
+                },
+                Console = {
+                    path = "sdk/console",
+                },
+                Constant = {
+                    path = "sdk/constant",
+                },
+                Debug = {
+                    path = "sdk/debug",
+                },
+                DebugUpvalue = {
+                    path = "sdk/debugupvalue",
+                },
+                Dump = {
+                    path = "sdk/dump",
+                },
+                Entity = {
+                    path = "sdk/entity",
+                },
+                FrontEnd = {
+                    path = "sdk/frontend",
+                },
+                Input = {
+                    path = "sdk/input",
+                },
+                Method = {
+                    path = "sdk/method",
+                },
+                ModMain = {
+                    path = "sdk/modmain",
+                },
+                PersistentData = {
+                    path = "sdk/persistentdata",
+                },
+                Player = {
+                    path = "sdk/player",
+                    submodules = {
+                        Attribute = {
+                            path = "sdk/player/attribute",
+                        },
+                        Craft = {
+                            path = "sdk/player/craft",
+                        },
+                        Inventory = {
+                            path = "sdk/player/inventory",
+                        },
+                    },
+                },
+                Remote = {
+                    path = "sdk/remote",
+                    submodules = {
+                        Player = {
+                            path = "sdk/remote/player",
+                        },
+                        World = {
+                            path = "sdk/remote/world",
+                        },
+                    },
+                },
+                RPC = {
+                    path = "sdk/rpc",
+                },
+                Test = {
+                    path = "sdk/test",
+                },
+                Thread = {
+                    path = "sdk/thread",
+                },
+                World = {
+                    path = "sdk/world",
+                },
+            }
+
+            local function TestReturnSanitized(fn)
+                it("should return sanitized modules", function()
+                    assert.is_same(modules, fn())
+                end)
+            end
+
+            before_each(function()
+                SDK.SetPath("")
+            end)
+
+            describe("when modules as options are passed", function()
+                TestReturnSanitized(function()
+                    return SDK.SanitizeModules(modules)
+                end)
+            end)
+
+            describe("when modules as names are passed", function()
+                TestReturnSanitized(function()
+                    return SDK.SanitizeModules({
+                        "Config",
+                        "Console",
+                        "Constant",
+                        "Debug",
+                        "DebugUpvalue",
+                        "Dump",
+                        "Entity",
+                        "FrontEnd",
+                        "Input",
+                        "Method",
+                        "ModMain",
+                        "PersistentData",
+                        Player = {
+                            "Attribute",
+                            "Craft",
+                            "Inventory",
+                        },
+                        Remote = {
+                            "Player",
+                            "World",
+                        },
+                        "RPC",
+                        "Test",
+                        "Thread",
+                        "World",
+                    })
+                end)
+            end)
+
+            describe("when modules as name and path pairs are passed", function()
+                TestReturnSanitized(function()
+                    return SDK.SanitizeModules({
+                        Config = "sdk/config",
+                        Console = "sdk/console",
+                        Constant = "sdk/constant",
+                        Debug = "sdk/debug",
+                        DebugUpvalue = "sdk/debugupvalue",
+                        Dump = "sdk/dump",
+                        Entity = "sdk/entity",
+                        FrontEnd = "sdk/frontend",
+                        Input = "sdk/input",
+                        Method = "sdk/method",
+                        ModMain = "sdk/modmain",
+                        PersistentData = "sdk/persistentdata",
+                        Player = {
+                            path = "sdk/player",
+                            submodules = {
+                                Attribute = "sdk/player/attribute",
+                                Craft = "sdk/player/craft",
+                                Inventory = "sdk/player/inventory",
+                            },
+                        },
+                        Remote = {
+                            path = "sdk/remote",
+                            submodules = {
+                                Player = "sdk/remote/player",
+                                World = "sdk/remote/world",
+                            },
+                        },
+                        RPC = "sdk/rpc",
+                        Test = "sdk/test",
+                        Thread = "sdk/thread",
+                        World = "sdk/world",
+                    })
+                end)
+            end)
+        end)
+
         describe("SanitizeSubmodules()", function()
             local submodules = {
                 Attribute = {
