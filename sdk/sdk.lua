@@ -58,8 +58,21 @@ local _MODULES = {
     Method = "sdk/method",
     ModMain = "sdk/modmain",
     PersistentData = "sdk/persistentdata",
-    Player = "sdk/player",
-    Remote = "sdk/remote",
+    Player = {
+        path = "sdk/player",
+        submodules = {
+            Attribute = "sdk/player/attribute",
+            Craft = "sdk/player/craft",
+            Inventory = "sdk/player/inventory",
+        },
+    },
+    Remote = {
+        path = "sdk/remote",
+        submodules = {
+            Player = "sdk/remote/player",
+            World = "sdk/remote/world",
+        }
+    },
     RPC = "sdk/rpc",
     Test = "sdk/test",
     Thread = "sdk/thread",
@@ -516,6 +529,41 @@ function SDK.OnLoadWorld(fn)
     if type(fn) == "function" then
         table.insert(_ON_LOAD_WORLD, fn)
     end
+end
+
+--- Sanitize
+-- @section sanitize
+
+--- Sanitizes submodules.
+-- @tparam string module Module name
+-- @tparam[opt] table submodules Submodules
+-- @treturn table
+function SDK.SanitizeSubmodules(module, submodules)
+    if not _MODULES[module] or not _MODULES[module].submodules then
+        return
+    end
+
+    local modules = _MODULES[module].submodules
+    if not submodules then
+        submodules = modules
+    end
+
+    local t = {}
+    for k, v in pairs(submodules) do
+        if type(k) == "number" then
+            t[v] = {
+                path = modules[v],
+            }
+        else
+            t[k] = {
+                path = type(v) ~= "string" and v.path or (type(modules[k]) ~= "string"
+                    and (SDK.path or "") .. modules[k].path
+                    or modules[k]) or v
+            }
+        end
+    end
+
+    return t
 end
 
 --- Time Scale

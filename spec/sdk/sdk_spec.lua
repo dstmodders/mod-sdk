@@ -533,7 +533,77 @@ describe("#sdk SDK", function()
         end)
     end)
 
-    describe("pausing", function()
+    describe("sanitize", function()
+        describe("SanitizeSubmodules()", function()
+            local submodules = {
+                Attribute = {
+                    path = "sdk/player/attribute",
+                },
+                Craft = {
+                    path = "sdk/player/craft",
+                },
+                Inventory = {
+                    path = "sdk/player/inventory",
+                },
+            }
+
+            local function TestReturnSanitized(fn)
+                it("should return sanitized submodules", function()
+                    assert.is_same(submodules, fn())
+                end)
+            end
+
+            before_each(function()
+                SDK.SetPath("")
+            end)
+
+            describe("when submodules are not passed", function()
+                TestReturnSanitized(function()
+                    return SDK.SanitizeSubmodules("Player")
+                end)
+            end)
+
+            describe("when submodules as options are passed", function()
+                TestReturnSanitized(function()
+                    return SDK.SanitizeSubmodules("Player", submodules)
+                end)
+            end)
+
+            describe("when submodules as names are passed", function()
+                TestReturnSanitized(function()
+                    return SDK.SanitizeSubmodules("Player", {
+                        "Attribute",
+                        "Craft",
+                        "Inventory",
+                    })
+                end)
+            end)
+
+            describe("when submodules as name and path pairs are passed", function()
+                TestReturnSanitized(function()
+                    return SDK.SanitizeSubmodules("Player", {
+                        Attribute = "sdk/player/attribute",
+                        Craft = "sdk/player/craft",
+                        Inventory = "sdk/player/inventory",
+                    })
+                end)
+            end)
+
+            describe("when submodules as mixed are passed", function()
+                TestReturnSanitized(function()
+                    return SDK.SanitizeSubmodules("Player", {
+                        "Attribute",
+                        Craft = "sdk/player/craft",
+                        Inventory = {
+                            path = "sdk/player/inventory",
+                        },
+                    })
+                end)
+            end)
+        end)
+    end)
+
+    describe("time scale", function()
         describe("IsPaused()", function()
             describe("when TheSim:GetTimeScale() returns 0", function()
                 before_each(function()
