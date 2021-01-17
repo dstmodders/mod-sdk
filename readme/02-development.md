@@ -48,8 +48,8 @@ PS C:\> docker run --rm -u 'dst-mod' -itv "${PWD}:/mod/" viktorpopkov/dst-mod
 
 The game engine uses the [Lua][] interpreter v5.1, so it's RECOMMENDED to use
 the same version locally as well. In this project, the v5.1.5 is used so if you
-happen to stumble upon on some compatibility issues consider switching to that
-version instead.
+stumble upon on some compatibility issues, consider switching to that version
+instead.
 
 Also, I RECOMMEND installing the latest [LuaRocks][] to install some tools used
 throughout the project as well.
@@ -94,7 +94,7 @@ encourage following some of the best practices:
 - [LuaCov][]
 - [Prettier][]
 
-I do RECOMMEND getting familiar with these tools and integrate them into your
+I RECOMMEND getting familiar with these tools and integrate them into your
 workflow when developing this project. Their usage is OPTIONAL but is strongly
 advisable. Consider running at least code linting and tests (if there are any)
 throughout the development.
@@ -160,9 +160,9 @@ $ make install
 
 ## Code Style
 
-In addition to the general code style that is described in the [EditorConfig][]
-and some stylistic errors that can be caught by the [Luacheck][], the
-[Lua Style Guide][] can be used as a reference throughout the project.
+Besides the general code style that is described in the [EditorConfig][] and
+some stylistic errors that can be caught by [Luacheck][], use
+[Lua Style Guide][] as a reference throughout the project.
 
 Based on the game engine, the following suggestions SHOULD apply which differ
 from the mentioned guide:
@@ -174,10 +174,10 @@ from the mentioned guide:
 - Use snake_case for the class fields and variables
 
 If at some point the mentioned style guide suggests a different approach that
-wasn't mentioned earlier use the existing code as a guide instead.
+wasn't mentioned earlier, use the existing code as a guide instead.
 
-All the suggestions are negotiable and can be changed in the future when a
-rational reason has been found.
+All the suggestions are negotiable and can be changed when a rational reason has
+been found.
 
 ## Workflow
 
@@ -256,17 +256,17 @@ differentiate active branches:
 
 You can add an OPTIONAL number pointing to the corresponding [Trello][] card
 number or [GitHub][] issue (you MUST add a "G" letter before the number:
-`issue-G1/`). In this case, the label becomes OPTIONAL:
+`issue-G1/`). Here, the label becomes OPTIONAL:
 
 - **Feature**: `feature-42/controller-support` or `feature-42`
 - **Hotfix**: `hotfix-46/movement-prediction` or `hotfix-46`
 - **Issue**: `issue-G2/sendrpctoserver` or `issue-G2`
 
-In general, a shorter version without a label is RECOMMENDED when a reference
-number is available.
+A shorter version without a label is RECOMMENDED when a reference number is
+available.
 
-Furthermore, when starting developing a certain feature or fixing a certain
-issue you MUST work in a named branch by adding your [GitHub][] username prefix:
+When starting developing a certain feature or fixing a certain issue, you MUST
+work in a named branch by adding your [GitHub][] username prefix:
 
 - **Feature**: `<your username>/feature-42/controller-support` or `<your username>/feature-42`
 - **Hotfix**: `<your username>/hotfix-46/movement-prediction` or `<your username>/hotfix-46`
@@ -274,10 +274,9 @@ issue you MUST work in a named branch by adding your [GitHub][] username prefix:
 
 This not only allows you to work peacefully on a certain feature/issue and no
 one will interfere into your work but also allows you not to bother with commits
-as in the end they will be rebased into the non-prefixed branch before merging
-anyway.
+as they will be rebased into the non-prefixed branch before merging anyway.
 
-In the end, you MUST just follow this workflow:
+You MUST just follow this workflow:
 
 1. Create or pick a [Trello][] card or a [GitHub][] issue (Reference example: #42)
 2. Create the corresponding branch: `<your username>/issue-42` (from `develop` branch)
