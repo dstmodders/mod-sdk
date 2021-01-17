@@ -29,6 +29,39 @@ function Remote.Send(cmd, data)
     TheNet:SendRemoteExecute(string.format(cmd, unpack(data or {})), x, z)
 end
 
+--- Serializes values ready for remote.
+--
+-- _**NB!** Currently doesn't support tables._
+--
+-- @usage SDK.Remote.Serialize({ "foo", 0, 1, true, false, _G.ThePlayer }) -- returns:
+-- -- {
+-- --     '"foo"',
+-- --     "0",
+-- --     "1",
+-- --     "true",
+-- --     "false",
+-- --     'LookupPlayerInstByUserID("KU_foobar")',
+-- -- }
+-- @tparam table t Table with values to serialize
+-- @treturn table Table with serialized values
+function Remote.Serialize(t)
+    local serialized = {}
+    for _, v in pairs(t) do
+        if type(v) == "boolean" or type(v) == "number" then
+            table.insert(serialized, tostring(v))
+        elseif type(v) == "string" then
+            table.insert(serialized, string.format("%q", v))
+        elseif type(v) == "table" then
+            if v.userid then
+                table.insert(serialized, 'LookupPlayerInstByUserID("' .. v.userid .. '")')
+            else
+                return
+            end
+        end
+    end
+    return serialized
+end
+
 --- Lifecycle
 -- @section lifecycle
 

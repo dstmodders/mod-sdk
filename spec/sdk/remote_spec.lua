@@ -9,12 +9,20 @@ describe("#sdk SDK.Remote", function()
     local Remote
 
     setup(function()
+        -- match
         match = require "luassert.match"
+
+        -- globals
+        _G.ThePlayer = mock({
+            GUID = 1,
+            userid = "KU_foobar",
+        })
     end)
 
     teardown(function()
         -- globals
         _G.TheNet = nil
+        _G.ThePlayer = nil
         _G.TheSim = nil
 
         -- sdk
@@ -88,6 +96,27 @@ describe("#sdk SDK.Remote", function()
                 AssertSendWasCalled(function()
                     Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { "autumn" })
                 end, 'TheWorld:PushEvent("ms_setseason", "autumn")')
+            end)
+        end)
+
+        describe("Serialize()", function()
+            describe("when serializable data is passed", function()
+                it("should return serialized data", function()
+                    assert.is_same({
+                        '"foo"',
+                        "0",
+                        "1",
+                        "true",
+                        "false",
+                        'LookupPlayerInstByUserID("KU_foobar")',
+                    }, Remote.Serialize({ "foo", 0, 1, true, false, _G.ThePlayer }))
+                end)
+            end)
+
+            describe("when non-serializable data is passed", function()
+                it("should return nil", function()
+                    assert.is_nil(Remote.Serialize({ "foo", 0, 1, true, false, {} }))
+                end)
             end)
         end)
     end)
