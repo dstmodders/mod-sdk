@@ -1,7 +1,5 @@
 ----
--- Tool to save/load any kind of data.
---
--- Handles local persistent data so that that you could store any value in order to access it later.
+-- Handles storing any data for later access.
 --
 -- **How it works?**
 --

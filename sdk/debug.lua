@@ -1,5 +1,15 @@
 ----
--- Different debug functionality.
+-- Helps with mod debugging.
+--
+-- As it's a common practice to put different messages throughout your code to see what exactly your
+-- function is doing through the console. This enables more transparency over the business logic and
+-- simplifies tracking the unexpected behaviour.
+--
+--    SDK.Debug.Enable()
+--    SDK.Debug.String("Hello", "World!") -- prints: [sdk] [your-mod] Hello World!
+--
+--    SDK.Debug.Disable()
+--    SDK.Debug.String("Hello", "World!") -- prints nothing
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

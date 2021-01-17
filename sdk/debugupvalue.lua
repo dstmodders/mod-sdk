@@ -1,12 +1,16 @@
 ----
--- Tool to debug upvalue.
+-- Handles upvalue debugging.
 --
--- Includes functionality to access to some in-game local variables using `debug` module and it has
--- been inspired by `UpvalueHacker` from
--- [here](https://github.com/rezecib/Rezecib-s-Rebalance/blob/master/scripts/tools/upvaluehacker.lua)
+-- _**NB!** Should be used with caution and only as a last resort._
+--
+-- Allows accessing some in-game local variables using `debug` module.
+--
+--    local fn = TheWorld.net.components.weather.GetDebugString
+--    local _moisturefloor = SDK.DebugUpvalue.GetUpvalue(fn, "_moisturefloor")
+--    print(_moisturefloor:value()) -- prints a moisture floor value
+--
+-- Inspired by [UpvalueHacker](https://github.com/rezecib/Rezecib-s-Rebalance/blob/master/scripts/tools/upvaluehacker.lua)
 -- created by Rafael Lizarralde ([@rezecib](https://github.com/rezecib)).
---
--- **NB!** Should be used with caution and only as a last resort.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
