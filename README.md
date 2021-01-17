@@ -20,9 +20,8 @@ The story is always the same...
 
 As I was making a few mods for the game, the amount of code that could be reused
 has kept growing. The maintenance cost has increased, and the feeling of writing
-the same solutions has started to pop into my head more frequently. So, I've
-decided to make a separate repository to store all the existing solutions and
-wrap it in an SDK.
+the same solutions has popped into my head more frequently. So, I've made a
+separate repository to store all the existing solutions and wrap it in an SDK.
 
 I don't know what final form this project ends up with. At this stage I have no
 aim in covering everything and just planning to extend it based on my own needs.
@@ -44,7 +43,7 @@ contributions!
 ## Quick Start
 
 First, this project is still in active development, so I can't guarantee
-anything at this stage. But if you are one of those who likes living on the
+anything at this stage. But if you are one of those who enjoys living on the
 verge and has decided to try it out, then it could be done in 3 steps:
 
 **Step 1/3**. Clone it into your unique mod subdirectory:
@@ -70,6 +69,17 @@ dumptable(SDK.Entity.GetTags(ThePlayer))
 
 To learn more, explore the [usage][].
 
+## Features
+
+_**NB!** Not all features are covered yet._
+
+The whole SDK comprises modules and submodules with different functionality:
+
+- [Debug Upvalue](readme/02-features.md#debug-upvalue)
+- [Debug](readme/02-features.md#debug)
+- [Persistent Data](readme/02-features.md#persistent-data)
+- [Player](readme/02-features.md#player)
+
 ## Examples
 
 _**NB!** The mentioned mods are currently in the process of migration to SDK.
@@ -92,6 +102,7 @@ and the most recent version can be found here:
 http://github.victorpopkov.com/dst-mod-sdk/
 
 - [Usage][]
+- [Features][]
 - [Development][]
 
 ## Roadmap
@@ -106,9 +117,10 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 [auto join]: https://github.com/victorpopkov/dst-mod-auto-join
 [codecov]: https://img.shields.io/codecov/c/github/victorpopkov/dst-mod-sdk.svg
 [dev tools]: https://github.com/victorpopkov/dst-mod-dev-tools
-[development]: readme/02-development.md
+[development]: readme/03-development.md
 [documentation]: http://github.victorpopkov.com/dst-mod-sdk/
 [don't starve together]: https://www.klei.com/games/dont-starve-together
+[features]: readme/02-features.md
 [github workflow ci status]: https://img.shields.io/github/workflow/status/victorpopkov/dst-mod-sdk/CI?label=CI
 [github workflow documentation status]: https://img.shields.io/github/workflow/status/victorpopkov/dst-mod-sdk/Documentation?label=Documentation
 [keep following]: https://github.com/victorpopkov/dst-mod-keep-following
