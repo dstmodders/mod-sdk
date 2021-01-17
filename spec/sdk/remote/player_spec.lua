@@ -574,6 +574,47 @@ describe("#sdk SDK.Remote.Player", function()
                 end)
             end)
         end)
+
+        describe("CallFnComponent()", function()
+            describe("when serialized arguments are passed", function()
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Player.CallFnComponent("foo", "Bar", args_valid)
+                    end, 'player = LookupPlayerInstByUserID("KU_foobar") '
+                        .. "player.components.foo:Bar("
+                            .. '"foo", '
+                            .. '"bar", '
+                            .. "0, "
+                            .. "1, "
+                            .. "true, "
+                            .. "false, "
+                            .. 'LookupPlayerInstByUserID("KU_foobar")'
+                        .. ")")
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.CallFnComponent("foo", "Bar", args_valid))
+                end)
+            end)
+
+            describe("when non-serialized arguments are passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        Player.CallFnComponent("foo", "Bar", args_invalid)
+                    end, "CallFnComponent", "args", "can't be serialized")
+                end)
+
+                it("shouldn't call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasNotCalled(function()
+                        Player.CallFnComponent("foo", "Bar", args_invalid)
+                    end)
+                end)
+
+                it("should return true", function()
+                    assert.is_false(Player.CallFnComponent("foo", "Bar", args_invalid))
+                end)
+            end)
+        end)
     end)
 
     describe("recipe", function()

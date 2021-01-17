@@ -355,6 +355,29 @@ function Player.CallFn(name, args, player)
     return true
 end
 
+--- Sends a request to call a component function.
+-- @tparam string component Component name
+-- @tparam string name Component function name
+-- @tparam string args Component function arguments
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+function Player.CallFnComponent(component, name, args, player)
+    player = player ~= nil and player or ThePlayer
+
+    local serialized = Remote.Serialize(args)
+    if not serialized then
+        DebugErrorInvalidArg("CallFnComponent", "args", "can't be serialized")
+        return false
+    end
+
+    Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. "player.components." .. component .. ":" .. name .. "(%s)", {
+        player.userid,
+        table.concat(serialized, ", "),
+    })
+
+    return true
+end
+
 --- Recipes
 -- @section recipes
 
