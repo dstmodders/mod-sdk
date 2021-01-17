@@ -364,7 +364,7 @@ function SDK.LoadSubmodule(parent, name, path, global)
             return false
         end
 
-        module = module._DoInit and module._DoInit(SDK) or module
+        module = module._DoInit and module._DoInit(SDK, parent) or module
         module = SDK._DoInitModule(parent, module, name, global)
 
         SDK._Info("Loaded", tostring(module))
