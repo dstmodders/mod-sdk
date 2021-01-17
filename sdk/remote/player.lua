@@ -15,6 +15,7 @@
 local Player = {}
 
 local SDK
+local Remote
 local Value
 
 --- Helpers
@@ -102,7 +103,7 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
 
     DebugString(debug .. ":", Value.ToPercentString(percent), "(" .. player:GetDisplayName() .. ")")
 
-    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+    Remote.Send('player = LookupPlayerInstByUserID("%s") '
         .. 'if player.components.' .. component .. ' then '
             .. 'player.components.' .. component .. ':' .. setter .. ' '
         .. 'end',
@@ -123,7 +124,7 @@ end
 -- @treturn boolean
 function Player.GatherPlayers()
     DebugString("Gather players")
-    SDK.Remote.Send("c_gatherplayers()")
+    Remote.Send("c_gatherplayers()")
     return true
 end
 
@@ -137,7 +138,7 @@ function Player.GoNext(prefab)
     end
 
     DebugString("Go next:", prefab)
-    SDK.Remote.Send('c_gonext("%s")', { prefab })
+    Remote.Send('c_gonext("%s")', { prefab })
     return true
 end
 
@@ -180,7 +181,7 @@ function Player.SendMiniEarthquake(radius, amount, duration, player)
     end
 
     DebugString("Send mini earthquake:", player:GetDisplayName())
-    SDK.Remote.Send('TheWorld:PushEvent("ms_miniquake", { '
+    Remote.Send('TheWorld:PushEvent("ms_miniquake", { '
             .. 'target = LookupPlayerInstByUserID("%s"), '
             .. 'rad = %d, '
             .. 'num = %d, '
@@ -202,7 +203,7 @@ function Player.ToggleFreeCrafting(player)
     end
 
     DebugString("Toggle free crafting:", player:GetDisplayName())
-    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+    Remote.Send('player = LookupPlayerInstByUserID("%s") '
         .. 'player.components.builder:GiveAllRecipes() '
         .. 'player:PushEvent("techlevelchange")',
         { player.userid })
@@ -303,7 +304,7 @@ function Player.SetTemperature(temperature, player)
         "(" .. player:GetDisplayName() .. ")"
     )
 
-    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+    Remote.Send('player = LookupPlayerInstByUserID("%s") '
         .. 'if player.components.temperature then '
             .. 'player.components.temperature:SetTemperature(%0.2f) '
         .. 'end',
@@ -330,6 +331,30 @@ function Player.SetWerenessPercent(percent, player)
     }, percent, player)
 end
 
+--- Call
+-- @section call
+
+--- Sends a request to call a function.
+-- @tparam string name Function name
+-- @tparam string args Function arguments
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+function Player.CallFn(name, args, player)
+    player = player ~= nil and player or ThePlayer
+
+    local serialized = Remote.Serialize(args)
+    if not serialized then
+        DebugErrorInvalidArg("CallFn", "args", "can't be serialized")
+        return false
+    end
+
+    Remote.Send('player = LookupPlayerInstByUserID("%s") player:' .. name .. "(%s)", {
+        player.userid,
+        table.concat(serialized, ", "),
+    })
+
+    return true
+end
+
 --- Recipes
 -- @section recipes
 
@@ -345,7 +370,7 @@ function Player.LockRecipe(recipe, player)
     end
 
     DebugString("Lock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
-    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+    Remote.Send('player = LookupPlayerInstByUserID("%s") '
         .. 'for k, v in pairs(player.components.builder.recipes) do '
             .. 'if v == "%s" then '
                 .. 'table.remove(player.components.builder.recipes, k) '
@@ -369,7 +394,7 @@ function Player.UnlockRecipe(recipe, player)
     end
 
     DebugString("Unlock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
-    SDK.Remote.Send('player = LookupPlayerInstByUserID("%s") '
+    Remote.Send('player = LookupPlayerInstByUserID("%s") '
         .. 'player.components.builder:AddRecipe("%s") '
         .. 'player:PushEvent("unlockrecipe", { recipe = "%s" })',
         { player.userid, recipe, recipe })
@@ -382,9 +407,11 @@ end
 
 --- Initializes.
 -- @tparam SDK sdk
+-- @tparam SDK.Remote parent
 -- @treturn SDK.Remote.Player
-function Player._DoInit(sdk)
+function Player._DoInit(sdk, parent)
     SDK = sdk
+    Remote = parent
     Value = SDK.Utils.Value
     return Player
 end

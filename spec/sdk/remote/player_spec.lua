@@ -518,6 +518,64 @@ describe("#sdk SDK.Remote.Player", function()
         end)
     end)
 
+    describe("call", function()
+        local args_invalid, args_valid
+
+        setup(function()
+            args_invalid =  { {} }
+            args_valid = {
+                "foo",
+                "bar",
+                0,
+                1,
+                true,
+                false,
+                ThePlayer,
+            }
+        end)
+
+        describe("CallFn()", function()
+            describe("when serialized arguments are passed", function()
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Player.CallFn("Foo", args_valid)
+                    end, 'player = LookupPlayerInstByUserID("KU_foobar") '
+                        .. "player:Foo("
+                            .. '"foo", '
+                            .. '"bar", '
+                            .. "0, "
+                            .. "1, "
+                            .. "true, "
+                            .. "false, "
+                            .. 'LookupPlayerInstByUserID("KU_foobar")'
+                        .. ")")
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.CallFn("Foo", args_valid))
+                end)
+            end)
+
+            describe("when non-serialized arguments are passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        Player.CallFn("Foo", args_invalid)
+                    end, "CallFn", "args", "can't be serialized")
+                end)
+
+                it("shouldn't call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasNotCalled(function()
+                        Player.CallFn("Foo", args_invalid)
+                    end)
+                end)
+
+                it("should return true", function()
+                    assert.is_false(Player.CallFn("Foo", args_invalid))
+                end)
+            end)
+        end)
+    end)
+
     describe("recipe", function()
         describe("LockRecipe()", function()
             TestRemoteInvalidArg("LockRecipe", "recipe", "must be a valid recipe", "string")
