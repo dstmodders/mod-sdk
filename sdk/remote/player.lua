@@ -129,7 +129,7 @@ function Player.GoNext(prefab)
     end
 
     DebugString("Go next:", prefab)
-    Remote.Send('c_gonext("%s")', { prefab })
+    Remote.Send('c_gonext(%s)', { prefab }, true)
     return true
 end
 
@@ -156,13 +156,14 @@ function Player.SendMiniEarthquake(radius, amount, duration, player)
     end
 
     DebugString("Send mini earthquake:", player:GetDisplayName())
-    Remote.Send('TheWorld:PushEvent("ms_miniquake", { '
-            .. 'target = LookupPlayerInstByUserID("%s"), '
-            .. 'rad = %d, '
-            .. 'num = %d, '
-            .. 'duration = %0.2f '
-        .. '})',
-        { player.userid, radius, amount, duration })
+    Remote.Send('TheWorld:PushEvent("ms_miniquake", %s)', {
+        {
+            target = player,
+            num = amount,
+            rad = radius,
+            duration = duration,
+        },
+    }, true)
 
     return true
 end
@@ -178,16 +179,17 @@ function Player.ToggleFreeCrafting(player)
     end
 
     DebugString("Toggle free crafting:", player:GetDisplayName())
-    Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'player.components.builder:GiveAllRecipes() '
-        .. 'player:PushEvent("techlevelchange")',
-        { player.userid })
+    Remote.Send('player = %s player.components.%s:%s() player:PushEvent("techlevelchange")', {
+        Remote.Serialize(player),
+        "builder",
+        "GiveAllRecipes",
+    })
 
     return true
 end
 
---- Attributes
--- @section attributes
+--- Attribute
+-- @section attribute
 
 --- Sends a request to set a health limit percent.
 -- @see SDK.Player.Attribute.SetHealthLimitPercent
@@ -303,6 +305,10 @@ end
 -- @section call
 
 --- Sends a request to call a function.
+--
+-- @usage SDK.Remote.Player.CallFn("AddTag", { "foobar" }, ThePlayer)
+-- -- LookupPlayerInstByUserID("KU_foobar"):AddTag("foobar")
+--
 -- @tparam string name Function name
 -- @tparam string args Function arguments
 -- @tparam[opt] EntityScript player Player instance (owner by default)
@@ -320,8 +326,9 @@ function Player.CallFn(name, args, player)
         return false
     end
 
-    Remote.Send('player = LookupPlayerInstByUserID("%s") player:' .. name .. "(%s)", {
-        player.userid,
+    Remote.Send('%s:%s(%s)', {
+        Remote.Serialize(player),
+        name,
         table.concat(serialized, ", "),
     })
 
@@ -329,6 +336,10 @@ function Player.CallFn(name, args, player)
 end
 
 --- Sends a request to call a component function.
+--
+-- @usage SDK.Remote.Player.CallFnComponent("temperature", "SetTemperature", { 36 }, ThePlayer)
+-- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperature(36)
+--
 -- @tparam string component Component name
 -- @tparam string name Component function name
 -- @tparam string args Component function arguments
@@ -347,9 +358,10 @@ function Player.CallFnComponent(component, name, args, player)
         return false
     end
 
-    Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. "player.components." .. component .. ":" .. name .. "(%s)", {
-        player.userid,
+    Remote.Send('%s.components.%s:%s(%s)', {
+        Remote.Serialize(player),
+        component,
+        name,
         table.concat(serialized, ", "),
     })
 
@@ -375,17 +387,18 @@ function Player.CallFnReplica(replica, name, args, player)
         return false
     end
 
-    Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. "player.replica." .. replica .. ":" .. name .. "(%s)", {
-        player.userid,
+    Remote.Send('%s.replica.%s:%s(%s)', {
+        Remote.Serialize(player),
+        replica,
+        name,
         table.concat(serialized, ", "),
     })
 
     return true
 end
 
---- Recipes
--- @section recipes
+--- Recipe
+-- @section recipe
 
 --- Sends a request to lock a recipe.
 -- @tparam string recipe Valid recipe
@@ -401,14 +414,20 @@ function Player.LockRecipe(recipe, player)
     end
 
     DebugString("Lock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
-    Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'for k, v in pairs(player.components.builder.recipes) do '
-            .. 'if v == "%s" then '
-                .. 'table.remove(player.components.builder.recipes, k) '
+    Remote.Send(
+        'player = %s '
+            .. 'for k, v in pairs(player.components.builder.recipes) do '
+                .. 'if v == "%s" then '
+                    .. 'table.remove(player.components.builder.recipes, k) '
+                .. 'end '
             .. 'end '
-        .. 'end '
-        .. 'player.replica.builder:RemoveRecipe("%s")',
-        { player.userid, recipe, recipe })
+            .. 'player.replica.builder:RemoveRecipe("%s")',
+        {
+            Remote.Serialize(player),
+            recipe,
+            recipe,
+        }
+    )
 
     return true
 end
@@ -427,10 +446,17 @@ function Player.UnlockRecipe(recipe, player)
     end
 
     DebugString("Unlock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
-    Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'player.components.builder:AddRecipe("%s") '
-        .. 'player:PushEvent("unlockrecipe", { recipe = "%s" })',
-        { player.userid, recipe, recipe })
+    Remote.Send(
+        'player = %s '
+            .. 'player.components.builder:AddRecipe(%s) '
+            .. 'player:PushEvent("unlockrecipe", %s)',
+        {
+            player,
+            recipe,
+            { recipe = recipe },
+        },
+        true
+    )
 
     return true
 end

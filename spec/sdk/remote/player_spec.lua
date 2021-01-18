@@ -311,13 +311,23 @@ describe("#sdk SDK.Remote.Player", function()
                 TestRemoteValid(
                     "SendMiniEarthquake",
                     { "Send mini earthquake:", "Player" },
-                    'TheWorld:PushEvent("ms_miniquake", { target = LookupPlayerInstByUserID("KU_foobar"), rad = 20, num = 20, duration = 2.50 })' -- luacheck: only
+                    'TheWorld:PushEvent("ms_miniquake", { '
+                            .. 'target = LookupPlayerInstByUserID("KU_foobar"), '
+                            .. "num = 20, "
+                            .. "rad = 20, "
+                            .. "duration = 2.50 "
+                        .. '})'
                 )
 
                 TestRemoteValid(
                     "SendMiniEarthquake",
                     { "Send mini earthquake:", "Player" },
-                    'TheWorld:PushEvent("ms_miniquake", { target = LookupPlayerInstByUserID("KU_foobar"), rad = 20, num = 20, duration = 2.50 })', -- luacheck: only
+                    'TheWorld:PushEvent("ms_miniquake", { '
+                            .. 'target = LookupPlayerInstByUserID("KU_foobar"), '
+                            .. "num = 20, "
+                            .. "rad = 20, "
+                            .. "duration = 2.50 "
+                        .. '})',
                     20,
                     20,
                     2.5,
@@ -328,14 +338,20 @@ describe("#sdk SDK.Remote.Player", function()
 
         describe("ToggleFreeCrafting()", function()
             TestRemoteInvalidArg("ToggleFreeCrafting", "player", "must be a player", "foo")
-            TestRemoteValid("ToggleFreeCrafting", {
-                "Toggle free crafting:",
-                "Player",
-            }, 'player = LookupPlayerInstByUserID("KU_foobar") player.components.builder:GiveAllRecipes() player:PushEvent("techlevelchange")', _G.ThePlayer) -- luacheck: only
+            TestRemoteValid(
+                "ToggleFreeCrafting", {
+                    "Toggle free crafting:",
+                    "Player",
+                },
+                'player = LookupPlayerInstByUserID("KU_foobar") '
+                    .. "player.components.builder:GiveAllRecipes() "
+                    .. 'player:PushEvent("techlevelchange")',
+                _G.ThePlayer
+            )
         end)
     end)
 
-    describe("attributes", function()
+    describe("attribute", function()
         local function TestSetAttributePercent(name, debug, send)
             describe(name .. "()", function()
                 describe("when a player is not a ghost", function()
@@ -357,43 +373,37 @@ describe("#sdk SDK.Remote.Player", function()
         TestSetAttributePercent(
             "SetHealthLimitPercent",
             { "Health limit:", "25.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") '
-                .. "player.components.health:SetPenalty(0.75)"
+            'LookupPlayerInstByUserID("KU_foobar").components.health:SetPenalty(0.75)'
         )
 
         TestSetAttributePercent(
             "SetHealthPenaltyPercent",
             { "Health penalty:", "25.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") '
-                .. "player.components.health:SetPenalty(0.25)"
+            'LookupPlayerInstByUserID("KU_foobar").components.health:SetPenalty(0.25)'
         )
 
         TestSetAttributePercent(
             "SetHealthPercent",
             { "Health:", "25.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") '
-                .. "player.components.health:SetPercent(0.25)"
+            'LookupPlayerInstByUserID("KU_foobar").components.health:SetPercent(0.25)'
         )
 
         TestSetAttributePercent(
             "SetHungerPercent",
             { "Hunger:", "25.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") '
-                .. "player.components.hunger:SetPercent(0.25)"
+            'LookupPlayerInstByUserID("KU_foobar").components.hunger:SetPercent(0.25)'
         )
 
         TestSetAttributePercent(
             "SetMoisturePercent",
             { "Moisture:", "25.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") '
-                .. "player.components.moisture:SetPercent(0.25)"
+            'LookupPlayerInstByUserID("KU_foobar").components.moisture:SetPercent(0.25)'
         )
 
         TestSetAttributePercent(
             "SetSanityPercent",
             { "Sanity:", "25.00%", "(Player)" },
-            'player = LookupPlayerInstByUserID("KU_foobar") '
-                .. "player.components.sanity:SetPercent(0.25)"
+            'LookupPlayerInstByUserID("KU_foobar").components.sanity:SetPercent(0.25)'
         )
 
         describe("SetTemperature()", function()
@@ -422,8 +432,8 @@ describe("#sdk SDK.Remote.Player", function()
                 TestRemoteValid(
                     "SetTemperature",
                     { "Temperature:", "25.00°", "(Player)" },
-                    'player = LookupPlayerInstByUserID("KU_foobar") '
-                        .. "player.components.temperature:SetTemperature(25)",
+                    'LookupPlayerInstByUserID("KU_foobar")'
+                        .. ".components.temperature:SetTemperature(25)",
                     25,
                     _G.ThePlayer
                 )
@@ -451,8 +461,8 @@ describe("#sdk SDK.Remote.Player", function()
                         it("should call TheSim:SendRemoteExecute()", function()
                             AssertSendWasCalled(function()
                                 Player.SetWerenessPercent(25, _G.ThePlayer)
-                            end, 'player = LookupPlayerInstByUserID("KU_foobar") '
-                                .. "player.components.wereness:SetPercent(0.25)")
+                            end, 'LookupPlayerInstByUserID("KU_foobar")'
+                                .. ".components.wereness:SetPercent(0.25)")
                         end)
 
                         it("should return true", function()
@@ -547,8 +557,7 @@ describe("#sdk SDK.Remote.Player", function()
                 it("should call TheSim:SendRemoteExecute()", function()
                     AssertSendWasCalled(function()
                         Player.CallFn("Foo", args_valid)
-                    end, 'player = LookupPlayerInstByUserID("KU_foobar") '
-                        .. "player:Foo("
+                    end, 'LookupPlayerInstByUserID("KU_foobar"):Foo('
                             .. '"foo", '
                             .. '"bar", '
                             .. "0, "
@@ -588,8 +597,7 @@ describe("#sdk SDK.Remote.Player", function()
                 it("should call TheSim:SendRemoteExecute()", function()
                     AssertSendWasCalled(function()
                         Player.CallFnComponent("foo", "Bar", args_valid)
-                    end, 'player = LookupPlayerInstByUserID("KU_foobar") '
-                        .. "player.components.foo:Bar("
+                    end, 'LookupPlayerInstByUserID("KU_foobar").components.foo:Bar('
                             .. '"foo", '
                             .. '"bar", '
                             .. "0, "
@@ -629,8 +637,7 @@ describe("#sdk SDK.Remote.Player", function()
                 it("should call TheSim:SendRemoteExecute()", function()
                     AssertSendWasCalled(function()
                         Player.CallFnReplica("foo", "Bar", args_valid)
-                    end, 'player = LookupPlayerInstByUserID("KU_foobar") '
-                        .. "player.replica.foo:Bar("
+                    end, 'LookupPlayerInstByUserID("KU_foobar").replica.foo:Bar('
                             .. '"foo", '
                             .. '"bar", '
                             .. "0, "
