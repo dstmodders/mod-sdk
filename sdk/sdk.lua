@@ -738,36 +738,103 @@ end
 --- Checks if a player argument is valid.
 -- @tparam table module
 -- @tparam string fn_name
--- @tparam any value
-function SDK._ArgPlayer(module, fn_name, value)
+-- @tparam[opt] any value
+-- @tparam[opt] string arg_name
+function SDK._ArgPlayer(module, fn_name, value, arg_name)
     value = value ~= nil and value or ThePlayer
+    arg_name = arg_name ~= nil and arg_name or "player"
     if SDK.Utils.Value.IsPlayer(value) then
         return value
     end
-    SDK._DebugErrorInvalidArg(module, fn_name, "player", "must be a player")
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be a player")
 end
 
---- Checks if a recipe argument is valid.
+--- Checks if a player argument is an alive player.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam[opt] any value
+-- @tparam[opt] string arg_name
+function SDK._ArgPlayerAlive(module, fn_name, value, arg_name)
+    value = value ~= nil and value or ThePlayer
+    arg_name = arg_name ~= nil and arg_name or "player"
+
+    if not SDK.Utils.Value.IsPlayer(value) then
+        SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be a player")
+        return
+    end
+
+    if value:HasTag("playerghost") then
+        SDK._DebugErrorNoPlayerGhost(module, fn_name)
+        return
+    end
+
+    return value
+end
+
+--- Checks if an argument is a prefab.
 -- @tparam table module
 -- @tparam string fn_name
 -- @tparam any value
-function SDK._ArgRecipe(module, fn_name, value)
+-- @tparam[opt] string arg_name
+function SDK._ArgPrefab(module, fn_name, value, arg_name)
+    arg_name = arg_name ~= nil and arg_name or "prefab"
+    if SDK.Utils.Value.IsPrefab(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be a prefab")
+end
+
+--- Checks if an argument is a recipe.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+-- @tparam[opt] string arg_name
+function SDK._ArgRecipe(module, fn_name, value, arg_name)
+    arg_name = arg_name ~= nil and arg_name or "recipe"
     if SDK.Utils.Value.IsRecipeValid(value) then
         return value
     end
-    SDK._DebugErrorInvalidArg(module, fn_name, "recipe", "must be a valid recipe")
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be a valid recipe")
 end
 
---- Checks if a recipes argument is valid.
+--- Checks if an argument is recipes.
 -- @tparam table module
 -- @tparam string fn_name
--- @tparam any value
-function SDK._ArgRecipes(module, fn_name, value)
+-- @tparam[opt] any value
+-- @tparam[opt] string arg_name
+function SDK._ArgRecipes(module, fn_name, value, arg_name)
     value = value ~= nil and value or AllRecipes
+    arg_name = arg_name ~= nil and arg_name or "recipes"
     if type(value) == "table" then
         return value
     end
-    SDK._DebugErrorInvalidArg(module, fn_name, "recipes", "must be valid recipes")
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be valid recipes")
+end
+
+--- Checks if an argument is an unsigned number.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+-- @tparam[opt] string arg_name
+function SDK._ArgUnsigned(module, fn_name, value, arg_name)
+    arg_name = arg_name ~= nil and arg_name or "number"
+    if SDK.Utils.Value.IsUnsigned(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be an unsigned number")
+end
+
+--- Checks if an argument is an unsigned integer.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+-- @tparam[opt] string arg_name
+function SDK._ArgUnsignedInteger(module, fn_name, value, arg_name)
+    arg_name = arg_name ~= nil and arg_name or "number"
+    if SDK.Utils.Value.IsUnsigned(value) and SDK.Utils.Value.IsInteger(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be an unsigned integer")
 end
 
 --- Debugs an error string.
