@@ -378,6 +378,29 @@ function Player.CallFnComponent(component, name, args, player)
     return true
 end
 
+--- Sends a request to call a replica function.
+-- @tparam string replica Replica name
+-- @tparam string name Replica function name
+-- @tparam string args Replica function arguments
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+function Player.CallFnReplica(replica, name, args, player)
+    player = player ~= nil and player or ThePlayer
+
+    local serialized = Remote.Serialize(args)
+    if not serialized then
+        DebugErrorInvalidArg("CallFnReplica", "args", "can't be serialized")
+        return false
+    end
+
+    Remote.Send('player = LookupPlayerInstByUserID("%s") '
+        .. "player.replica." .. replica .. ":" .. name .. "(%s)", {
+        player.userid,
+        table.concat(serialized, ", "),
+    })
+
+    return true
+end
+
 --- Recipes
 -- @section recipes
 

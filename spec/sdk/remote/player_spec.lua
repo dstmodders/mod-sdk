@@ -569,7 +569,7 @@ describe("#sdk SDK.Remote.Player", function()
                     end)
                 end)
 
-                it("should return true", function()
+                it("should return false", function()
                     assert.is_false(Player.CallFn("Foo", args_invalid))
                 end)
             end)
@@ -610,8 +610,49 @@ describe("#sdk SDK.Remote.Player", function()
                     end)
                 end)
 
-                it("should return true", function()
+                it("should return false", function()
                     assert.is_false(Player.CallFnComponent("foo", "Bar", args_invalid))
+                end)
+            end)
+        end)
+
+        describe("CallFnReplica()", function()
+            describe("when serialized arguments are passed", function()
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Player.CallFnReplica("foo", "Bar", args_valid)
+                    end, 'player = LookupPlayerInstByUserID("KU_foobar") '
+                        .. "player.replica.foo:Bar("
+                            .. '"foo", '
+                            .. '"bar", '
+                            .. "0, "
+                            .. "1, "
+                            .. "true, "
+                            .. "false, "
+                            .. 'LookupPlayerInstByUserID("KU_foobar")'
+                        .. ")")
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.CallFnReplica("foo", "Bar", args_valid))
+                end)
+            end)
+
+            describe("when non-serialized arguments are passed", function()
+                it("should debug error string", function()
+                    AssertDebugErrorInvalidArg(function()
+                        Player.CallFnReplica("foo", "Bar", args_invalid)
+                    end, "CallFnReplica", "args", "can't be serialized")
+                end)
+
+                it("shouldn't call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasNotCalled(function()
+                        Player.CallFnReplica("foo", "Bar", args_invalid)
+                    end)
+                end)
+
+                it("should return false", function()
+                    assert.is_false(Player.CallFnReplica("foo", "Bar", args_invalid))
                 end)
             end)
         end)
