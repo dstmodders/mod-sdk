@@ -84,6 +84,18 @@ describe("#sdk SDK.Utils.Value", function()
 
         TestChecker("IsInteger", { 0, -1, 1 }, { "string", -0.5, 0.5, false, true, {} })
         TestChecker("IsNumber", { 0, -1, 1 }, { "string", false, true, {} })
+
+        TestChecker("IsPairedTable", {
+            { foo = "foo", bar = "bar" },
+            {},
+        }, {
+            { 1, 2, 3 },
+            { "foo", "bar" },
+            { true, false },
+            { 1, bar = "bar" },
+            { foo = "foo", 2 },
+        })
+
         TestChecker("IsPercent", { 0, 50, 100 }, { "string", -1, 101, false, true, {} })
 
         TestChecker("IsPlayer", {

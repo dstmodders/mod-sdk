@@ -79,6 +79,18 @@ function Value.IsNumber(value)
     return type(value) == "number"
 end
 
+--- Checks if a value is a key-value paired table.
+-- @tparam any value
+-- @treturn boolean
+function Value.IsPairedTable(value)
+    for k, _ in pairs(value) do
+        if type(k) ~= "string" then
+            return false
+        end
+    end
+    return true
+end
+
 --- Checks if a value is a percent.
 -- @tparam any value
 -- @treturn boolean
