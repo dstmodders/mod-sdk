@@ -55,8 +55,19 @@ describe("#sdk SDK.Utils.Value", function()
     end
 
     describe("checkers", function()
+        TestChecker("IsArray", {
+            { 1, 2, 3 },
+            { "foo", "bar" },
+            { true, false },
+            {},
+        }, {
+            { 1, bar = "bar" },
+            { foo = "foo", bar = "bar" },
+            { foo = "foo", 2 },
+        })
+
         TestChecker("IsBoolean", { false, true }, { "string", 0, {} })
-        TestChecker("IsEntity", { { GUID = 1, } }, { "string", 0, false, true, {} })
+        TestChecker("IsEntity", { { GUID = 1 } }, { "string", 0, false, true, {} })
 
         TestChecker("IsEntityTemperature", {
             0,

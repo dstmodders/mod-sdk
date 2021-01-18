@@ -30,6 +30,18 @@ end
 --- Checkers
 -- @section checkers
 
+--- Checks if a value is an array.
+-- @tparam any value
+-- @treturn boolean
+function Value.IsArray(value)
+    for k, _ in pairs(value) do
+        if type(k) ~= "number" then
+            return false
+        end
+    end
+    return true
+end
+
 --- Checks if a value is a boolean.
 -- @tparam any value
 -- @treturn boolean
