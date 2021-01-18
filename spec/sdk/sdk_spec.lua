@@ -633,10 +633,6 @@ describe("#sdk SDK", function()
                 end)
             end
 
-            before_each(function()
-                SDK.SetPath("")
-            end)
-
             describe("when modules as options are passed", function()
                 TestReturnSanitized(function()
                     return SDK.SanitizeModules(modules)
@@ -732,10 +728,6 @@ describe("#sdk SDK", function()
                     assert.is_same(submodules, fn())
                 end)
             end
-
-            before_each(function()
-                SDK.SetPath("")
-            end)
 
             describe("when submodules are not passed", function()
                 TestReturnSanitized(function()

@@ -289,7 +289,7 @@ function SDK.Load(env, path, modules)
             modules = SDK.SanitizeModules(modules)
             for k, v in pairs(modules) do
                 if k ~= "Utils" then
-                    SDK.LoadModule(k, v.path, v.submodules)
+                    SDK.LoadModule(k, path .. v.path, v.submodules)
                 end
             end
         else
@@ -297,7 +297,7 @@ function SDK.Load(env, path, modules)
             modules = SDK.SanitizeModules(_MODULES)
             for k, v in pairs(modules) do
                 if k ~= "Utils" then
-                    SDK.LoadModule(k, v.path, v.submodules)
+                    SDK.LoadModule(k, path .. v.path, v.submodules)
                 end
             end
         end
@@ -549,15 +549,13 @@ function SDK.SanitizeModules(modules)
     for k, v in pairs(modules) do
         if type(k) == "number" then
             t[v] = {
-                path = (SDK.path or "") .. (type(_MODULES[v]) == "string"
-                    and _MODULES[v]
-                    or _MODULES[v].path),
+                path = type(_MODULES[v]) == "string" and _MODULES[v] or _MODULES[v].path,
                 submodules = SDK.SanitizeSubmodules(v),
             }
         else
             t[k] = {
                 path = type(v) ~= "string" and v.path or (type(_MODULES[k]) ~= "string"
-                    and (SDK.path or "") .. _MODULES[k].path
+                    and _MODULES[k].path
                     or _MODULES[k]) or v,
             }
 
@@ -600,7 +598,7 @@ function SDK.SanitizeSubmodules(module, submodules)
         else
             t[k] = {
                 path = type(v) ~= "string" and v.path or (type(modules[k]) ~= "string"
-                    and (SDK.path or "") .. modules[k].path
+                    and modules[k].path
                     or modules[k]) or v
             }
         end
