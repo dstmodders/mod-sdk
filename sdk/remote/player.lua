@@ -21,62 +21,55 @@ local Value
 --- Helpers
 -- @section helpers
 
-local function DebugErrorFn(fn_name, ...)
-    SDK._DebugErrorFn(Player, fn_name, ...)
+local function ArgPlayer(...)
+    return SDK._ArgPlayer(Player, ...)
 end
 
-local function DebugErrorInvalidArg(fn_name, arg_name, explanation)
-    SDK._DebugErrorInvalidArg(Player, fn_name, arg_name, explanation)
+local function ArgPlayerAlive(...)
+    return SDK._ArgPlayerAlive(Player, ...)
 end
 
-local function DebugErrorInvalidWorldType(fn_name, explanation)
-    SDK._DebugErrorInvalidWorldType(Player, fn_name, explanation)
+local function ArgPrefab(...)
+    return SDK._ArgPrefab(Player, ...)
 end
 
-local function DebugErrorNoPlayerGhost(fn_name)
-    SDK._DebugErrorNoPlayerGhost(Player, fn_name)
+local function ArgRecipe(...)
+    return SDK._ArgRecipe(Player, ...)
+end
+
+local function ArgUnsigned(...)
+    return SDK._ArgUnsigned(Player, ...)
+end
+
+local function ArgUnsignedInteger(...)
+    return SDK._ArgUnsignedInteger(Player, ...)
+end
+
+local function DebugErrorFn(...)
+    SDK._DebugErrorFn(Player, ...)
+end
+
+local function DebugErrorInvalidArg(...)
+    SDK._DebugErrorInvalidArg(Player, ...)
+end
+
+local function DebugErrorInvalidWorldType(...)
+    SDK._DebugErrorInvalidWorldType(Player, ...)
 end
 
 local function DebugString(...)
     SDK._DebugString("[remote]", "[player]", ...)
 end
 
-local function IsValidPlayer(player, fn_name)
-    if not Value.IsPlayer(player) then
-        DebugErrorInvalidArg(fn_name, "player", "must be a player")
-        return false
-    end
-    return true
-end
-
-local function IsValidPlayerAlive(player, fn_name)
-    if not IsValidPlayer(player, fn_name) then
-        return false
-    end
-
-    if player:HasTag("playerghost") then
-        DebugErrorNoPlayerGhost(fn_name)
-        return false
-    end
-
-    return true
-end
-
-local function IsValidRecipe(recipe, fn_name)
-    if not Value.IsRecipeValid(recipe) then
-        DebugErrorInvalidArg(fn_name, "recipe", "must be a valid recipe")
-        return false
-    end
-    return true
-end
-
 local function IsValidSetAttributePercent(percent, player, fn_name)
+    player = ArgPlayerAlive(fn_name, player)
+
     if not Value.IsPercent(percent) then
         DebugErrorInvalidArg(fn_name, "percent", "must be a percent")
         return false
     end
 
-    if not IsValidPlayerAlive(player, fn_name) then
+    if not player then
         return false
     end
 
@@ -84,7 +77,11 @@ local function IsValidSetAttributePercent(percent, player, fn_name)
 end
 
 local function SetAttributeComponentPercent(fn_name, options, percent, player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer(fn_name, player)
+
+    if not player then
+        return false
+    end
 
     local component = type(options) == "table" and options.component or options
     local debug = type(options) == "table" and options.debug or component:gsub("^%l", string.upper)
@@ -125,8 +122,9 @@ end
 -- @tparam string prefab
 -- @treturn boolean
 function Player.GoNext(prefab)
-    if not Value.IsPrefab(prefab) then
-        DebugErrorInvalidArg("GoNext", "prefab", "must be a prefab")
+    prefab = ArgPrefab("GoNext", prefab)
+
+    if not prefab then
         return false
     end
 
@@ -142,34 +140,18 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SendMiniEarthquake(radius, amount, duration, player)
-    radius = radius ~= nil and radius or 20
-    amount = amount ~= nil and amount or 20
-    duration = duration ~= nil and duration or 2.5
-    player = player ~= nil and player or ThePlayer
-
     local fn_name = "SendMiniEarthquake"
+    radius = ArgUnsignedInteger(fn_name, radius or 20, "radius", 20)
+    amount = ArgUnsignedInteger(fn_name, amount or 20, "amount", 20)
+    duration = ArgUnsigned(fn_name, duration or 2.5, "duration", 2.5)
+    player = ArgPlayer(fn_name, player)
+
+    if not radius or not amount or not duration or not player then
+        return false
+    end
 
     if not TheWorld:HasTag("cave") then
         DebugErrorInvalidWorldType(fn_name, "must be in a cave")
-        return false
-    end
-
-    if not Value.IsUnsigned(radius) or not Value.IsInteger(radius) then
-        DebugErrorInvalidArg(fn_name, "radius", "must be an unsigned integer")
-        return false
-    end
-
-    if not Value.IsUnsigned(amount) or not Value.IsInteger(amount) then
-        DebugErrorInvalidArg(fn_name, "amount", "must be an unsigned integer")
-        return false
-    end
-
-    if not Value.IsUnsigned(duration) or not Value.IsNumber(duration) then
-        DebugErrorInvalidArg(fn_name, "duration", "must be an unsigned number")
-        return false
-    end
-
-    if not IsValidPlayer(player, fn_name) then
         return false
     end
 
@@ -189,9 +171,9 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.ToggleFreeCrafting(player)
-    player = player ~= nil and player or ThePlayer
+    player = ArgPlayer("ToggleFreeCrafting", player)
 
-    if not IsValidPlayer(player, "ToggleFreeCrafting") then
+    if not player then
         return false
     end
 
@@ -278,16 +260,15 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.SetTemperature(temperature, player)
-    player = player ~= nil and player or ThePlayer
-
     local fn_name = "SetTemperature"
+    player = ArgPlayerAlive(fn_name, player)
 
-    if not Value.IsEntityTemperature(temperature) then
-        DebugErrorInvalidArg(fn_name, "temperature", "must be an entity temperature")
+    if not player then
         return false
     end
 
-    if not IsValidPlayerAlive(player, fn_name) then
+    if not Value.IsEntityTemperature(temperature) then
+        DebugErrorInvalidArg(fn_name, "temperature", "must be an entity temperature")
         return false
     end
 
@@ -326,11 +307,16 @@ end
 -- @tparam string args Function arguments
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 function Player.CallFn(name, args, player)
-    player = player ~= nil and player or ThePlayer
+    local fn_name = "CallFn"
+    player = ArgPlayer(fn_name, player)
+
+    if not player then
+        return false
+    end
 
     local serialized = Remote.Serialize(args)
     if not serialized then
-        DebugErrorInvalidArg("CallFn", "args", "can't be serialized")
+        DebugErrorInvalidArg(fn_name, "args", "can't be serialized")
         return false
     end
 
@@ -348,11 +334,16 @@ end
 -- @tparam string args Component function arguments
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 function Player.CallFnComponent(component, name, args, player)
-    player = player ~= nil and player or ThePlayer
+    local fn_name = "CallFnComponent"
+    player = ArgPlayer(fn_name, player)
+
+    if not player then
+        return false
+    end
 
     local serialized = Remote.Serialize(args)
     if not serialized then
-        DebugErrorInvalidArg("CallFnComponent", "args", "can't be serialized")
+        DebugErrorInvalidArg(fn_name, "args", "can't be serialized")
         return false
     end
 
@@ -371,11 +362,16 @@ end
 -- @tparam string args Replica function arguments
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 function Player.CallFnReplica(replica, name, args, player)
-    player = player ~= nil and player or ThePlayer
+    local fn_name = "CallFnReplica"
+    player = ArgPlayer(fn_name, player)
+
+    if not player then
+        return false
+    end
 
     local serialized = Remote.Serialize(args)
     if not serialized then
-        DebugErrorInvalidArg("CallFnReplica", "args", "can't be serialized")
+        DebugErrorInvalidArg(fn_name, "args", "can't be serialized")
         return false
     end
 
@@ -396,9 +392,11 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.LockRecipe(recipe, player)
-    player = player ~= nil and player or ThePlayer
+    local fn_name = "LockRecipe"
+    recipe = ArgRecipe(fn_name, recipe)
+    player = ArgPlayer(fn_name, player)
 
-    if not IsValidRecipe(recipe, "LockRecipe") or not IsValidPlayer(player, "LockRecipe") then
+    if not recipe or not player then
         return false
     end
 
@@ -420,9 +418,11 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
 function Player.UnlockRecipe(recipe, player)
-    player = player ~= nil and player or ThePlayer
+    local fn_name = "UnlockRecipe"
+    recipe = ArgRecipe(fn_name, recipe)
+    player = ArgPlayer(fn_name, player)
 
-    if not IsValidRecipe(recipe, "UnlockRecipe") or not IsValidPlayer(player, "UnlockRecipe") then
+    if not recipe or not player then
         return false
     end
 
