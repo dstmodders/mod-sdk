@@ -306,8 +306,12 @@ end
 
 --- Sends a request to call a function.
 --
--- @usage SDK.Remote.Player.CallFn("AddTag", { "foobar" }, ThePlayer)
+-- @usage SDK.Remote.Player.CallFn("AddTag", "foobar", ThePlayer)
 -- -- LookupPlayerInstByUserID("KU_foobar"):AddTag("foobar")
+-- @usage SDK.Remote.Player.CallFn("RemoveFromScene", "nil", ThePlayer)
+-- -- LookupPlayerInstByUserID("KU_foobar"):RemoveFromScene(nil)
+-- @usage SDK.Remote.Player.CallFn("ReturnToScene", nil, ThePlayer)
+-- -- LookupPlayerInstByUserID("KU_foobar"):ReturnToScene()
 --
 -- @tparam string name Function name
 -- @tparam string args Function arguments
@@ -320,25 +324,32 @@ function Player.CallFn(name, args, player)
         return false
     end
 
-    local serialized = Remote.Serialize(args)
-    if not serialized then
-        DebugErrorInvalidArg(fn_name, "args", "can't be serialized")
-        return false
+    if args then
+        local serialized = Remote.Serialize(args)
+        if not serialized then
+            DebugErrorInvalidArg(fn_name, "args", "can't be serialized")
+            return false
+        end
+
+        Remote.Send('%s:%s(%s)', {
+            Remote.Serialize(player),
+            name,
+            type(args) == "table" and table.concat(serialized, ", ") or serialized,
+        })
+
+        return true
     end
 
-    Remote.Send('%s:%s(%s)', {
-        Remote.Serialize(player),
-        name,
-        table.concat(serialized, ", "),
-    })
-
+    Remote.Send('%s:%s()', { Remote.Serialize(player), name })
     return true
 end
 
 --- Sends a request to call a component function.
 --
--- @usage SDK.Remote.Player.CallFnComponent("temperature", "SetTemperature", { 36 }, ThePlayer)
+-- @usage SDK.Remote.Player.CallFnComponent("temperature", "SetTemperature", 36, ThePlayer)
 -- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperature(36)
+-- @usage SDK.Remote.Player.CallFnComponent("temperature", "SetTemperatureInBelly", { 3, 5 }, ThePlayer)
+-- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperatureInBelly(3, 5)
 --
 -- @tparam string component Component name
 -- @tparam string name Component function name
@@ -352,48 +363,23 @@ function Player.CallFnComponent(component, name, args, player)
         return false
     end
 
-    local serialized = Remote.Serialize(args)
-    if not serialized then
-        DebugErrorInvalidArg(fn_name, "args", "can't be serialized")
-        return false
+    if args then
+        local serialized = Remote.Serialize(args)
+        if not serialized then
+            DebugErrorInvalidArg(fn_name, "args", "can't be serialized")
+            return false
+        end
+
+        Remote.Send('%s.components.%s:%s(%s)', {
+            Remote.Serialize(player),
+            component,
+            name,
+            type(args) == "table" and table.concat(serialized, ", ") or serialized,
+        })
+        return true
     end
 
-    Remote.Send('%s.components.%s:%s(%s)', {
-        Remote.Serialize(player),
-        component,
-        name,
-        table.concat(serialized, ", "),
-    })
-
-    return true
-end
-
---- Sends a request to call a replica function.
--- @tparam string replica Replica name
--- @tparam string name Replica function name
--- @tparam string args Replica function arguments
--- @tparam[opt] EntityScript player Player instance (owner by default)
-function Player.CallFnReplica(replica, name, args, player)
-    local fn_name = "CallFnReplica"
-    player = ArgPlayer(fn_name, player)
-
-    if not player then
-        return false
-    end
-
-    local serialized = Remote.Serialize(args)
-    if not serialized then
-        DebugErrorInvalidArg(fn_name, "args", "can't be serialized")
-        return false
-    end
-
-    Remote.Send('%s.replica.%s:%s(%s)', {
-        Remote.Serialize(player),
-        replica,
-        name,
-        table.concat(serialized, ", "),
-    })
-
+    Remote.Send('%s.components.%s:%s()', { Remote.Serialize(player), component, name })
     return true
 end
 

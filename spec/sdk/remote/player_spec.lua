@@ -553,6 +553,18 @@ describe("#sdk SDK.Remote.Player", function()
         end)
 
         describe("CallFn()", function()
+            describe("when serialized argument is passed", function()
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Player.CallFn("Foo", "foo")
+                    end, 'LookupPlayerInstByUserID("KU_foobar"):Foo("foo")')
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.CallFn("Foo", "foo"))
+                end)
+            end)
+
             describe("when serialized arguments are passed", function()
                 it("should call TheSim:SendRemoteExecute()", function()
                     AssertSendWasCalled(function()
@@ -570,6 +582,18 @@ describe("#sdk SDK.Remote.Player", function()
 
                 it("should return true", function()
                     assert.is_true(Player.CallFn("Foo", args_valid))
+                end)
+            end)
+
+            describe("when nil argument is passed", function()
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Player.CallFn("Foo")
+                    end, 'LookupPlayerInstByUserID("KU_foobar"):Foo()')
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.CallFn("Foo"))
                 end)
             end)
 
@@ -593,6 +617,18 @@ describe("#sdk SDK.Remote.Player", function()
         end)
 
         describe("CallFnComponent()", function()
+            describe("when serialized argument is passed", function()
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Player.CallFnComponent("foo", "Bar", "foo")
+                    end, 'LookupPlayerInstByUserID("KU_foobar").components.foo:Bar("foo")')
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.CallFnComponent("foo", "Bar", "foo"))
+                end)
+            end)
+
             describe("when serialized arguments are passed", function()
                 it("should call TheSim:SendRemoteExecute()", function()
                     AssertSendWasCalled(function()
@@ -613,6 +649,18 @@ describe("#sdk SDK.Remote.Player", function()
                 end)
             end)
 
+            describe("when nil argument is passed", function()
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Player.CallFnComponent("foo", "Bar")
+                    end, 'LookupPlayerInstByUserID("KU_foobar").components.foo:Bar()')
+                end)
+
+                it("should return true", function()
+                    assert.is_true(Player.CallFnComponent("foo", "Bar"))
+                end)
+            end)
+
             describe("when non-serialized arguments are passed", function()
                 it("should debug error string", function()
                     AssertDebugErrorInvalidArg(function()
@@ -628,46 +676,6 @@ describe("#sdk SDK.Remote.Player", function()
 
                 it("should return false", function()
                     assert.is_false(Player.CallFnComponent("foo", "Bar", args_invalid))
-                end)
-            end)
-        end)
-
-        describe("CallFnReplica()", function()
-            describe("when serialized arguments are passed", function()
-                it("should call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasCalled(function()
-                        Player.CallFnReplica("foo", "Bar", args_valid)
-                    end, 'LookupPlayerInstByUserID("KU_foobar").replica.foo:Bar('
-                            .. '"foo", '
-                            .. '"bar", '
-                            .. "0, "
-                            .. "1, "
-                            .. "true, "
-                            .. "false, "
-                            .. 'LookupPlayerInstByUserID("KU_foobar")'
-                        .. ")")
-                end)
-
-                it("should return true", function()
-                    assert.is_true(Player.CallFnReplica("foo", "Bar", args_valid))
-                end)
-            end)
-
-            describe("when non-serialized arguments are passed", function()
-                it("should debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        Player.CallFnReplica("foo", "Bar", args_invalid)
-                    end, "CallFnReplica", "args", "can't be serialized")
-                end)
-
-                it("shouldn't call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasNotCalled(function()
-                        Player.CallFnReplica("foo", "Bar", args_invalid)
-                    end)
-                end)
-
-                it("should return false", function()
-                    assert.is_false(Player.CallFnReplica("foo", "Bar", args_invalid))
                 end)
             end)
         end)
