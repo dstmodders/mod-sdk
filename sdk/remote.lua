@@ -68,18 +68,28 @@ end
 -- _**NB!** Tables support is pretty basic so be careful._
 --
 -- @usage SDK.Remote.Serialize({ "foo", 0, 0.5, true, false })
--- -- returns: { '"foo"', "0", "0.50", "true", "false" }
--- @usage SDK.Remote.Serialize({ ThePlayer })
--- -- returns: { 'LookupPlayerInstByUserID("KU_foobar")' }
+-- -- { '"foo"', "0", "0.50", "true", "false" }
 -- @usage SDK.Remote.Serialize({ { 1, "foo", true, 0.25 } })
--- -- returns: { '{ 1, "foo", true, 0.25 }' }
+-- -- { '{ 1, "foo", true, 0.25 }' }
 -- @usage SDK.Remote.Serialize({ { foo = "foo", bar = "bar" } })
--- -- returns: { '{ bar = "bar", foo = "foo" }' }
+-- -- { '{ bar = "bar", foo = "foo" }' }
+-- @usage SDK.Remote.Serialize({ ThePlayer })
+-- -- { 'LookupPlayerInstByUserID("KU_foobar")' }
+-- @usage SDK.Remote.Serialize(ThePlayer)
+-- -- LookupPlayerInstByUserID("KU_foobar")
+-- @usage SDK.Remote.Serialize("foo")
+-- -- "foo"
 --
 -- @see Send
--- @tparam table t Table with values to serialize
--- @treturn table Table with serialized values
+-- @tparam any|table t Single or multiple values to serialize
+-- @treturn string|table Serialized value(s)
 function Remote.Serialize(t)
+    local is_single = false
+    if type(t) ~= "table" or t.userid then
+        is_single = true
+        t = { t }
+    end
+
     local serialized = {}
     for _, v in pairs(t) do
         if v == "nil" then
@@ -149,6 +159,11 @@ function Remote.Serialize(t)
             end
         end
     end
+
+    if is_single then
+        return serialized[1]
+    end
+
     return serialized
 end
 

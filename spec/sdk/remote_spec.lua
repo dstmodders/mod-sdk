@@ -126,8 +126,16 @@ describe("#sdk SDK.Remote", function()
 
         describe("Serialize()", function()
             local function TestValid(what, value, serialized)
-                describe("when " .. what .. " as one of the values is passed", function()
+                describe("when " .. what .. " as a single value is passed", function()
                     it("should return a serialized value", function()
+                        assert.is_same(serialized, Remote.Serialize(value))
+                    end)
+                end)
+            end
+
+            local function TestValidTable(what, value, serialized)
+                describe("when " .. what .. " as one of the values is passed", function()
+                    it("should return serialized values", function()
                         assert.is_same({ serialized }, Remote.Serialize({ value }))
                     end)
                 end)
@@ -139,20 +147,28 @@ describe("#sdk SDK.Remote", function()
             TestValid("a float number", 0.5, "0.50")
             TestValid("a boolean (true)", true, "true")
             TestValid("a boolean (false)", false, "false")
-            TestValid("a player", _G.ThePlayer, 'LookupPlayerInstByUserID("KU_foobar")')
-            TestValid("an empty table", {}, "{}")
-            TestValid("an array (with only numbers)", { 1, 2, 3 }, "{ 1, 2, 3 }")
-            TestValid("an array (with only strings)", { "foo", "bar" }, '{ "foo", "bar" }')
-            TestValid("an array (with only booleans)", { true, false }, "{ true, false }")
-            TestValid("an array (with only floats)", { 0.25, 0.5, 1.0 }, "{ 0.25, 0.50, 1 }")
+            TestValid("ThePlayer", _G.ThePlayer, 'LookupPlayerInstByUserID("KU_foobar")')
 
-            TestValid(
+            TestValidTable("a nil (as a string)", "nil", "nil")
+            TestValidTable("a string", "foo", '"foo"')
+            TestValidTable("a number", 0, "0")
+            TestValidTable("a float number", 0.5, "0.50")
+            TestValidTable("a boolean (true)", true, "true")
+            TestValidTable("a boolean (false)", false, "false")
+            TestValidTable("ThePlayer", _G.ThePlayer, 'LookupPlayerInstByUserID("KU_foobar")')
+            TestValidTable("an empty table", {}, "{}")
+            TestValidTable("an array (with only numbers)", { 1, 2, 3 }, "{ 1, 2, 3 }")
+            TestValidTable("an array (with only strings)", { "foo", "bar" }, '{ "foo", "bar" }')
+            TestValidTable("an array (with only booleans)", { true, false }, "{ true, false }")
+            TestValidTable("an array (with only floats)", { 0.25, 0.5, 1.0 }, "{ 0.25, 0.50, 1 }")
+
+            TestValidTable(
                 "an array (with mixed values)",
                 { 1, "foo", true, 0.25 },
                 '{ 1, "foo", true, 0.25 }'
             )
 
-            TestValid(
+            TestValidTable(
                 "a table (with key-value pairs)",
                 { foo = "foo", bar = "bar" },
                 '{ bar = "bar", foo = "foo" }'
