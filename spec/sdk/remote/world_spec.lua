@@ -164,11 +164,13 @@ describe("#sdk SDK.Remote.World", function()
         end
 
         describe(description, function()
-            it("should debug string", function()
-                AssertDebugString(function()
-                    World[name](unpack(args))
-                end, "[remote]", "[world]", unpack(debug))
-            end)
+            if debug then
+                it("should debug string", function()
+                    AssertDebugString(function()
+                        World[name](unpack(args))
+                    end, "[remote]", "[world]", unpack(debug))
+                end)
+            end
 
             it("should call TheSim:SendRemoteExecute()", function()
                 AssertSendWasCalled(function()
@@ -204,10 +206,28 @@ describe("#sdk SDK.Remote.World", function()
             TestRemoteInvalidArg("PushEvent", "event", "must be a string")
             TestRemoteInvalidArg("PushEvent", "event", "must be a string", true)
 
-            TestRemoteValid("PushEvent", {
-                "Push event:",
-                "ms_advanceseason",
-            }, 'TheWorld:PushEvent("ms_advanceseason")', "ms_advanceseason")
+            TestRemoteValid(
+                "PushEvent",
+                nil,
+                'TheWorld:PushEvent("ms_advanceseason")',
+                "ms_advanceseason"
+            )
+
+            TestRemoteValid(
+                "PushEvent",
+                nil,
+                'TheWorld:PushEvent("ms_forceprecipitation", true)',
+                "ms_forceprecipitation",
+                true
+            )
+
+            TestRemoteValid(
+                "PushEvent",
+                nil,
+                'TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 20 })',
+                "ms_setseasonlength",
+                { season = "autumn", length = 20 }
+            )
         end)
 
         describe("Rollback()", function()

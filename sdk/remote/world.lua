@@ -15,17 +15,18 @@
 local World = {}
 
 local SDK
+local Remote
 local Value
 
 --- Helpers
 -- @section helpers
 
-local function DebugErrorInvalidArg(fn_name, arg_name, explanation)
-    SDK._DebugErrorInvalidArg(World, fn_name, arg_name, explanation)
+local function DebugErrorInvalidArg(...)
+    SDK._DebugErrorInvalidArg(World, ...)
 end
 
-local function DebugErrorInvalidWorldType(fn_name, explanation)
-    SDK._DebugErrorInvalidWorldType(World, fn_name, explanation)
+local function DebugErrorInvalidWorldType(...)
+    SDK._DebugErrorInvalidWorldType(World, ...)
 end
 
 local function DebugString(...)
@@ -41,21 +42,36 @@ end
 function World.ForcePrecipitation(bool)
     bool = bool ~= false and true or false
     DebugString("Force precipitation:", tostring(bool))
-    SDK.Remote.Send('TheWorld:PushEvent("ms_forceprecipitation", %s)', { tostring(bool) })
+    Remote.Send('TheWorld:PushEvent("ms_forceprecipitation", %s)', { tostring(bool) })
     return true
 end
 
 --- Sends a request to push a certain event.
+--
+-- @usage SDK.Remote.World.PushEvent("ms_advanceseason")
+-- -- TheWorld:PushEvent("ms_advanceseason")
+--
+-- @usage SDK.Remote.World.PushEvent("ms_forceprecipitation", true)
+-- -- TheWorld:PushEvent("ms_advanceseason", true)
+--
+-- @usage SDK.Remote.World.PushEvent("ms_setseasonlength", { season = "autumn", length = 20 })
+-- -- TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 20 })
+--
 -- @tparam string event
+-- @tparam[opt] table options
 -- @treturn boolean
-function World.PushEvent(event)
+function World.PushEvent(event, options)
     if not Value.IsString(event) then
         DebugErrorInvalidArg("PushEvent", "event", "must be a string")
         return false
     end
 
-    DebugString("Push event:", event)
-    SDK.Remote.Send('TheWorld:PushEvent("%s")', { event })
+    if options then
+        Remote.Send('TheWorld:PushEvent(%s, %s)', { event, options }, true)
+        return true
+    end
+
+    Remote.Send('TheWorld:PushEvent("%s")', { event })
     return true
 end
 
@@ -71,7 +87,7 @@ function World.Rollback(days)
     end
 
     DebugString("Rollback:", Value.ToDaysString(days))
-    SDK.Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days })
+    Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days })
     return true
 end
 
@@ -93,7 +109,7 @@ function World.SendLightningStrike(pt)
 
     local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
     DebugString("Send lighting strike:", tostring(pt))
-    SDK.Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
+    Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
     return true
 end
 
@@ -109,7 +125,7 @@ function World.SetDeltaMoisture(delta)
     end
 
     DebugString("Delta moisture:", Value.ToFloatString(delta))
-    SDK.Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
+    Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
     return true
 end
 
@@ -125,7 +141,7 @@ function World.SetDeltaWetness(delta)
     end
 
     DebugString("Delta wetness:", Value.ToFloatString(delta))
-    SDK.Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
+    Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
     return true
 end
 
@@ -143,7 +159,7 @@ function World.SetSeason(season)
     end
 
     DebugString("Season:", tostring(season))
-    SDK.Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
+    Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
     return true
 end
 
@@ -169,7 +185,7 @@ function World.SetSeasonLength(season, length)
     end
 
     DebugString("Season length:", season, "(" .. Value.ToDaysString(length) .. ")")
-    SDK.Remote.Send(
+    Remote.Send(
         'TheWorld:PushEvent("ms_setseasonlength", { season = "%s", length = %d })',
         { season, length }
     )
@@ -192,7 +208,7 @@ function World.SetSnowLevel(delta)
 
     if Value.IsUnitInterval(delta) then
         DebugString("Snow level:", tostring(delta))
-        SDK.Remote.Send('TheWorld:PushEvent("ms_setsnowlevel", %0.2f)', { delta })
+        Remote.Send('TheWorld:PushEvent("ms_setsnowlevel", %0.2f)', { delta })
         return true
     end
 
@@ -205,9 +221,11 @@ end
 
 --- Initializes.
 -- @tparam SDK sdk
+-- @tparam SDK.Remote parent
 -- @treturn SDK.Remote.World
-function World._DoInit(sdk)
+function World._DoInit(sdk, parent)
     SDK = sdk
+    Remote = parent
     Value = SDK.Utils.Value
     return World
 end
