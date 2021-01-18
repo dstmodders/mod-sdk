@@ -16,12 +16,23 @@
 local Remote = {}
 
 local SDK
+local Table
 local Value
 
 --- General
 -- @section general
 
 --- Sends a remote command to execute.
+-- @usage SDK.Remote.Send(
+--     'LookupPlayerInstByUserID("%s").components.temperature:SetTemperature(%d)',
+--     { ThePlayer.userid, 36 }
+-- )
+-- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperature(36)
+-- @usage SDK.Remote.Send(
+--     "%s.components.temperature:SetTemperature(%s)",
+--     SDK.Remote.Serialize({ ThePlayer, 36 })
+-- )
+-- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperature(36)
 -- @tparam string cmd Command to execute
 -- @tparam[opt] table data Data to unpack and used alongside with string
 -- @treturn table
@@ -32,23 +43,27 @@ end
 
 --- Serializes values ready for remote.
 --
--- _**NB!** Currently doesn't support tables._
+-- Returns a table with serialized values for later use in `TheNet.SendRemoteExecute`. If one value
+-- can't be serialized, it returns false.
 --
--- @usage SDK.Remote.Serialize({ "foo", 0, 1, true, false, _G.ThePlayer }) -- returns:
--- -- {
--- --     '"foo"',
--- --     "0",
--- --     "1",
--- --     "true",
--- --     "false",
--- --     'LookupPlayerInstByUserID("KU_foobar")',
--- -- }
+-- _**NB!** Tables support is pretty basic so be careful._
+--
+-- @usage SDK.Remote.Serialize({ "foo", 0, 0.5, true, false })
+-- -- returns: { '"foo"', "0", "0.50", "true", "false" }
+-- @usage SDK.Remote.Serialize({ ThePlayer })
+-- -- returns: { 'LookupPlayerInstByUserID("KU_foobar")' }
+-- @usage SDK.Remote.Serialize({ { 1, "foo", true, 0.25 } })
+-- -- returns: { '{ 1, "foo", true, 0.25 }' }
+-- @usage SDK.Remote.Serialize({ { foo = "foo", bar = "bar" } })
+-- -- returns: { '{ bar = "bar", foo = "foo" }' }
 -- @tparam table t Table with values to serialize
 -- @treturn table Table with serialized values
 function Remote.Serialize(t)
     local serialized = {}
     for _, v in pairs(t) do
-        if type(v) == "boolean" then
+        if v == "nil" then
+            table.insert(serialized, "nil")
+        elseif type(v) == "boolean" then
             table.insert(serialized, tostring(v))
         elseif type(v) == "number" then
             if not Value.IsInteger(v) then
@@ -61,6 +76,53 @@ function Remote.Serialize(t)
         elseif type(v) == "table" then
             if v.userid then
                 table.insert(serialized, 'LookupPlayerInstByUserID("' .. v.userid .. '")')
+            elseif Value.IsArray(v) then
+                local value, serialized_table, serialized_values
+
+                serialized_table = "{"
+                if #v > 0 then
+                    serialized_table = serialized_table .. " "
+                    for i = 1, #v, 1 do
+                        value = v[i]
+                        serialized_values = Remote.Serialize({ value })
+                        if not serialized_values or not serialized_values[1] then
+                            return
+                        end
+
+                        serialized_table = serialized_table .. serialized_values[1]
+                        if i ~= #v then
+                            serialized_table = serialized_table .. ", "
+                        end
+                    end
+                    serialized_table = serialized_table .. " "
+                end
+                serialized_table = serialized_table .. "}"
+
+                table.insert(serialized, serialized_table)
+            elseif Value.IsPairedTable(v) then
+                local total, serialized_table, serialized_values
+
+                total = Table.Count(v)
+                serialized_table = "{ "
+                if total > 0 then
+                    local i = 0
+                    for _k, _v in pairs(v) do
+                        i = i + 1
+                        serialized_table = serialized_table .. _k .. " = "
+                        serialized_values = Remote.Serialize({ _v })
+                        if not serialized_values or not serialized_values[1] then
+                            return
+                        end
+
+                        serialized_table = serialized_table .. serialized_values[1]
+                        if i ~= total then
+                            serialized_table = serialized_table .. ", "
+                        end
+                    end
+                end
+                serialized_table = serialized_table .. " }"
+
+                table.insert(serialized, serialized_table)
             else
                 return
             end
@@ -78,6 +140,7 @@ end
 -- @treturn SDK.Remote
 function Remote._DoInit(sdk, submodules)
     SDK = sdk
+    Table = SDK.Utils.Table
     Value = SDK.Utils.Value
 
     submodules = submodules ~= nil and submodules or {

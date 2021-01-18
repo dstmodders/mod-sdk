@@ -530,7 +530,7 @@ describe("#sdk SDK.Remote.Player", function()
         local args_invalid, args_valid
 
         setup(function()
-            args_invalid =  { {} }
+            args_invalid =  { _G.TheSim }
             args_valid = {
                 "foo",
                 "bar",

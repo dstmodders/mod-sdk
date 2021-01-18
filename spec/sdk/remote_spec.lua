@@ -78,6 +78,14 @@ describe("#sdk SDK.Remote", function()
                 end)
             end)
 
+            describe("when serialized data is passed", function()
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Remote.Send("%s:SetTemperature(%s)", SDK.Remote.Serialize({ _G.ThePlayer, 36 }))
+                    end, 'LookupPlayerInstByUserID("KU_foobar"):SetTemperature(36)')
+                end)
+            end)
+
             it("should call TheSim:GetPosition()", function()
                 assert.spy(_G.TheSim.GetPosition).was_not_called()
                 Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { "autumn" })
@@ -100,22 +108,42 @@ describe("#sdk SDK.Remote", function()
         end)
 
         describe("Serialize()", function()
-            describe("when serializable data is passed", function()
-                it("should return serialized data", function()
-                    assert.is_same({
-                        '"foo"',
-                        "0",
-                        "1",
-                        "true",
-                        "false",
-                        'LookupPlayerInstByUserID("KU_foobar")',
-                    }, Remote.Serialize({ "foo", 0, 1, true, false, _G.ThePlayer }))
+            local function TestValid(what, value, serialized)
+                describe("when " .. what .. " as one of the values is passed", function()
+                    it("should return a serialized value", function()
+                        assert.is_same({ serialized }, Remote.Serialize({ value }))
+                    end)
                 end)
-            end)
+            end
 
-            describe("when non-serializable data is passed", function()
+            TestValid("a nil (as a string)", "nil", "nil")
+            TestValid("a string", "foo", '"foo"')
+            TestValid("a number", 0, "0")
+            TestValid("a float number", 0.5, "0.50")
+            TestValid("a boolean (true)", true, "true")
+            TestValid("a boolean (false)", false, "false")
+            TestValid("a player", _G.ThePlayer, 'LookupPlayerInstByUserID("KU_foobar")')
+            TestValid("an empty table", {}, "{}")
+            TestValid("an array (with only numbers)", { 1, 2, 3 }, "{ 1, 2, 3 }")
+            TestValid("an array (with only strings)", { "foo", "bar" }, '{ "foo", "bar" }')
+            TestValid("an array (with only booleans)", { true, false }, "{ true, false }")
+            TestValid("an array (with only floats)", { 0.25, 0.5, 1.0 }, "{ 0.25, 0.50, 1 }")
+
+            TestValid(
+                "an array (with mixed values)",
+                { 1, "foo", true, 0.25 },
+                '{ 1, "foo", true, 0.25 }'
+            )
+
+            TestValid(
+                "a table (with key-value pairs)",
+                { foo = "foo", bar = "bar" },
+                '{ bar = "bar", foo = "foo" }'
+            )
+
+            describe("when non-serializable data as one of the values is passed", function()
                 it("should return nil", function()
-                    assert.is_nil(Remote.Serialize({ "foo", 0, 1, true, false, {} }))
+                    assert.is_nil(Remote.Serialize({ "foo", 0, 0.5, 1, true, false, _G.TheSim }))
                 end)
             end)
         end)
