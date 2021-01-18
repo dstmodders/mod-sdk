@@ -19,6 +19,17 @@ local SDK
 local Table
 local Value
 
+--- Helpers
+-- @section helpers
+
+local function ArgUnsigned(...)
+    return SDK._ArgUnsigned(Remote, ...)
+end
+
+local function DebugString(...)
+    SDK._DebugString("[remote]", ...)
+end
+
 --- General
 -- @section general
 
@@ -165,6 +176,28 @@ function Remote.Serialize(t)
     end
 
     return serialized
+end
+
+--- Sends a request to set a time scale.
+--
+-- @usage SDK.Remote.SetTimeScale(4)
+-- @usage SDK.Remote.SetTimeScale(0.5)
+--
+-- @see SDK.Pause
+-- @see SDK.Resume
+-- @see SDK.SetTimeScale
+-- @tparam string timescale
+-- @treturn boolean
+function Remote.SetTimeScale(timescale)
+    timescale = ArgUnsigned("SetTimeScale", timescale, "timescale")
+
+    if not timescale then
+        return false
+    end
+
+    DebugString("Time scale:", Value.ToFloatString(timescale))
+    Remote.Send('TheSim:SetTimeScale(%s)', { timescale }, true)
+    return true
 end
 
 --- Lifecycle

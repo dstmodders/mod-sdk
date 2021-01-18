@@ -360,15 +360,5 @@ describe("#sdk SDK.Remote.World", function()
                 }, 'TheWorld:PushEvent("ms_setsnowlevel", 1.00)', 1)
             end)
         end)
-
-        describe("SetTimeScale()", function()
-            TestRemoteInvalidArg("SetTimeScale", "timescale", "must be an unsigned number", "foo")
-            TestRemoteValid(
-                "SetTimeScale",
-                { "Time scale:", "1.00" },
-                'TheSim:SetTimeScale(1.00)',
-                1
-            )
-        end)
     end)
 end)

@@ -68,6 +68,68 @@ describe("#sdk SDK.Remote", function()
         )
     end
 
+    local function AssertSendWasNotCalled(fn)
+        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
+        fn()
+        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
+    end
+
+    local function TestRemoteInvalidArg(name, arg_name, explanation, ...)
+        local args = { ... }
+        local description = "when no arguments are passed"
+        if #args > 1 then
+            description = "when invalid arguments are passed"
+        elseif #args == 1 then
+            description = "when an invalid argument is passed"
+        end
+
+        describe(description, function()
+            it("should debug error string", function()
+                AssertDebugErrorInvalidArg(function()
+                    Remote[name](unpack(args))
+                end, name, arg_name, explanation)
+            end)
+
+            it("shouldn't call TheSim:SendRemoteExecute()", function()
+                AssertSendWasNotCalled(function()
+                    Remote[name](unpack(args))
+                end)
+            end)
+
+            it("should return false", function()
+                assert.is_false(Remote[name](unpack(args)))
+            end)
+        end)
+    end
+
+    local function TestRemoteValid(name, debug, send, ...)
+        local args = { ... }
+        local description = "when no arguments are passed"
+        if #args > 1 then
+            description = "when valid arguments are passed"
+        elseif #args == 1 then
+            description = "when a valid argument is passed"
+        end
+
+        describe(description, function()
+            it("should debug string", function()
+                AssertDebugString(function()
+                    Remote[name](unpack(args))
+                end, "[remote]", unpack(debug))
+            end)
+
+            it("should call TheSim:SendRemoteExecute()", function()
+                AssertSendWasCalled(function()
+                    Remote[name](unpack(args))
+                end, send)
+            end)
+
+            it("should return true", function()
+                assert.is_true(Remote[name](unpack(args)))
+            end)
+        end)
+    end
+
     describe("general", function()
         describe("Send()", function()
             describe("when different data types are passed", function()
@@ -179,6 +241,17 @@ describe("#sdk SDK.Remote", function()
                     assert.is_nil(Remote.Serialize({ "foo", 0, 0.5, 1, true, false, _G.TheSim }))
                 end)
             end)
+        end)
+
+        describe("SetTimeScale()", function()
+            TestRemoteInvalidArg("SetTimeScale", "timescale", "must be an unsigned number", "foo")
+            TestRemoteValid("SetTimeScale", { "Time scale:", "1" }, 'TheSim:SetTimeScale(1)', 1)
+            TestRemoteValid(
+                "SetTimeScale",
+                { "Time scale:", "0.50" },
+                'TheSim:SetTimeScale(0.50)',
+                0.5
+            )
         end)
     end)
 end)

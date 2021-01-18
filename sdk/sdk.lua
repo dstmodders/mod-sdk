@@ -619,7 +619,7 @@ function SDK.IsPaused()
 end
 
 --- Pauses a game.
--- @see SDK.Remote.World.SetTimeScale
+-- @see SDK.Remote.SetTimeScale
 -- @treturn boolean
 function SDK.Pause()
     if SDK.IsPaused() then
@@ -638,7 +638,7 @@ function SDK.Pause()
         and TheWorld
         and not TheWorld.ismastersim
         and SDK.IsLoaded("Remote")
-        and SDK.Remote.World.SetTimeScale(0)
+        and SDK.Remote.SetTimeScale(0)
     then
         SDK._DebugNoticeTimeScaleMismatch(SDK, "Pause")
     end
@@ -647,7 +647,7 @@ function SDK.Pause()
 end
 
 --- Resumes a game from a pause.
--- @see SDK.Remote.World.SetTimeScale
+-- @see SDK.Remote.SetTimeScale
 -- @treturn boolean
 function SDK.Resume()
     if not SDK.IsPaused() then
@@ -666,7 +666,7 @@ function SDK.Resume()
         and TheWorld
         and not TheWorld.ismastersim
         and SDK.IsLoaded("Remote")
-        and SDK.Remote.World.SetTimeScale(time_scale)
+        and SDK.Remote.SetTimeScale(time_scale)
     then
         SDK._DebugNoticeTimeScaleMismatch(SDK, "Resume")
     end
@@ -696,7 +696,7 @@ function SDK.SetDeltaTimeScale(delta)
 end
 
 --- Sets a time scale.
--- @see SDK.Remote.World.SetTimeScale
+-- @see SDK.Remote.SetTimeScale
 -- @see SDK.SetDeltaTimeScale
 -- @tparam number time_scale
 -- @treturn boolean
@@ -713,7 +713,7 @@ function SDK.SetTimeScale(time_scale)
         and TheWorld
         and not TheWorld.ismastersim
         and SDK.IsLoaded("Remote")
-        and SDK.Remote.World.SetTimeScale(time_scale)
+        and SDK.Remote.SetTimeScale(time_scale)
     then
         SDK._DebugNoticeTimeScaleMismatch(SDK, "SetTimeScale")
     end

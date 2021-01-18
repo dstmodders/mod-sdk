@@ -200,23 +200,6 @@ function World.SetSnowLevel(delta)
     return false
 end
 
---- Sends a request to set a time scale.
--- @see SDK.Pause
--- @see SDK.Resume
--- @see SDK.SetTimeScale
--- @tparam string timescale
--- @treturn boolean
-function World.SetTimeScale(timescale)
-    if not Value.IsUnsigned(timescale) or not Value.IsNumber(timescale) then
-        DebugErrorInvalidArg("SetTimeScale", "timescale", "must be an unsigned number")
-        return false
-    end
-
-    DebugString("Time scale:", Value.ToFloatString(timescale))
-    SDK.Remote.Send('TheSim:SetTimeScale(%0.2f)', { timescale })
-    return true
-end
-
 --- Lifecycle
 -- @section lifecycle
 
