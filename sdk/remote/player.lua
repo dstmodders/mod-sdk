@@ -90,7 +90,7 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
     local debug = type(options) == "table" and options.debug or component:gsub("^%l", string.upper)
     local post_validation_fn = type(options) == "table" and options.post_validation_fn
     local pre_validation_fn = type(options) == "table" and options.pre_validation_fn
-    local setter = type(options) == "table" and options.setter or "SetPercent(math.min(%0.2f, 1))"
+    local setter = type(options) == "table" and options.setter or "SetPercent"
     local validation_fn = type(options) == "table" and options.validation_fn
 
     if (pre_validation_fn and not pre_validation_fn())
@@ -103,18 +103,11 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
 
     DebugString(debug .. ":", Value.ToPercentString(percent), "(" .. player:GetDisplayName() .. ")")
 
-    Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'if player.components.' .. component .. ' then '
-            .. 'player.components.' .. component .. ':' .. setter .. ' '
-        .. 'end',
-        {
-            player.userid,
-            (type(options) == "table" and options.value_fn)
-                and options.value_fn(percent)
-                or percent / 100,
-        })
+    local value = (type(options) == "table" and options.value_fn)
+        and options.value_fn(percent)
+        or percent / 100
 
-    return true
+    return Player.CallFnComponent(component, setter, { math.min(value, 1) }, player)
 end
 
 --- General
@@ -223,7 +216,7 @@ function Player.SetHealthLimitPercent(percent, player)
     return SetAttributeComponentPercent("SetHealthLimitPercent", {
         component = "health",
         debug = "Health limit",
-        setter = "SetPenalty(%0.2f)",
+        setter = "SetPenalty",
         value_fn = function(value)
             return 1 - (value / 100)
         end,
@@ -239,7 +232,7 @@ function Player.SetHealthPenaltyPercent(percent, player)
     return SetAttributeComponentPercent("SetHealthPenaltyPercent", {
         component = "health",
         debug = "Health penalty",
-        setter = "SetPenalty(%0.2f)",
+        setter = "SetPenalty",
     }, percent, player)
 end
 
@@ -304,13 +297,7 @@ function Player.SetTemperature(temperature, player)
         "(" .. player:GetDisplayName() .. ")"
     )
 
-    Remote.Send('player = LookupPlayerInstByUserID("%s") '
-        .. 'if player.components.temperature then '
-            .. 'player.components.temperature:SetTemperature(%0.2f) '
-        .. 'end',
-        { player.userid, temperature })
-
-    return true
+    return Player.CallFnComponent("temperature", "SetTemperature", { temperature }, player)
 end
 
 --- Sends a request to set a wereness percent.

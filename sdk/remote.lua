@@ -16,6 +16,7 @@
 local Remote = {}
 
 local SDK
+local Value
 
 --- General
 -- @section general
@@ -47,8 +48,14 @@ end
 function Remote.Serialize(t)
     local serialized = {}
     for _, v in pairs(t) do
-        if type(v) == "boolean" or type(v) == "number" then
+        if type(v) == "boolean" then
             table.insert(serialized, tostring(v))
+        elseif type(v) == "number" then
+            if not Value.IsInteger(v) then
+                table.insert(serialized, Value.ToFloatString(v))
+            else
+                table.insert(serialized, tostring(v))
+            end
         elseif type(v) == "string" then
             table.insert(serialized, string.format("%q", v))
         elseif type(v) == "table" then
@@ -71,6 +78,7 @@ end
 -- @treturn SDK.Remote
 function Remote._DoInit(sdk, submodules)
     SDK = sdk
+    Value = SDK.Utils.Value
 
     submodules = submodules ~= nil and submodules or {
         Player = "sdk/remote/player",
