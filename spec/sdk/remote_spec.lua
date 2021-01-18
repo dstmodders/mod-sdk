@@ -78,11 +78,28 @@ describe("#sdk SDK.Remote", function()
                 end)
             end)
 
-            describe("when serialized data is passed", function()
+            describe("when serialized data is passed without is_serialized", function()
                 it("should call TheSim:SendRemoteExecute()", function()
                     AssertSendWasCalled(function()
-                        Remote.Send("%s:SetTemperature(%s)", SDK.Remote.Serialize({ _G.ThePlayer, 36 }))
-                    end, 'LookupPlayerInstByUserID("KU_foobar"):SetTemperature(36)')
+                        Remote.Send(
+                            "%s.components.temperature:SetTemperature(%s)",
+                            SDK.Remote.Serialize({ _G.ThePlayer, 36 })
+                        )
+                    end, 'LookupPlayerInstByUserID("KU_foobar")'
+                        .. '.components.temperature:SetTemperature(36)')
+                end)
+            end)
+
+            describe("when serialized data is passed with is_serialized", function()
+                it("should call TheSim:SendRemoteExecute()", function()
+                    AssertSendWasCalled(function()
+                        Remote.Send(
+                            "%s.components.temperature:SetTemperature(%s)",
+                            { _G.ThePlayer, 36 },
+                            true
+                        )
+                    end, 'LookupPlayerInstByUserID("KU_foobar")'
+                        .. '.components.temperature:SetTemperature(36)')
                 end)
             end)
 

@@ -23,6 +23,7 @@ local Value
 -- @section general
 
 --- Sends a remote command to execute.
+--
 -- @usage SDK.Remote.Send(
 --     'LookupPlayerInstByUserID("%s").components.temperature:SetTemperature(%d)',
 --     { ThePlayer.userid, 36 }
@@ -33,12 +34,30 @@ local Value
 --     SDK.Remote.Serialize({ ThePlayer, 36 })
 -- )
 -- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperature(36)
+-- @usage SDK.Remote.Send(
+--     "%s.components.temperature:SetTemperature(%s)",
+--     { ThePlayer, 36 },
+--     true
+-- )
+-- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperature(36)
+--
+-- @see Serialize
 -- @tparam string cmd Command to execute
 -- @tparam[opt] table data Data to unpack and used alongside with string
--- @treturn table
-function Remote.Send(cmd, data)
+-- @tparam[opt] boolean is_serialized Should data be serialized first?
+-- @treturn boolean
+function Remote.Send(cmd, data, is_serialized)
+    if is_serialized then
+        local serialized = Remote.Serialize(data)
+        if not serialized then
+            return false
+        end
+        data = serialized
+    end
+
     local x, _, z = TheSim:ProjectScreenPos(TheSim:GetPosition())
     TheNet:SendRemoteExecute(string.format(cmd, unpack(data or {})), x, z)
+    return true
 end
 
 --- Serializes values ready for remote.
@@ -56,6 +75,8 @@ end
 -- -- returns: { '{ 1, "foo", true, 0.25 }' }
 -- @usage SDK.Remote.Serialize({ { foo = "foo", bar = "bar" } })
 -- -- returns: { '{ bar = "bar", foo = "foo" }' }
+--
+-- @see Send
 -- @tparam table t Table with values to serialize
 -- @treturn table Table with serialized values
 function Remote.Serialize(t)
