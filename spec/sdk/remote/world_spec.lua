@@ -363,6 +363,31 @@ describe("#sdk SDK.Remote.World", function()
             )
         end)
 
+        describe("RetreatSeason()", function()
+            local fn_name = "RetreatSeason"
+
+            TestArgUnsignedInteger(fn_name, {
+                empty = {
+                    args = {},
+                    calls = 1,
+                },
+                invalid = { -10 },
+                valid = { 10 }
+            }, "days")
+
+            TestRemoteInvalid(fn_name, nil, -10)
+
+            TestRemoteValid(
+                fn_name,
+                { "Retreat season:", "10 days" },
+                {
+                    calls = 10,
+                    data = 'TheWorld:PushEvent("ms_retreatseason")',
+                },
+                10
+            )
+        end)
+
         describe("SetSeason()", function()
             local fn_name = "SetSeason"
 

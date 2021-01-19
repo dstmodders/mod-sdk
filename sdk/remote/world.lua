@@ -203,6 +203,23 @@ function World.AdvanceSeason(days)
     return true
 end
 
+--- Sends a request to retreat a season.
+-- @tparam number days
+-- @treturn boolean
+function World.RetreatSeason(days)
+    days = ArgUnsignedInteger("RetreatSeason", days, "days")
+
+    if not days then
+        return false
+    end
+
+    DebugString("Retreat season:", Value.ToDaysString(days))
+    for _ = 1, days do
+        World.PushEvent("ms_retreatseason")
+    end
+    return true
+end
+
 --- Sends a request to set a season.
 -- @tparam string season
 -- @treturn boolean
