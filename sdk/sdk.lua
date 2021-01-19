@@ -733,6 +733,19 @@ end
 --- Internal
 -- @section internal
 
+--- Checks if an argument is a number.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+-- @tparam[opt] string arg_name
+function SDK._ArgNumber(module, fn_name, value, arg_name)
+    arg_name = arg_name ~= nil and arg_name or "number"
+    if SDK.Utils.Value.IsNumber(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be a number")
+end
+
 --- Checks if a player argument is valid.
 -- @tparam table module
 -- @tparam string fn_name
@@ -767,6 +780,19 @@ function SDK._ArgPlayerAlive(module, fn_name, value, arg_name)
     end
 
     return value
+end
+
+--- Checks if an argument is a point.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+-- @tparam[opt] string arg_name
+function SDK._ArgPoint(module, fn_name, value, arg_name)
+    arg_name = arg_name ~= nil and arg_name or "pt"
+    if SDK.Utils.Value.IsPoint(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be a point")
 end
 
 --- Checks if an argument is a prefab.
@@ -807,6 +833,50 @@ function SDK._ArgRecipes(module, fn_name, value, arg_name)
         return value
     end
     SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be valid recipes")
+end
+
+--- Checks if an argument is a season.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+-- @tparam[opt] string arg_name
+function SDK._ArgSeason(module, fn_name, value, arg_name)
+    arg_name = arg_name ~= nil and arg_name or "season"
+    if SDK.Utils.Value.IsSeason(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(
+        module,
+        fn_name,
+        arg_name,
+        "must be a season: autumn, winter, spring or summer"
+    )
+end
+
+--- Checks if an argument is a string.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam[opt] any value
+-- @tparam[opt] string arg_name
+function SDK._ArgString(module, fn_name, value, arg_name)
+    arg_name = arg_name ~= nil and arg_name or "str"
+    if SDK.Utils.Value.IsString(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be a string")
+end
+
+--- Checks if an argument is a unit interval.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam any value
+-- @tparam[opt] string arg_name
+function SDK._ArgUnitInterval(module, fn_name, value, arg_name)
+    arg_name = arg_name ~= nil and arg_name or "number"
+    if SDK.Utils.Value.IsUnitInterval(value) then
+        return value
+    end
+    SDK._DebugErrorInvalidArg(module, fn_name, arg_name, "must be a unit interval")
 end
 
 --- Checks if an argument is an unsigned number.
