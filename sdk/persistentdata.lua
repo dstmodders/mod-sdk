@@ -33,7 +33,7 @@
 --    SDK.PersistentData.Set("foo", "bar")
 --    SDK.PersistentData.Get("foo") -- returns: "bar"
 --
---    -- same, but in chained
+--    -- same, but chained
 --    print(SDK.PersistentData
 --        .Load()
 --        .SetMode(SDK.PersistentData.DEFAULT)

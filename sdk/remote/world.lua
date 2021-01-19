@@ -62,7 +62,7 @@ end
 function World.ForcePrecipitation(bool)
     bool = bool ~= false and true or false
     DebugString("Force precipitation:", tostring(bool))
-    Remote.Send('TheWorld:PushEvent("ms_forceprecipitation", %s)', { tostring(bool) })
+    World.PushEvent("ms_forceprecipitation", bool)
     return true
 end
 
@@ -127,9 +127,8 @@ function World.SendLightningStrike(pt)
         return false
     end
 
-    local pt_string = string.format("Vector3(%0.2f, %0.2f, %0.2f)", pt.x, pt.y, pt.z)
     DebugString("Send lighting strike:", tostring(pt))
-    Remote.Send('TheWorld:PushEvent("ms_sendlightningstrike", %s)', { pt_string })
+    World.PushEvent("ms_sendlightningstrike", pt)
     return true
 end
 
@@ -144,7 +143,7 @@ function World.SetDeltaMoisture(delta)
     end
 
     DebugString("Delta moisture:", Value.ToFloatString(delta))
-    Remote.Send('TheWorld:PushEvent("ms_deltamoisture", %d)', { delta })
+    World.PushEvent("ms_deltamoisture", delta)
     return true
 end
 
@@ -159,7 +158,7 @@ function World.SetDeltaWetness(delta)
     end
 
     DebugString("Delta wetness:", Value.ToFloatString(delta))
-    Remote.Send('TheWorld:PushEvent("ms_deltawetness", %d)', { delta })
+    World.PushEvent("ms_deltawetness", delta)
     return true
 end
 
@@ -174,7 +173,7 @@ function World.SetSeason(season)
     end
 
     DebugString("Season:", tostring(season))
-    Remote.Send('TheWorld:PushEvent("ms_setseason", "%s")', { season })
+    World.PushEvent("ms_setseason", season)
     return true
 end
 
@@ -192,11 +191,7 @@ function World.SetSeasonLength(season, length)
     end
 
     DebugString("Season length:", season, "(" .. Value.ToDaysString(length) .. ")")
-    Remote.Send(
-        'TheWorld:PushEvent("ms_setseasonlength", { season = "%s", length = %d })',
-        { season, length }
-    )
-
+    World.PushEvent("ms_setseasonlength", { season = season, length = length })
     return true
 end
 
@@ -216,8 +211,8 @@ function World.SetSnowLevel(delta)
         return false
     end
 
-    DebugString("Snow level:", tostring(delta))
-    Remote.Send('TheWorld:PushEvent("ms_setsnowlevel", %0.2f)', { delta })
+    DebugString("Snow level:", Value.ToFloatString(delta))
+    World.PushEvent("ms_setsnowlevel", delta)
     return true
 end
 

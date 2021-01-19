@@ -379,13 +379,18 @@ describe("#sdk SDK.Remote.World", function()
 
                 TestRemoteValid("SetSnowLevel", {
                     "Snow level:",
-                    "0",
-                }, 'TheWorld:PushEvent("ms_setsnowlevel", 0.00)')
+                    "0.00",
+                }, 'TheWorld:PushEvent("ms_setsnowlevel", 0)')
 
                 TestRemoteValid("SetSnowLevel", {
                     "Snow level:",
-                    "1",
-                }, 'TheWorld:PushEvent("ms_setsnowlevel", 1.00)', 1)
+                    "0.50",
+                }, 'TheWorld:PushEvent("ms_setsnowlevel", 0.50)', 0.5)
+
+                TestRemoteValid("SetSnowLevel", {
+                    "Snow level:",
+                    "1.00",
+                }, 'TheWorld:PushEvent("ms_setsnowlevel", 1)', 1)
             end)
         end)
     end)
