@@ -224,6 +224,14 @@ describe("#sdk SDK.Remote.World", function()
             TestRemoteValid(
                 "PushEvent",
                 nil,
+                'TheWorld:PushEvent("ms_forceprecipitation", false)',
+                "ms_forceprecipitation",
+                false
+            )
+
+            TestRemoteValid(
+                "PushEvent",
+                nil,
                 'TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 20 })',
                 "ms_setseasonlength",
                 { season = "autumn", length = 20 }

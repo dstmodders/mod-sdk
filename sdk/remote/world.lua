@@ -87,7 +87,7 @@ function World.PushEvent(event, options)
         return false
     end
 
-    if options then
+    if options ~= nil then
         Remote.Send('TheWorld:PushEvent(%s, %s)', { event, options }, true)
         return true
     end
