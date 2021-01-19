@@ -141,9 +141,9 @@ end
 -- @treturn boolean
 function Player.SendMiniEarthquake(radius, amount, duration, player)
     local fn_name = "SendMiniEarthquake"
-    radius = ArgUnsignedInteger(fn_name, radius or 20, "radius", 20)
-    amount = ArgUnsignedInteger(fn_name, amount or 20, "amount", 20)
-    duration = ArgUnsigned(fn_name, duration or 2.5, "duration", 2.5)
+    radius = ArgUnsignedInteger(fn_name, radius or 20, "radius")
+    amount = ArgUnsignedInteger(fn_name, amount or 20, "amount")
+    duration = ArgUnsigned(fn_name, duration or 2.5, "duration")
     player = ArgPlayer(fn_name, player)
 
     if not radius or not amount or not duration or not player then
@@ -308,8 +308,10 @@ end
 --
 -- @usage SDK.Remote.Player.CallFn("AddTag", "foobar", ThePlayer)
 -- -- LookupPlayerInstByUserID("KU_foobar"):AddTag("foobar")
+--
 -- @usage SDK.Remote.Player.CallFn("RemoveFromScene", "nil", ThePlayer)
 -- -- LookupPlayerInstByUserID("KU_foobar"):RemoveFromScene(nil)
+--
 -- @usage SDK.Remote.Player.CallFn("ReturnToScene", nil, ThePlayer)
 -- -- LookupPlayerInstByUserID("KU_foobar"):ReturnToScene()
 --
@@ -348,6 +350,7 @@ end
 --
 -- @usage SDK.Remote.Player.CallFnComponent("temperature", "SetTemperature", 36, ThePlayer)
 -- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperature(36)
+--
 -- @usage SDK.Remote.Player.CallFnComponent("temperature", "SetTemperatureInBelly", { 3, 5 }, ThePlayer)
 -- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperatureInBelly(3, 5)
 --

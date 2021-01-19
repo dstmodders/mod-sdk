@@ -40,11 +40,13 @@ end
 --     { ThePlayer.userid, 36 }
 -- )
 -- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperature(36)
+--
 -- @usage SDK.Remote.Send(
 --     "%s.components.temperature:SetTemperature(%s)",
 --     SDK.Remote.Serialize({ ThePlayer, 36 })
 -- )
 -- -- LookupPlayerInstByUserID("KU_foobar").components.temperature:SetTemperature(36)
+--
 -- @usage SDK.Remote.Send(
 --     "%s.components.temperature:SetTemperature(%s)",
 --     { ThePlayer, 36 },
@@ -80,14 +82,19 @@ end
 --
 -- @usage SDK.Remote.Serialize({ "foo", 0, 0.5, true, false })
 -- -- { '"foo"', "0", "0.50", "true", "false" }
+--
 -- @usage SDK.Remote.Serialize({ { 1, "foo", true, 0.25 } })
 -- -- { '{ 1, "foo", true, 0.25 }' }
+--
 -- @usage SDK.Remote.Serialize({ { foo = "foo", bar = "bar" } })
 -- -- { '{ bar = "bar", foo = "foo" }' }
+--
 -- @usage SDK.Remote.Serialize({ ThePlayer })
 -- -- { 'LookupPlayerInstByUserID("KU_foobar")' }
+--
 -- @usage SDK.Remote.Serialize(ThePlayer)
 -- -- LookupPlayerInstByUserID("KU_foobar")
+--
 -- @usage SDK.Remote.Serialize("foo")
 -- -- "foo"
 --
