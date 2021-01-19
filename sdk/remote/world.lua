@@ -162,6 +162,47 @@ function World.SetDeltaWetness(delta)
     return true
 end
 
+--- Sends a request to set a snow level.
+-- @tparam number delta
+-- @treturn boolean
+function World.SetSnowLevel(delta)
+    local fn_name = "SetSnowLevel"
+    delta = ArgUnitInterval(fn_name, delta or 0, "delta")
+
+    if not delta then
+        return false
+    end
+
+    if TheWorld:HasTag("cave") then
+        DebugErrorInvalidWorldType(fn_name, "must be in a forest")
+        return false
+    end
+
+    DebugString("Snow level:", Value.ToFloatString(delta))
+    World.PushEvent("ms_setsnowlevel", delta)
+    return true
+end
+
+--- Season
+-- @section season
+
+--- Sends a request to advance a season.
+-- @tparam number days
+-- @treturn boolean
+function World.AdvanceSeason(days)
+    days = ArgUnsignedInteger("AdvanceSeason", days, "days")
+
+    if not days then
+        return false
+    end
+
+    DebugString("Advance season:", Value.ToDaysString(days))
+    for _ = 1, days do
+        World.PushEvent("ms_advanceseason")
+    end
+    return true
+end
+
 --- Sends a request to set a season.
 -- @tparam string season
 -- @treturn boolean
@@ -192,27 +233,6 @@ function World.SetSeasonLength(season, length)
 
     DebugString("Season length:", season, "(" .. Value.ToDaysString(length) .. ")")
     World.PushEvent("ms_setseasonlength", { season = season, length = length })
-    return true
-end
-
---- Sends a request to set a snow level.
--- @tparam number delta
--- @treturn boolean
-function World.SetSnowLevel(delta)
-    local fn_name = "SetSnowLevel"
-    delta = ArgUnitInterval(fn_name, delta or 0, "delta")
-
-    if not delta then
-        return false
-    end
-
-    if TheWorld:HasTag("cave") then
-        DebugErrorInvalidWorldType(fn_name, "must be in a forest")
-        return false
-    end
-
-    DebugString("Snow level:", Value.ToFloatString(delta))
-    World.PushEvent("ms_setsnowlevel", delta)
     return true
 end
 

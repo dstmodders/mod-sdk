@@ -287,7 +287,7 @@ function TestRemoteValid(name, options, ...)
             it("should call TheSim:SendRemoteExecute()", function()
                 assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
                 _MODULE[name](unpack(args))
-                assert.spy(_G.TheNet.SendRemoteExecute).was_called(1)
+                assert.spy(_G.TheNet.SendRemoteExecute).was_called(options.send.calls or 1)
                 assert.spy(_G.TheNet.SendRemoteExecute).was_called_with(
                     match.is_ref(_G.TheNet),
                     options.send.data,
