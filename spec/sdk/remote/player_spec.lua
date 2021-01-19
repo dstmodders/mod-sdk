@@ -108,41 +108,6 @@ describe("#sdk SDK.Remote.Player", function()
         assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
     end
 
-    local function TestRemoteInvalid(name, error, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when valid arguments are passed"
-        elseif #args == 1 then
-            description = "when a valid argument is passed"
-        end
-
-        describe(description, function()
-            if error then
-                it("should debug error string", function()
-                    AssertDebugError(
-                        function()
-                            Player[name](unpack(args))
-                        end,
-                        string.format("SDK.Remote.Player.%s():", name),
-                        error.message,
-                        error.explanation and "(" .. error.explanation .. ")"
-                    )
-                end)
-            end
-
-            it("shouldn't call TheSim:SendRemoteExecute()", function()
-                AssertSendWasNotCalled(function()
-                    Player[name](unpack(args))
-                end)
-            end)
-
-            it("should return false", function()
-                assert.is_false(Player[name](unpack(args)))
-            end)
-        end)
-    end
-
     local function TestRemotePlayerIsGhost(name, player, ...)
         local args = { ..., player }
         describe("when a player is a ghost", function()
@@ -182,31 +147,17 @@ describe("#sdk SDK.Remote.Player", function()
     end
 
     local function TestRemoteValid(name, debug, send, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when valid arguments are passed"
-        elseif #args == 1 then
-            description = "when a valid argument is passed"
-        end
-
-        describe(description, function()
-            it("should debug string", function()
-                AssertDebugString(function()
-                    Player[name](unpack(args))
-                end, "[remote]", "[player]", unpack(debug))
-            end)
-
-            it("should call TheSim:SendRemoteExecute()", function()
-                AssertSendWasCalled(function()
-                    Player[name](unpack(args))
-                end, send)
-            end)
-
-            it("should return true", function()
-                assert.is_true(Player[name](unpack(args)))
-            end)
-        end)
+        _G.TestRemoteValid(name, {
+            debug = {
+                name = "player",
+                args = debug,
+            },
+            send = {
+                data = send,
+                x = 1,
+                z = 3,
+            },
+        }, ...)
     end
 
     describe("general", function()

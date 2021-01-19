@@ -1,16 +1,9 @@
 require "busted.runner"()
 
 describe("#sdk SDK.Remote.World", function()
-    -- setup
-    local match
-
     -- before_each initialization
     local SDK
     local World
-
-    setup(function()
-        match = require "luassert.match"
-    end)
 
     teardown(function()
         -- globals
@@ -63,158 +56,71 @@ describe("#sdk SDK.Remote.World", function()
         SDK.LoadModule("Remote")
         World = SDK.Remote.World
 
+        SetTestModule(World)
+
         -- spies
         SDK.Debug.Error = spy.on(SDK.Debug, "Error")
         SDK.Debug.String = spy.on(SDK.Debug, "String")
     end)
 
-    local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)
-        _G.AssertDebugErrorInvalidArg(fn, World, fn_name, arg_name, explanation)
-    end
-
-    local function AssertSendWasCalled(fn, ...)
-        local args = { ..., 1, 3 }
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-        fn()
-        assert.spy(_G.TheNet.SendRemoteExecute).was_called(1)
-        assert.spy(_G.TheNet.SendRemoteExecute).was_called_with(
-            match.is_ref(_G.TheNet),
-            unpack(args)
-        )
-    end
-
-    local function AssertSendWasNotCalled(fn)
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-        fn()
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-    end
-
-    local function TestRemoteInvalid(name, msg, explanation, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when valid arguments are passed"
-        elseif #args == 1 then
-            description = "when a valid argument is passed"
-        end
-
-        describe(description, function()
-            it("should debug error string", function()
-                AssertDebugError(
-                    function()
-                        World[name](unpack(args))
-                    end,
-                    string.format("SDK.Remote.World.%s():", name),
-                    msg,
-                    explanation and "(" .. explanation .. ")"
-                )
-            end)
-
-            it("shouldn't call TheSim:SendRemoteExecute()", function()
-                AssertSendWasNotCalled(function()
-                    World[name](unpack(args))
-                end)
-            end)
-
-            it("should return false", function()
-                assert.is_false(World[name](unpack(args)))
-            end)
-        end)
-    end
-
-    local function TestRemoteInvalidArg(name, arg_name, explanation, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when invalid arguments are passed"
-        elseif #args == 1 then
-            description = "when an invalid argument is passed"
-        end
-
-        describe(description, function()
-            it("should debug error string", function()
-                AssertDebugErrorInvalidArg(function()
-                    World[name](unpack(args))
-                end, name, arg_name, explanation)
-            end)
-
-            it("shouldn't call TheSim:SendRemoteExecute()", function()
-                AssertSendWasNotCalled(function()
-                    World[name](unpack(args))
-                end)
-            end)
-
-            it("should return false", function()
-                assert.is_false(World[name](unpack(args)))
-            end)
-        end)
-    end
-
-    local function TestRemoteInvalidWorldType(name, explanation, ...)
-        TestRemoteInvalid(name, "Invalid world type", explanation, ...)
-    end
-
     local function TestRemoteValid(name, debug, send, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when valid arguments are passed"
-        elseif #args == 1 then
-            description = "when a valid argument is passed"
-        end
-
-        describe(description, function()
-            if debug then
-                it("should debug string", function()
-                    AssertDebugString(function()
-                        World[name](unpack(args))
-                    end, "[remote]", "[world]", unpack(debug))
-                end)
-            end
-
-            it("should call TheSim:SendRemoteExecute()", function()
-                AssertSendWasCalled(function()
-                    World[name](unpack(args))
-                end, send)
-            end)
-
-            it("should return true", function()
-                assert.is_true(World[name](unpack(args)))
-            end)
-        end)
+        _G.TestRemoteValid(name, {
+            debug = {
+                name = "world",
+                args = debug,
+            },
+            send = {
+                data = send,
+                x = 1,
+                z = 3,
+            },
+        }, ...)
     end
 
     describe("general", function()
         describe("ForcePrecipitation()", function()
-            TestRemoteValid("ForcePrecipitation", {
+            local fn_name = "ForcePrecipitation"
+
+            TestRemoteValid(fn_name, {
                 "Force precipitation:",
                 "true",
             }, 'TheWorld:PushEvent("ms_forceprecipitation", true)')
 
-            TestRemoteValid("ForcePrecipitation", {
+            TestRemoteValid(fn_name, {
                 "Force precipitation:",
                 "true",
             }, 'TheWorld:PushEvent("ms_forceprecipitation", true)', true)
 
-            TestRemoteValid("ForcePrecipitation", {
+            TestRemoteValid(fn_name, {
                 "Force precipitation:",
                 "false",
             }, 'TheWorld:PushEvent("ms_forceprecipitation", false)', false)
         end)
 
         describe("PushEvent()", function()
-            TestRemoteInvalidArg("PushEvent", "event", "must be a string")
-            TestRemoteInvalidArg("PushEvent", "event", "must be a string", true)
+            local fn_name = "PushEvent"
+
+            TestArgString(fn_name, {
+                empty = {
+                    args = {},
+                    calls = 1,
+                },
+                invalid = { true },
+                valid = { "foo" },
+            }, "event")
+
+            TestRemoteInvalid(fn_name)
+            TestRemoteInvalid(fn_name, nil, true)
 
             TestRemoteValid(
-                "PushEvent",
+                fn_name,
                 nil,
                 'TheWorld:PushEvent("ms_advanceseason")',
                 "ms_advanceseason"
             )
 
             TestRemoteValid(
-                "PushEvent",
+                fn_name,
                 nil,
                 'TheWorld:PushEvent("ms_forceprecipitation", true)',
                 "ms_forceprecipitation",
@@ -222,7 +128,7 @@ describe("#sdk SDK.Remote.World", function()
             )
 
             TestRemoteValid(
-                "PushEvent",
+                fn_name,
                 nil,
                 'TheWorld:PushEvent("ms_forceprecipitation", false)',
                 "ms_forceprecipitation",
@@ -230,7 +136,7 @@ describe("#sdk SDK.Remote.World", function()
             )
 
             TestRemoteValid(
-                "PushEvent",
+                fn_name,
                 nil,
                 'TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 20 })',
                 "ms_setseasonlength",
@@ -239,20 +145,32 @@ describe("#sdk SDK.Remote.World", function()
         end)
 
         describe("Rollback()", function()
-            TestRemoteInvalidArg("Rollback", "days", "must be an unsigned integer", -1)
-            TestRemoteInvalidArg("Rollback", "days", "must be an unsigned integer", 0.5)
+            local fn_name = "Rollback"
 
-            TestRemoteValid("Rollback", {
+            TestArgUnsignedInteger(fn_name, {
+                empty = {},
+                invalid = { -1 },
+                valid = { 1 },
+            }, "days")
+
+            TestArgUnsignedInteger(fn_name, {
+                invalid = { 0.5 },
+            }, "days")
+
+            TestRemoteInvalid(fn_name, nil, -1)
+            TestRemoteInvalid(fn_name, nil, 0.5)
+
+            TestRemoteValid(fn_name, {
                 "Rollback:",
                 "0 days",
             }, "TheNet:SendWorldRollbackRequestToServer(0)")
 
-            TestRemoteValid("Rollback", {
+            TestRemoteValid(fn_name, {
                 "Rollback:",
                 "1 day",
             }, "TheNet:SendWorldRollbackRequestToServer(1)", 1)
 
-            TestRemoteValid("Rollback", {
+            TestRemoteValid(fn_name, {
                 "Rollback:",
                 "3 days",
             }, "TheNet:SendWorldRollbackRequestToServer(3)", 3)
@@ -272,7 +190,10 @@ describe("#sdk SDK.Remote.World", function()
                     end)
                 end)
 
-                TestRemoteInvalidWorldType("SendLightningStrike", "must be in a forest", pt)
+                TestRemoteInvalid("SendLightningStrike", {
+                    explanation = "must be in a forest",
+                    message = "Invalid world type",
+                }, pt)
             end)
 
             describe("when in a forest world", function()
@@ -282,7 +203,16 @@ describe("#sdk SDK.Remote.World", function()
                     end)
                 end)
 
-                TestRemoteInvalidArg("SendLightningStrike", "pt", "must be a point", "foo")
+                TestArgPoint("SendLightningStrike", {
+                    empty = {
+                        args = {},
+                        calls = 1,
+                    },
+                    invalid = { "foo" },
+                    valid = { pt },
+                })
+
+                TestRemoteInvalid("SendLightningStrike", nil, "foo")
 
                 TestRemoteValid(
                     "SendLightningStrike",
@@ -294,66 +224,95 @@ describe("#sdk SDK.Remote.World", function()
         end)
 
         describe("SetDeltaMoisture()", function()
-            TestRemoteInvalidArg("SetDeltaMoisture", "delta", "must be a number", "foo")
+            local fn_name = "SetDeltaMoisture"
 
-            TestRemoteValid("SetDeltaMoisture", {
+            TestArgNumber(fn_name, {
+                empty = {},
+                invalid = { "foo" },
+                valid = { 1 },
+            }, "delta")
+
+            TestRemoteInvalid(fn_name, nil, "foo")
+
+            TestRemoteValid(fn_name, {
                 "Delta moisture:",
                 "0.00",
             }, 'TheWorld:PushEvent("ms_deltamoisture", 0)')
 
-            TestRemoteValid("SetDeltaMoisture", {
+            TestRemoteValid(fn_name, {
                 "Delta moisture:",
                 "1.00",
             }, 'TheWorld:PushEvent("ms_deltamoisture", 1)', 1)
         end)
 
         describe("SetDeltaWetness()", function()
-            TestRemoteInvalidArg("SetDeltaWetness", "delta", "must be a number", "foo")
+            local fn_name = "SetDeltaWetness"
 
-            TestRemoteValid("SetDeltaWetness", {
+            TestArgNumber(fn_name, {
+                empty = {},
+                invalid = { "foo" },
+                valid = { 1 },
+            }, "delta")
+
+            TestRemoteInvalid(fn_name, nil, "foo")
+
+            TestRemoteValid(fn_name, {
                 "Delta wetness:",
                 "0.00",
             }, 'TheWorld:PushEvent("ms_deltawetness", 0)')
 
-            TestRemoteValid("SetDeltaWetness", {
+            TestRemoteValid(fn_name, {
                 "Delta wetness:",
                 "1.00",
             }, 'TheWorld:PushEvent("ms_deltawetness", 1)', 1)
         end)
 
         describe("SetSeason()", function()
-            TestRemoteInvalidArg(
-                "SetSeason",
-                "season",
-                "must be a season: autumn, winter, spring or summer",
-                "foo"
-            )
+            local fn_name = "SetSeason"
 
-            TestRemoteValid("SetSeason", {
+            TestArgSeason(fn_name, {
+                empty = {
+                    args = {},
+                    calls = 1,
+                },
+                invalid = { "foo" },
+                valid = { "autumn" },
+            })
+
+            TestRemoteInvalid(fn_name, nil, "foo")
+
+            TestRemoteValid(fn_name, {
                 "Season:",
                 "autumn",
             }, 'TheWorld:PushEvent("ms_setseason", "autumn")', "autumn")
         end)
 
         describe("SetSeasonLength()", function()
-            TestRemoteInvalidArg(
-                "SetSeasonLength",
-                "season",
-                "must be a season: autumn, winter, spring or summer",
-                "foo",
-                10
-            )
+            local fn_name = "SetSeasonLength"
 
-            TestRemoteInvalidArg(
-                "SetSeasonLength",
-                "length",
-                "must be an unsigned integer",
-                "autumn",
-                -10
-            )
+            TestArgSeason(fn_name, {
+                empty = {
+                    args = { nil, 10 },
+                    calls = 1,
+                },
+                invalid = { "foo", 10 },
+                valid = { "autumn", 10 },
+            })
+
+            TestArgUnsignedInteger(fn_name, {
+                empty = {
+                    args = { "autumn" },
+                    calls = 1,
+                },
+                invalid = { "autumn", -10 },
+                valid = { "autumn", 10 },
+            }, "length")
+
+            TestRemoteInvalid(fn_name, nil, "foo", 10)
+            TestRemoteInvalid(fn_name, nil, "autumn", -10)
 
             TestRemoteValid(
-                "SetSeasonLength",
+                fn_name,
                 { "Season length:", "autumn", "(10 days)" },
                 'TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 10 })',
                 "autumn",
@@ -362,12 +321,23 @@ describe("#sdk SDK.Remote.World", function()
         end)
 
         describe("SetSnowLevel()", function()
+            local fn_name = "SetSnowLevel"
+
+            TestArgUnitInterval(fn_name, {
+                empty = {},
+                invalid = { 2 },
+                valid = { 1 },
+            }, "delta")
+
             describe("when not in a forest world", function()
                 before_each(function()
                     _G.TheWorld.HasTag = ReturnValueFn(true)
                 end)
 
-                TestRemoteInvalidWorldType("SetSnowLevel", "must be in a forest", 1)
+                TestRemoteInvalid(fn_name, {
+                    explanation = "must be in a forest",
+                    message = "Invalid world type",
+                }, 1)
             end)
 
             describe("when in a forest world", function()
@@ -375,19 +345,19 @@ describe("#sdk SDK.Remote.World", function()
                     _G.TheWorld.HasTag = ReturnValueFn(false)
                 end)
 
-                TestRemoteInvalidArg("SetSnowLevel", "delta", "must be a unit interval", 2)
+                TestRemoteInvalid(fn_name, nil, 2)
 
-                TestRemoteValid("SetSnowLevel", {
+                TestRemoteValid(fn_name, {
                     "Snow level:",
                     "0.00",
                 }, 'TheWorld:PushEvent("ms_setsnowlevel", 0)')
 
-                TestRemoteValid("SetSnowLevel", {
+                TestRemoteValid(fn_name, {
                     "Snow level:",
                     "0.50",
                 }, 'TheWorld:PushEvent("ms_setsnowlevel", 0.50)', 0.5)
 
-                TestRemoteValid("SetSnowLevel", {
+                TestRemoteValid(fn_name, {
                     "Snow level:",
                     "1.00",
                 }, 'TheWorld:PushEvent("ms_setsnowlevel", 1)', 1)

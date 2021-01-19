@@ -171,18 +171,134 @@ function TestArg(fn_name, name, explanation, args)
     end
 end
 
-function TestArgPercent(fn_name, args)
-    TestArg(fn_name, "percent", "must be a percent", args)
+function TestArgNumber(fn_name, args, name)
+    name = name ~= nil and name or "number"
+    TestArg(fn_name, name, "must be a number", args)
 end
 
-function TestArgPlayer(fn_name, args)
-    TestArg(fn_name, "player", "must be a player", args)
+function TestArgPercent(fn_name, args, name)
+    name = name ~= nil and name or "percent"
+    TestArg(fn_name, name, "must be a percent", args)
 end
 
-function TestArgRecipe(fn_name, args)
-    TestArg(fn_name, "recipe", "must be a valid recipe", args)
+function TestArgPlayer(fn_name, args, name)
+    name = name ~= nil and name or "player"
+    TestArg(fn_name, name, "must be a player", args)
 end
 
-function TestArgRecipes(fn_name, args)
-    TestArg(fn_name, "recipes", "must be valid recipes", args)
+function TestArgPoint(fn_name, args, name)
+    name = name ~= nil and name or "pt"
+    TestArg(fn_name, name, "must be a point", args)
+end
+
+function TestArgRecipe(fn_name, args, name)
+    name = name ~= nil and name or "recipe"
+    TestArg(fn_name, name, "must be a valid recipe", args)
+end
+
+function TestArgRecipes(fn_name, args, name)
+    name = name ~= nil and name or "recipes"
+    TestArg(fn_name, name, "must be valid recipes", args)
+end
+
+function TestArgSeason(fn_name, args, name)
+    name = name ~= nil and name or "season"
+    TestArg(fn_name, name, "must be a season: autumn, winter, spring or summer", args)
+end
+
+function TestArgString(fn_name, args, name)
+    name = name ~= nil and name or "str"
+    TestArg(fn_name, name, "must be a string", args)
+end
+
+function TestArgUnitInterval(fn_name, args, name)
+    name = name ~= nil and name or "number"
+    TestArg(fn_name, name, "must be a unit interval", args)
+end
+
+function TestArgUnsignedInteger(fn_name, args, name)
+    name = name ~= nil and name or "number"
+    TestArg(fn_name, name, "must be an unsigned integer", args)
+end
+
+function TestRemoteInvalid(name, error, ...)
+    local assert = require("busted").assert
+    local describe = require "busted".describe
+    local it = require "busted".it
+
+    local args = { ... }
+    local description = "when no arguments are passed"
+    if #args > 1 then
+        description = "when valid arguments are passed"
+    elseif #args == 1 then
+        description = "when a valid argument is passed"
+    end
+
+    describe(description, function()
+        if error then
+            it("should debug error string", function()
+                AssertDebugError(
+                    function()
+                        _MODULE[name](unpack(args))
+                    end,
+                    string.format("%s.%s():", tostring(_MODULE), name),
+                    error.message,
+                    error.explanation and "(" .. error.explanation .. ")"
+                )
+            end)
+        end
+
+        it("shouldn't call TheSim:SendRemoteExecute()", function()
+            assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
+            _MODULE[name](unpack(args))
+            assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
+        end)
+
+        it("should return false", function()
+            assert.is_false(_MODULE[name](unpack(args)))
+        end)
+    end)
+end
+
+function TestRemoteValid(name, options, ...)
+    local assert = require("busted").assert
+    local describe = require "busted".describe
+    local it = require "busted".it
+    local match = require "luassert.match"
+
+    local args = { ... }
+    local description = "when no arguments are passed"
+    if #args > 1 then
+        description = "when valid arguments are passed"
+    elseif #args == 1 then
+        description = "when a valid argument is passed"
+    end
+
+    describe(description, function()
+        if options.debug and options.debug.args then
+            it("should debug string", function()
+                AssertDebugString(function()
+                    _MODULE[name](unpack(args))
+                end, "[remote]", "[" .. options.debug.name .. "]", unpack(options.debug.args))
+            end)
+        end
+
+        if options.send then
+            it("should call TheSim:SendRemoteExecute()", function()
+                assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
+                _MODULE[name](unpack(args))
+                assert.spy(_G.TheNet.SendRemoteExecute).was_called(1)
+                assert.spy(_G.TheNet.SendRemoteExecute).was_called_with(
+                    match.is_ref(_G.TheNet),
+                    options.send.data,
+                    options.send.x,
+                    options.send.z
+                )
+            end)
+        end
+
+        it("should return true", function()
+            assert.is_true(_MODULE[name](unpack(args)))
+        end)
+    end)
 end
