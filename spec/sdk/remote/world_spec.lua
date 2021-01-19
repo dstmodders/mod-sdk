@@ -82,30 +82,6 @@ describe("#sdk SDK.Remote.World", function()
     end
 
     describe("general", function()
-        describe("ForcePrecipitation()", function()
-            local fn_name = "ForcePrecipitation"
-
-            TestRemoteValid(
-                fn_name,
-                { "Force precipitation:", "true" },
-                'TheWorld:PushEvent("ms_forceprecipitation", true)'
-            )
-
-            TestRemoteValid(
-                fn_name,
-                { "Force precipitation:", "true" },
-                'TheWorld:PushEvent("ms_forceprecipitation", true)',
-                true
-            )
-
-            TestRemoteValid(
-                fn_name,
-                { "Force precipitation:", "false" },
-                'TheWorld:PushEvent("ms_forceprecipitation", false)',
-                false
-            )
-        end)
-
         describe("PushEvent()", function()
             local fn_name = "PushEvent"
 
@@ -187,6 +163,139 @@ describe("#sdk SDK.Remote.World", function()
                 { "Rollback:", "3 days" },
                 "TheNet:SendWorldRollbackRequestToServer(3)",
                 3
+            )
+        end)
+    end)
+
+    describe("season", function()
+        describe("AdvanceSeason()", function()
+            local fn_name = "AdvanceSeason"
+
+            TestArgUnsignedInteger(fn_name, {
+                empty = {
+                    args = {},
+                    calls = 1,
+                },
+                invalid = { -10 },
+                valid = { 10 }
+            }, "days")
+
+            TestRemoteInvalid(fn_name, nil, -10)
+
+            TestRemoteValid(
+                fn_name,
+                { "Advance season:", "10 days" },
+                {
+                    calls = 10,
+                    data = 'TheWorld:PushEvent("ms_advanceseason")',
+                },
+                10
+            )
+        end)
+
+        describe("RetreatSeason()", function()
+            local fn_name = "RetreatSeason"
+
+            TestArgUnsignedInteger(fn_name, {
+                empty = {
+                    args = {},
+                    calls = 1,
+                },
+                invalid = { -10 },
+                valid = { 10 }
+            }, "days")
+
+            TestRemoteInvalid(fn_name, nil, -10)
+
+            TestRemoteValid(
+                fn_name,
+                { "Retreat season:", "10 days" },
+                {
+                    calls = 10,
+                    data = 'TheWorld:PushEvent("ms_retreatseason")',
+                },
+                10
+            )
+        end)
+
+        describe("SetSeason()", function()
+            local fn_name = "SetSeason"
+
+            TestArgSeason(fn_name, {
+                empty = {
+                    args = {},
+                    calls = 1,
+                },
+                invalid = { "foo" },
+                valid = { "autumn" },
+            })
+
+            TestRemoteInvalid(fn_name, nil, "foo")
+
+            TestRemoteValid(
+                fn_name,
+                { "Season:", "autumn" },
+                'TheWorld:PushEvent("ms_setseason", "autumn")',
+                "autumn"
+            )
+        end)
+
+        describe("SetSeasonLength()", function()
+            local fn_name = "SetSeasonLength"
+
+            TestArgSeason(fn_name, {
+                empty = {
+                    args = { nil, 10 },
+                    calls = 1,
+                },
+                invalid = { "foo", 10 },
+                valid = { "autumn", 10 },
+            })
+
+            TestArgUnsignedInteger(fn_name, {
+                empty = {
+                    args = { "autumn" },
+                    calls = 1,
+                },
+                invalid = { "autumn", -10 },
+                valid = { "autumn", 10 },
+            }, "length")
+
+            TestRemoteInvalid(fn_name, nil, "foo", 10)
+            TestRemoteInvalid(fn_name, nil, "autumn", -10)
+
+            TestRemoteValid(
+                fn_name,
+                { "Season length:", "autumn", "(10 days)" },
+                'TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 10 })',
+                "autumn",
+                10
+            )
+        end)
+    end)
+
+    describe("weather", function()
+        describe("ForcePrecipitation()", function()
+            local fn_name = "ForcePrecipitation"
+
+            TestRemoteValid(
+                fn_name,
+                { "Force precipitation:", "true" },
+                'TheWorld:PushEvent("ms_forceprecipitation", true)'
+            )
+
+            TestRemoteValid(
+                fn_name,
+                { "Force precipitation:", "true" },
+                'TheWorld:PushEvent("ms_forceprecipitation", true)',
+                true
+            )
+
+            TestRemoteValid(
+                fn_name,
+                { "Force precipitation:", "false" },
+                'TheWorld:PushEvent("ms_forceprecipitation", false)',
+                false
             )
         end)
 
@@ -334,113 +443,6 @@ describe("#sdk SDK.Remote.World", function()
                     1
                 )
             end)
-        end)
-    end)
-
-    describe("season", function()
-        describe("AdvanceSeason()", function()
-            local fn_name = "AdvanceSeason"
-
-            TestArgUnsignedInteger(fn_name, {
-                empty = {
-                    args = {},
-                    calls = 1,
-                },
-                invalid = { -10 },
-                valid = { 10 }
-            }, "days")
-
-            TestRemoteInvalid(fn_name, nil, -10)
-
-            TestRemoteValid(
-                fn_name,
-                { "Advance season:", "10 days" },
-                {
-                    calls = 10,
-                    data = 'TheWorld:PushEvent("ms_advanceseason")',
-                },
-                10
-            )
-        end)
-
-        describe("RetreatSeason()", function()
-            local fn_name = "RetreatSeason"
-
-            TestArgUnsignedInteger(fn_name, {
-                empty = {
-                    args = {},
-                    calls = 1,
-                },
-                invalid = { -10 },
-                valid = { 10 }
-            }, "days")
-
-            TestRemoteInvalid(fn_name, nil, -10)
-
-            TestRemoteValid(
-                fn_name,
-                { "Retreat season:", "10 days" },
-                {
-                    calls = 10,
-                    data = 'TheWorld:PushEvent("ms_retreatseason")',
-                },
-                10
-            )
-        end)
-
-        describe("SetSeason()", function()
-            local fn_name = "SetSeason"
-
-            TestArgSeason(fn_name, {
-                empty = {
-                    args = {},
-                    calls = 1,
-                },
-                invalid = { "foo" },
-                valid = { "autumn" },
-            })
-
-            TestRemoteInvalid(fn_name, nil, "foo")
-
-            TestRemoteValid(
-                fn_name,
-                { "Season:", "autumn" },
-                'TheWorld:PushEvent("ms_setseason", "autumn")',
-                "autumn"
-            )
-        end)
-
-        describe("SetSeasonLength()", function()
-            local fn_name = "SetSeasonLength"
-
-            TestArgSeason(fn_name, {
-                empty = {
-                    args = { nil, 10 },
-                    calls = 1,
-                },
-                invalid = { "foo", 10 },
-                valid = { "autumn", 10 },
-            })
-
-            TestArgUnsignedInteger(fn_name, {
-                empty = {
-                    args = { "autumn" },
-                    calls = 1,
-                },
-                invalid = { "autumn", -10 },
-                valid = { "autumn", 10 },
-            }, "length")
-
-            TestRemoteInvalid(fn_name, nil, "foo", 10)
-            TestRemoteInvalid(fn_name, nil, "autumn", -10)
-
-            TestRemoteValid(
-                fn_name,
-                { "Season length:", "autumn", "(10 days)" },
-                'TheWorld:PushEvent("ms_setseasonlength", { season = "autumn", length = 10 })',
-                "autumn",
-                10
-            )
         end)
     end)
 end)

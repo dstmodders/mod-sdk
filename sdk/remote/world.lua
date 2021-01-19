@@ -56,16 +56,6 @@ end
 --- General
 -- @section general
 
---- Sends a request to force precipitation.
--- @tparam[opt] boolean bool
--- @treturn boolean
-function World.ForcePrecipitation(bool)
-    bool = bool ~= false and true or false
-    DebugString("Force precipitation:", tostring(bool))
-    World.PushEvent("ms_forceprecipitation", bool)
-    return true
-end
-
 --- Sends a request to push a certain event.
 --
 -- @usage SDK.Remote.World.PushEvent("ms_advanceseason")
@@ -108,6 +98,89 @@ function World.Rollback(days)
 
     DebugString("Rollback:", Value.ToDaysString(days))
     Remote.Send("TheNet:SendWorldRollbackRequestToServer(%d)", { days })
+    return true
+end
+
+--- Season
+-- @section season
+
+--- Sends a request to advance a season.
+-- @tparam number days
+-- @treturn boolean
+function World.AdvanceSeason(days)
+    days = ArgUnsignedInteger("AdvanceSeason", days, "days")
+
+    if not days then
+        return false
+    end
+
+    DebugString("Advance season:", Value.ToDaysString(days))
+    for _ = 1, days do
+        World.PushEvent("ms_advanceseason")
+    end
+    return true
+end
+
+--- Sends a request to retreat a season.
+-- @tparam number days
+-- @treturn boolean
+function World.RetreatSeason(days)
+    days = ArgUnsignedInteger("RetreatSeason", days, "days")
+
+    if not days then
+        return false
+    end
+
+    DebugString("Retreat season:", Value.ToDaysString(days))
+    for _ = 1, days do
+        World.PushEvent("ms_retreatseason")
+    end
+    return true
+end
+
+--- Sends a request to set a season.
+-- @tparam string season
+-- @treturn boolean
+function World.SetSeason(season)
+    season = ArgSeason("SetSeason", season)
+
+    if not season then
+        return false
+    end
+
+    DebugString("Season:", tostring(season))
+    World.PushEvent("ms_setseason", season)
+    return true
+end
+
+--- Sends a request to set a season length.
+-- @tparam string season
+-- @tparam number length
+-- @treturn boolean
+function World.SetSeasonLength(season, length)
+    local fn_name = "SetSeasonLength"
+    season = ArgSeason(fn_name, season)
+    length = ArgUnsignedInteger(fn_name, length, "length")
+
+    if not season or not length then
+        return false
+    end
+
+    DebugString("Season length:", season, "(" .. Value.ToDaysString(length) .. ")")
+    World.PushEvent("ms_setseasonlength", { season = season, length = length })
+    return true
+end
+
+--- Weather
+-- @section weather
+
+--- Sends a request to force precipitation.
+-- @tparam[opt] boolean bool
+-- @treturn boolean
+function World.ForcePrecipitation(bool)
+    bool = bool ~= false and true or false
+    DebugString("Force precipitation:", tostring(bool))
+    World.PushEvent("ms_forceprecipitation", bool)
     return true
 end
 
@@ -180,76 +253,6 @@ function World.SetSnowLevel(delta)
 
     DebugString("Snow level:", Value.ToFloatString(delta))
     World.PushEvent("ms_setsnowlevel", delta)
-    return true
-end
-
---- Season
--- @section season
-
---- Sends a request to advance a season.
--- @tparam number days
--- @treturn boolean
-function World.AdvanceSeason(days)
-    days = ArgUnsignedInteger("AdvanceSeason", days, "days")
-
-    if not days then
-        return false
-    end
-
-    DebugString("Advance season:", Value.ToDaysString(days))
-    for _ = 1, days do
-        World.PushEvent("ms_advanceseason")
-    end
-    return true
-end
-
---- Sends a request to retreat a season.
--- @tparam number days
--- @treturn boolean
-function World.RetreatSeason(days)
-    days = ArgUnsignedInteger("RetreatSeason", days, "days")
-
-    if not days then
-        return false
-    end
-
-    DebugString("Retreat season:", Value.ToDaysString(days))
-    for _ = 1, days do
-        World.PushEvent("ms_retreatseason")
-    end
-    return true
-end
-
---- Sends a request to set a season.
--- @tparam string season
--- @treturn boolean
-function World.SetSeason(season)
-    season = ArgSeason("SetSeason", season)
-
-    if not season then
-        return false
-    end
-
-    DebugString("Season:", tostring(season))
-    World.PushEvent("ms_setseason", season)
-    return true
-end
-
---- Sends a request to set a season length.
--- @tparam string season
--- @tparam number length
--- @treturn boolean
-function World.SetSeasonLength(season, length)
-    local fn_name = "SetSeasonLength"
-    season = ArgSeason(fn_name, season)
-    length = ArgUnsignedInteger(fn_name, length, "length")
-
-    if not season or not length then
-        return false
-    end
-
-    DebugString("Season length:", season, "(" .. Value.ToDaysString(length) .. ")")
-    World.PushEvent("ms_setseasonlength", { season = season, length = length })
     return true
 end
 
