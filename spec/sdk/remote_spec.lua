@@ -203,32 +203,34 @@ describe("#sdk SDK.Remote", function()
                 end)
             end
 
-            TestValid("a nil (as a string)", "nil", "nil")
-            TestValid("a string", "foo", '"foo"')
-            TestValid("a number", 0, "0")
-            TestValid("a float number", 0.5, "0.50")
-            TestValid("a boolean (true)", true, "true")
             TestValid("a boolean (false)", false, "false")
+            TestValid("a boolean (true)", true, "true")
+            TestValid("a float number", 0.5, "0.50")
+            TestValid("a nil (as a string)", "nil", "nil")
+            TestValid("a number", 0, "0")
+            TestValid("a point", Vector3(1, 0, 3), "Vector3(1.00, 0.00, 3.00)")
+            TestValid("a string", "foo", '"foo"')
             TestValid("ThePlayer", _G.ThePlayer, 'LookupPlayerInstByUserID("KU_foobar")')
 
-            TestValidTable("a nil (as a string)", "nil", "nil")
-            TestValidTable("a string", "foo", '"foo"')
-            TestValidTable("a number", 0, "0")
-            TestValidTable("a float number", 0.5, "0.50")
-            TestValidTable("a boolean (true)", true, "true")
             TestValidTable("a boolean (false)", false, "false")
-            TestValidTable("ThePlayer", _G.ThePlayer, 'LookupPlayerInstByUserID("KU_foobar")')
-            TestValidTable("an empty table", {}, "{}")
-            TestValidTable("an array (with only numbers)", { 1, 2, 3 }, "{ 1, 2, 3 }")
-            TestValidTable("an array (with only strings)", { "foo", "bar" }, '{ "foo", "bar" }')
+            TestValidTable("a boolean (true)", true, "true")
+            TestValidTable("a float number", 0.5, "0.50")
+            TestValidTable("a nil (as a string)", "nil", "nil")
+            TestValidTable("a number", 0, "0")
+            TestValidTable("a string", "foo", '"foo"')
             TestValidTable("an array (with only booleans)", { true, false }, "{ true, false }")
             TestValidTable("an array (with only floats)", { 0.25, 0.5, 1.0 }, "{ 0.25, 0.50, 1 }")
+            TestValidTable("an array (with only numbers)", { 1, 2, 3 }, "{ 1, 2, 3 }")
+            TestValidTable("an array (with only strings)", { "foo", "bar" }, '{ "foo", "bar" }')
 
             TestValidTable(
                 "an array (with mixed values)",
                 { 1, "foo", true, 0.25 },
                 '{ 1, "foo", true, 0.25 }'
             )
+
+            TestValidTable("an empty table", {}, "{}")
+            TestValidTable("ThePlayer", _G.ThePlayer, 'LookupPlayerInstByUserID("KU_foobar")')
 
             TestValidTable(
                 "a table (with key-value pairs)",

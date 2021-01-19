@@ -69,7 +69,8 @@ function Remote.Send(cmd, data, is_serialized)
     end
 
     local x, _, z = TheSim:ProjectScreenPos(TheSim:GetPosition())
-    TheNet:SendRemoteExecute(string.format(cmd, unpack(data or {})), x, z)
+    local send = string.format(cmd, unpack(data or {}))
+    TheNet:SendRemoteExecute(send, x, z)
     return true
 end
 
@@ -93,7 +94,10 @@ end
 -- -- { 'LookupPlayerInstByUserID("KU_foobar")' }
 --
 -- @usage SDK.Remote.Serialize(ThePlayer)
--- -- LookupPlayerInstByUserID("KU_foobar")
+-- -- 'LookupPlayerInstByUserID("KU_foobar")'
+--
+-- @usage SDK.Remote.Serialize(Vector3(1, 0, 3))
+-- -- "Vector3(1.00, 0.00, 3.00)"
 --
 -- @usage SDK.Remote.Serialize("foo")
 -- -- "foo"
@@ -103,7 +107,7 @@ end
 -- @treturn string|table Serialized value(s)
 function Remote.Serialize(t)
     local is_single = false
-    if type(t) ~= "table" or t.userid then
+    if type(t) ~= "table" or t.userid or Value.IsPoint(t) then
         is_single = true
         t = { t }
     end
@@ -125,6 +129,11 @@ function Remote.Serialize(t)
         elseif type(v) == "table" then
             if v.userid then
                 table.insert(serialized, 'LookupPlayerInstByUserID("' .. v.userid .. '")')
+            elseif Value.IsPoint(v) then
+                table.insert(
+                    serialized,
+                    string.format("Vector3(%0.2f, %0.2f, %0.2f)", v.x, v.y, v.z)
+                )
             elseif Value.IsArray(v) then
                 local value, serialized_table, serialized_values
 
