@@ -94,10 +94,10 @@ end
 -- -- { 'LookupPlayerInstByUserID("KU_foobar")' }
 --
 -- @usage SDK.Remote.Serialize(ThePlayer)
--- -- 'LookupPlayerInstByUserID("KU_foobar")'
+-- -- LookupPlayerInstByUserID("KU_foobar")
 --
 -- @usage SDK.Remote.Serialize(Vector3(1, 0, 3))
--- -- "Vector3(1.00, 0.00, 3.00)"
+-- -- Vector3(1.00, 0.00, 3.00)
 --
 -- @usage SDK.Remote.Serialize("foo")
 -- -- "foo"

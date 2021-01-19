@@ -80,6 +80,8 @@ describe("#sdk SDK.Remote.Player", function()
         SDK.LoadModule("Remote")
         Player = SDK.Remote.Player
 
+        SetTestModule(Player)
+
         -- spies
         SDK.Debug.Error = spy.on(SDK.Debug, "Error")
         SDK.Debug.String = spy.on(SDK.Debug, "String")
@@ -106,7 +108,7 @@ describe("#sdk SDK.Remote.Player", function()
         assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
     end
 
-    local function TestRemoteInvalid(name, msg, explanation, ...)
+    local function TestRemoteInvalid(name, error, ...)
         local args = { ... }
         local description = "when no arguments are passed"
         if #args > 1 then
@@ -116,16 +118,18 @@ describe("#sdk SDK.Remote.Player", function()
         end
 
         describe(description, function()
-            it("should debug error string", function()
-                AssertDebugError(
-                    function()
-                        Player[name](unpack(args))
-                    end,
-                    string.format("SDK.Remote.Player.%s():", name),
-                    msg,
-                    explanation and "(" .. explanation .. ")"
-                )
-            end)
+            if error then
+                it("should debug error string", function()
+                    AssertDebugError(
+                        function()
+                            Player[name](unpack(args))
+                        end,
+                        string.format("SDK.Remote.Player.%s():", name),
+                        error.message,
+                        error.explanation and "(" .. error.explanation .. ")"
+                    )
+                end)
+            end
 
             it("shouldn't call TheSim:SendRemoteExecute()", function()
                 AssertSendWasNotCalled(function()
@@ -137,38 +141,6 @@ describe("#sdk SDK.Remote.Player", function()
                 assert.is_false(Player[name](unpack(args)))
             end)
         end)
-    end
-
-    local function TestRemoteInvalidArg(name, arg_name, explanation, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when invalid arguments are passed"
-        elseif #args == 1 then
-            description = "when an invalid argument is passed"
-        end
-
-        describe(description, function()
-            it("should debug error string", function()
-                AssertDebugErrorInvalidArg(function()
-                    Player[name](unpack(args))
-                end, name, arg_name, explanation)
-            end)
-
-            it("shouldn't call TheSim:SendRemoteExecute()", function()
-                AssertSendWasNotCalled(function()
-                    Player[name](unpack(args))
-                end)
-            end)
-
-            it("should return false", function()
-                assert.is_false(Player[name](unpack(args)))
-            end)
-        end)
-    end
-
-    local function TestRemoteInvalidWorldType(name, explanation, ...)
-        TestRemoteInvalid(name, "Invalid world type", explanation, ...)
     end
 
     local function TestRemotePlayerIsGhost(name, player, ...)
@@ -243,7 +215,7 @@ describe("#sdk SDK.Remote.Player", function()
         end)
 
         describe("GoNext()", function()
-            TestRemoteInvalidArg("GoNext", "prefab", "must be a prefab", "string")
+            TestRemoteInvalid("GoNext", nil, "string")
             TestRemoteValid("GoNext", {
                 "Go next:",
                 "foobar",
@@ -251,6 +223,8 @@ describe("#sdk SDK.Remote.Player", function()
         end)
 
         describe("SendMiniEarthquake()", function()
+            local fn_name = "SendMiniEarthquake"
+
             describe("when in a forest world", function()
                 before_each(function()
                     _G.TheWorld.HasTag = spy.new(function(_, tag)
@@ -258,7 +232,10 @@ describe("#sdk SDK.Remote.Player", function()
                     end)
                 end)
 
-                TestRemoteInvalidWorldType("SendMiniEarthquake", "must be in a cave")
+                TestRemoteInvalid(fn_name, {
+                    explanation = "must be in a cave",
+                    message = "Invalid world type",
+                })
             end)
 
             describe("when in a cave world", function()
@@ -268,48 +245,13 @@ describe("#sdk SDK.Remote.Player", function()
                     end)
                 end)
 
-                TestRemoteInvalidArg(
-                    "SendMiniEarthquake",
-                    "radius",
-                    "must be an unsigned integer",
-                    "foo",
-                    20,
-                    2.5,
-                    _G.ThePlayer
-                )
-
-                TestRemoteInvalidArg(
-                    "SendMiniEarthquake",
-                    "amount",
-                    "must be an unsigned integer",
-                    20,
-                    -10,
-                    2.5,
-                    _G.ThePlayer
-                )
-
-                TestRemoteInvalidArg(
-                    "SendMiniEarthquake",
-                    "duration",
-                    "must be an unsigned number",
-                    20,
-                    20,
-                    true,
-                    _G.ThePlayer
-                )
-
-                TestRemoteInvalidArg(
-                    "SendMiniEarthquake",
-                    "player",
-                    "must be a player",
-                    20,
-                    20,
-                    2.5,
-                    "foo"
-                )
+                TestRemoteInvalid(fn_name, nil, "foo", 20, 2.5, _G.ThePlayer)
+                TestRemoteInvalid(fn_name, nil, 20, -10, 2.5, _G.ThePlayer)
+                TestRemoteInvalid(fn_name, nil, 20, 20, true, _G.ThePlayer)
+                TestRemoteInvalid(fn_name, nil, 20, 20, 2.5, "foo")
 
                 TestRemoteValid(
-                    "SendMiniEarthquake",
+                    fn_name,
                     { "Send mini earthquake:", "Player" },
                     'TheWorld:PushEvent("ms_miniquake", { '
                             .. 'target = LookupPlayerInstByUserID("KU_foobar"), '
@@ -320,7 +262,7 @@ describe("#sdk SDK.Remote.Player", function()
                 )
 
                 TestRemoteValid(
-                    "SendMiniEarthquake",
+                    fn_name,
                     { "Send mini earthquake:", "Player" },
                     'TheWorld:PushEvent("ms_miniquake", { '
                             .. 'target = LookupPlayerInstByUserID("KU_foobar"), '
@@ -337,7 +279,7 @@ describe("#sdk SDK.Remote.Player", function()
         end)
 
         describe("ToggleFreeCrafting()", function()
-            TestRemoteInvalidArg("ToggleFreeCrafting", "player", "must be a player", "foo")
+            TestRemoteInvalid("ToggleFreeCrafting", nil, "foo")
             TestRemoteValid(
                 "ToggleFreeCrafting", {
                     "Toggle free crafting:",
@@ -354,6 +296,21 @@ describe("#sdk SDK.Remote.Player", function()
     describe("attribute", function()
         local function TestSetAttributePercent(name, debug, send)
             describe(name .. "()", function()
+                TestArgPercent(name, {
+                    empty = {
+                        args = { nil, _G.ThePlayer },
+                        calls = 1,
+                    },
+                    invalid = { "foo", _G.ThePlayer },
+                    valid = { 25, _G.ThePlayer },
+                })
+
+                TestArgPlayer(name, {
+                    empty = { 25 },
+                    invalid = { 25, "foo" },
+                    valid = { 25, _G.ThePlayer },
+                })
+
                 describe("when a player is not a ghost", function()
                     before_each(function()
                         _G.ThePlayer.HasTag = spy.new(function(_, tag)
@@ -361,8 +318,8 @@ describe("#sdk SDK.Remote.Player", function()
                         end)
                     end)
 
-                    TestRemoteInvalidArg(name, "percent", "must be a percent", "foo")
-                    TestRemoteInvalidArg(name, "player", "must be a player", 25, "foo")
+                    TestRemoteInvalid(name, nil, "foo")
+                    TestRemoteInvalid(name, nil, 25, "foo")
                     TestRemoteValid(name, debug, send, 25, _G.ThePlayer)
                 end)
 
@@ -407,6 +364,23 @@ describe("#sdk SDK.Remote.Player", function()
         )
 
         describe("SetTemperature()", function()
+            local fn_name = "SetTemperature"
+
+            TestArg(fn_name, "temperature", "must be an entity temperature", {
+                empty = {
+                    args = { nil, _G.ThePlayer },
+                    calls = 1,
+                },
+                invalid = { "foo", _G.ThePlayer },
+                valid = { 25, _G.ThePlayer },
+            })
+
+            TestArgPlayer(fn_name, {
+                empty = { 25 },
+                invalid = { 25, "foo" },
+                valid = { 25, _G.ThePlayer },
+            })
+
             describe("when a player is not a ghost", function()
                 before_each(function()
                     _G.ThePlayer.HasTag = spy.new(function(_, tag)
@@ -414,23 +388,11 @@ describe("#sdk SDK.Remote.Player", function()
                     end)
                 end)
 
-                TestRemoteInvalidArg(
-                    "SetTemperature",
-                    "temperature",
-                    "must be an entity temperature",
-                    "foo"
-                )
-
-                TestRemoteInvalidArg(
-                    "SetTemperature",
-                    "player",
-                    "must be a player",
-                    25,
-                    "foo"
-                )
+                TestRemoteInvalid(fn_name, nil, "foo")
+                TestRemoteInvalid(fn_name, nil, 25, "foo")
 
                 TestRemoteValid(
-                    "SetTemperature",
+                    fn_name,
                     { "Temperature:", "25.00°", "(Player)" },
                     'LookupPlayerInstByUserID("KU_foobar")'
                         .. ".components.temperature:SetTemperature(25)",
@@ -439,10 +401,29 @@ describe("#sdk SDK.Remote.Player", function()
                 )
             end)
 
-            TestRemotePlayerIsGhost("SetTemperature", _G.ThePlayer, 25)
+            TestRemotePlayerIsGhost(fn_name, _G.ThePlayer, 25)
         end)
 
         describe("SetWerenessPercent()", function()
+            _G.ThePlayer.HasTag = spy.new(function(_, tag)
+                return tag == "player" or tag == "werehuman"
+            end)
+
+            TestArgPercent("SetWerenessPercent", {
+                empty = {
+                    args = { nil, _G.ThePlayer },
+                    calls = 1,
+                },
+                invalid = { "foo", _G.ThePlayer },
+                valid = { 25, _G.ThePlayer },
+            })
+
+            TestArgPlayer("SetWerenessPercent", {
+                empty = { 25 },
+                invalid = { 25, "foo" },
+                valid = { 25, _G.ThePlayer },
+            })
+
             describe("when a player is not a ghost", function()
                 describe("and a player is a Woodie", function()
                     before_each(function()
@@ -470,20 +451,8 @@ describe("#sdk SDK.Remote.Player", function()
                         end)
                     end)
 
-                    TestRemoteInvalidArg(
-                        "SetWerenessPercent",
-                        "percent",
-                        "must be a percent",
-                        "foo"
-                    )
-
-                    TestRemoteInvalidArg(
-                        "SetWerenessPercent",
-                        "player",
-                        "must be a player",
-                        25,
-                        "foo"
-                    )
+                    TestRemoteInvalid("SetWerenessPercent", nil, "foo")
+                    TestRemoteInvalid("SetWerenessPercent", nil, 25, "foo")
                 end)
 
                 describe("and a player is not a Woodie", function()
@@ -515,20 +484,8 @@ describe("#sdk SDK.Remote.Player", function()
                         end)
                     end)
 
-                    TestRemoteInvalidArg(
-                        "SetWerenessPercent",
-                        "percent",
-                        "must be a percent",
-                        "foo"
-                    )
-
-                    TestRemoteInvalidArg(
-                        "SetWerenessPercent",
-                        "player",
-                        "must be a player",
-                        25,
-                        "foo"
-                    )
+                    TestRemoteInvalid("SetWerenessPercent", nil, "foo")
+                    TestRemoteInvalid("SetWerenessPercent", nil, 25, "foo")
                 end)
             end)
 
@@ -553,6 +510,12 @@ describe("#sdk SDK.Remote.Player", function()
         end)
 
         describe("CallFn()", function()
+            TestArgPlayer("CallFn", {
+                empty = { "Foo", "foo" },
+                invalid = { "Foo", "foo", "foo" },
+                valid = { "Foo", "foo", _G.ThePlayer },
+            })
+
             describe("when serialized argument is passed", function()
                 it("should call TheSim:SendRemoteExecute()", function()
                     AssertSendWasCalled(function()
@@ -617,6 +580,12 @@ describe("#sdk SDK.Remote.Player", function()
         end)
 
         describe("CallFnComponent()", function()
+            TestArgPlayer("CallFnComponent", {
+                empty = { "foo", "Bar", "foo" },
+                invalid = { "foo", "Bar", "foo", "foo" },
+                valid = { "foo", "Bar", "foo", _G.ThePlayer },
+            })
+
             describe("when serialized argument is passed", function()
                 it("should call TheSim:SendRemoteExecute()", function()
                     AssertSendWasCalled(function()
@@ -683,24 +652,66 @@ describe("#sdk SDK.Remote.Player", function()
 
     describe("recipe", function()
         describe("LockRecipe()", function()
-            TestRemoteInvalidArg("LockRecipe", "recipe", "must be a valid recipe", "string")
-            TestRemoteInvalidArg("LockRecipe", "player", "must be a player", "foo", "foo")
+            local fn_name = "LockRecipe"
+
+            TestArgRecipe(fn_name, {
+                empty = {
+                    args = { nil, _G.ThePlayer },
+                    calls = 1,
+                },
+                invalid = { "string", _G.ThePlayer },
+                valid = { "foo", _G.ThePlayer },
+            })
+
+            TestArgPlayer(fn_name, {
+                empty = { "foo" },
+                invalid = { "foo", "foo" },
+                valid = { "foo", _G.ThePlayer },
+            })
+
+            TestRemoteInvalid(fn_name, nil, "string")
+            TestRemoteInvalid(fn_name, nil, "foo", "foo")
             TestRemoteValid(
-                "LockRecipe",
+                fn_name,
                 { "Lock recipe:", "foo", "(Player)" },
-                'player = LookupPlayerInstByUserID("KU_foobar") for k, v in pairs(player.components.builder.recipes) do if v == "foo" then table.remove(player.components.builder.recipes, k) end end player.replica.builder:RemoveRecipe("foo")', -- luacheck: only
+                'player = LookupPlayerInstByUserID("KU_foobar") '
+                    .. "for k, v in pairs(player.components.builder.recipes) do "
+                        .. 'if v == "foo" then '
+                            .. "table.remove(player.components.builder.recipes, k) "
+                        .. "end "
+                    .. "end "
+                    .. 'player.replica.builder:RemoveRecipe("foo")',
                 "foo",
                 _G.ThePlayer
             )
         end)
 
         describe("UnlockRecipe()", function()
-            TestRemoteInvalidArg("UnlockRecipe", "recipe", "must be a valid recipe", "string")
-            TestRemoteInvalidArg("UnlockRecipe", "player", "must be a player", "foo", "foo")
+            local fn_name = "UnlockRecipe"
+
+            TestArgRecipe(fn_name, {
+                empty = {
+                    args = { nil, _G.ThePlayer },
+                    calls = 1,
+                },
+                invalid = { "string", _G.ThePlayer },
+                valid = { "foo", _G.ThePlayer },
+            })
+
+            TestArgPlayer(fn_name, {
+                empty = { "foo" },
+                invalid = { "foo", "foo" },
+                valid = { "foo", _G.ThePlayer },
+            })
+
+            TestRemoteInvalid(fn_name, nil, "string")
+            TestRemoteInvalid(fn_name, nil, "foo", "foo")
             TestRemoteValid(
-                "UnlockRecipe",
+                fn_name,
                 { "Unlock recipe:", "foo", "(Player)" },
-                'player = LookupPlayerInstByUserID("KU_foobar") player.components.builder:AddRecipe("foo") player:PushEvent("unlockrecipe", { recipe = "foo" })', -- luacheck: only
+                'player = LookupPlayerInstByUserID("KU_foobar") '
+                    .. 'player.components.builder:AddRecipe("foo") '
+                    .. 'player:PushEvent("unlockrecipe", { recipe = "foo" })',
                 "foo",
                 _G.ThePlayer
             )

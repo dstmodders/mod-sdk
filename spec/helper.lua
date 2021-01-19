@@ -122,18 +122,26 @@ end
 -- Tests
 --
 
-function TestArgPlayer(module, fn_name, args)
+local _MODULE
+
+function SetTestModule(module)
+    _MODULE = module
+end
+
+function TestArg(fn_name, name, explanation, args)
+    name = name ~= nil and name or "argument"
+
     local describe = require "busted".describe
     local it = require "busted".it
 
     if args.empty then
         local _args = args.empty.args or args.empty
         local calls = args.empty.calls or 0
-        describe("when no player is passed", function()
-            it("shouldn't debug error string", function()
-                AssertDebugErrorCalls(function()
-                    module[fn_name](unpack(_args))
-                end, calls)
+        describe("when no " .. name .. " is passed", function()
+            it((calls > 0 and "should" or "shouldn't") .. " debug error string", function()
+                AssertDebugErrorInvalidArgCalls(function()
+                    _MODULE[fn_name](unpack(_args))
+                end, calls, _MODULE, fn_name, name, explanation)
             end)
         end)
     end
@@ -141,11 +149,11 @@ function TestArgPlayer(module, fn_name, args)
     if args.invalid then
         local _args = args.invalid.args or args.invalid
         local calls = args.invalid.calls or 1
-        describe("when an invalid player is passed", function()
-            it("should debug error string", function()
+        describe("when an invalid " .. name .. " is passed", function()
+            it((calls > 0 and "should" or "shouldn't") .. " debug error string", function()
                 AssertDebugErrorInvalidArgCalls(function()
-                    module[fn_name](unpack(_args))
-                end, calls, module, fn_name, "player", "must be a player")
+                    _MODULE[fn_name](unpack(_args))
+                end, calls, _MODULE, fn_name, name, explanation)
             end)
         end)
     end
@@ -153,96 +161,28 @@ function TestArgPlayer(module, fn_name, args)
     if args.valid then
         local _args = args.valid.args or args.valid
         local calls = args.valid.calls or 0
-        describe("when a valid player is passed", function()
-            it("shouldn't debug error string", function()
+        describe("when a valid " .. name .. " is passed", function()
+            it((calls > 0 and "should" or "shouldn't") .. " debug error string", function()
                 AssertDebugErrorCalls(function()
-                    module[fn_name](unpack(_args))
+                    _MODULE[fn_name](unpack(_args))
                 end, calls)
             end)
         end)
     end
 end
 
-function TestArgRecipe(module, fn_name, args)
-    local describe = require "busted".describe
-    local it = require "busted".it
-
-    if args.empty then
-        local _args = args.empty.args or args.empty
-        local calls = args.empty.calls or 1
-        describe("when no recipe is passed", function()
-            it("should debug error string", function()
-                AssertDebugErrorInvalidArgCalls(function()
-                    module[fn_name](unpack(_args))
-                end, calls, module, fn_name, "recipe", "must be a valid recipe")
-            end)
-        end)
-    end
-
-    if args.invalid then
-        local _args = args.invalid.args or args.invalid
-        local calls = args.invalid.calls or 1
-        describe("when an invalid recipe is passed", function()
-            it("should debug error string", function()
-                AssertDebugErrorInvalidArgCalls(function()
-                    module[fn_name](unpack(_args))
-                end, calls, module, fn_name, "recipe", "must be a valid recipe")
-            end)
-        end)
-    end
-
-    if args.valid then
-        local _args = args.valid.args or args.valid
-        local calls = args.valid.calls or 0
-        describe("when a valid recipe is passed", function()
-            it("shouldn't debug error string", function()
-                AssertDebugErrorCalls(function()
-                    module[fn_name](unpack(_args))
-                end, calls)
-            end)
-        end)
-    end
+function TestArgPercent(fn_name, args)
+    TestArg(fn_name, "percent", "must be a percent", args)
 end
 
-function TestArgRecipes(module, fn_name, args)
-    local describe = require "busted".describe
-    local it = require "busted".it
+function TestArgPlayer(fn_name, args)
+    TestArg(fn_name, "player", "must be a player", args)
+end
 
-    if args.empty then
-        local calls = args.empty.calls or 0
-        describe("when no recipes are passed", function()
-            it("shouldn't debug error string", function()
-                AssertDebugErrorCalls(function()
-                    module[fn_name](unpack(args.empty))
-                end, calls)
-            end)
-        end)
-    end
+function TestArgRecipe(fn_name, args)
+    TestArg(fn_name, "recipe", "must be a valid recipe", args)
+end
 
-    if args.invalid then
-        describe("when invalid recipes are passed", function()
-            it("should debug error string", function()
-                if args.invalid.calls then
-                    AssertDebugErrorInvalidArgCalls(function()
-                        module[fn_name](unpack(args.invalid.args))
-                    end, args.invalid.calls, module, fn_name, "recipes", "must be valid recipes")
-                else
-                    AssertDebugErrorInvalidArg(function()
-                        module[fn_name](unpack(args.invalid))
-                    end, module, fn_name, "recipes", "must be valid recipes")
-                end
-            end)
-        end)
-    end
-
-    if args.valid then
-        local calls = args.valid.calls or 0
-        describe("when valid recipes are passed", function()
-            it("shouldn't debug error string", function()
-                AssertDebugErrorCalls(function()
-                    module[fn_name](unpack(args.valid))
-                end, calls)
-            end)
-        end)
-    end
+function TestArgRecipes(fn_name, args)
+    TestArg(fn_name, "recipes", "must be valid recipes", args)
 end

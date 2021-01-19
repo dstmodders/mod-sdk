@@ -137,6 +137,8 @@ describe("#sdk SDK.Player.Attribute", function()
         SDK.LoadModule("Remote")
         Attribute = require "yoursubdirectory/sdk/sdk/player/attribute"
 
+        SetTestModule(Attribute)
+
         -- spies
         if SDK.IsLoaded("Debug") then
             SDK.Debug.Error = spy.on(SDK.Debug, "Error")
@@ -150,10 +152,6 @@ describe("#sdk SDK.Player.Attribute", function()
 
     local function AssertDebugString(fn, ...)
         _G.AssertDebugString(fn, "[player]", "[attribute]", ...)
-    end
-
-    local function TestArgPlayer(...)
-        _G.TestArgPlayer(Attribute, ...)
     end
 
     describe("attributes", function()

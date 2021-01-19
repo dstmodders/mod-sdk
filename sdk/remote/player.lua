@@ -292,7 +292,7 @@ function Player.SetWerenessPercent(percent, player)
     return SetAttributeComponentPercent("SetWerenessPercent", {
         component = "wereness",
         post_validation_fn = function()
-            if not player:HasTag("werehuman") then
+            if Value.IsPlayer(player) and not player:HasTag("werehuman") then
                 DebugErrorFn("SetWerenessPercent", "Player should be a Woodie")
                 return false
             end

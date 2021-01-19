@@ -86,6 +86,8 @@ describe("#sdk SDK.Player.Craft", function()
         SDK.LoadModule("Remote")
         Craft = require "yoursubdirectory/sdk/sdk/player/craft"
 
+        SetTestModule(Craft)
+
         -- spies
         if SDK.IsLoaded("Debug") then
             SDK.Debug.Error = spy.on(SDK.Debug, "Error")
@@ -95,18 +97,6 @@ describe("#sdk SDK.Player.Craft", function()
 
     local function AssertDebugString(fn, ...)
         _G.AssertDebugString(fn, "[player]", "[craft]", ...)
-    end
-
-    local function TestArgPlayer(...)
-        _G.TestArgPlayer(Craft, ...)
-    end
-
-    local function TestArgRecipe(...)
-        _G.TestArgRecipe(Craft, ...)
-    end
-
-    local function TestArgRecipes(...)
-        _G.TestArgRecipes(Craft, ...)
     end
 
     local function TestDebugError(fn, ...)
@@ -577,7 +567,10 @@ describe("#sdk SDK.Player.Craft", function()
 
         describe("IsLearnedRecipe()", function()
             TestArgRecipe("IsLearnedRecipe", {
-                empty = { nil, _G.ThePlayer },
+                empty = {
+                    args = { nil, _G.ThePlayer },
+                    calls = 1,
+                },
                 invalid = { "foobar", _G.ThePlayer },
                 valid = { "foo", _G.ThePlayer },
             })
@@ -718,7 +711,10 @@ describe("#sdk SDK.Player.Craft", function()
             end)
 
             TestArgRecipe("LockRecipe", {
-                empty = { nil, _G.ThePlayer },
+                empty = {
+                    args = { nil, _G.ThePlayer },
+                    calls = 1,
+                },
                 invalid = { "foobar", _G.ThePlayer },
                 valid = { "foo", _G.ThePlayer },
             })
@@ -1012,7 +1008,10 @@ describe("#sdk SDK.Player.Craft", function()
             end)
 
             TestArgRecipe("UnlockRecipe", {
-                empty = { nil, _G.ThePlayer },
+                empty = {
+                    args = { nil, _G.ThePlayer },
+                    calls = 1,
+                },
                 invalid = { "foobar", _G.ThePlayer },
                 valid = { "foo", _G.ThePlayer },
             })
