@@ -121,26 +121,6 @@ function Player.GoNext(prefab)
     return true
 end
 
---- Sends a request to toggle a free crafting.
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Player.ToggleFreeCrafting(player)
-    player = ArgPlayer("ToggleFreeCrafting", player)
-
-    if not player then
-        return false
-    end
-
-    DebugString("Toggle free crafting:", player:GetDisplayName())
-    Remote.Send('player = %s player.components.%s:%s() player:PushEvent("techlevelchange")', {
-        Remote.Serialize(player),
-        "builder",
-        "GiveAllRecipes",
-    })
-
-    return true
-end
-
 --- Attribute
 -- @section attribute
 
@@ -339,8 +319,8 @@ function Player.CallFnComponent(component, name, args, player)
     return true
 end
 
---- Recipe
--- @section recipe
+--- Craft
+-- @section craft
 
 --- Sends a request to lock a recipe.
 -- @tparam string recipe Valid recipe
@@ -399,6 +379,26 @@ function Player.UnlockRecipe(recipe, player)
         },
         true
     )
+
+    return true
+end
+
+--- Sends a request to toggle a free crafting.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.ToggleFreeCrafting(player)
+    player = ArgPlayer("ToggleFreeCrafting", player)
+
+    if not player then
+        return false
+    end
+
+    DebugString("Toggle free crafting:", player:GetDisplayName())
+    Remote.Send('player = %s player.components.%s:%s() player:PushEvent("techlevelchange")', {
+        Remote.Serialize(player),
+        "builder",
+        "GiveAllRecipes",
+    })
 
     return true
 end

@@ -88,6 +88,96 @@ function Craft.ToggleFreeCrafting(player)
     return SDK.Remote.Player.ToggleFreeCrafting(player)
 end
 
+--- Recipe
+-- @section recipe
+
+--- Checks if a recipe is learned.
+--
+-- The learned recipes are retrieved using the `GetLearnedRecipes`.
+--
+-- **NB!** Free crafting doesn't affect this so it should be handled separately.
+--
+-- @tparam string recipe Recipe name
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Craft.IsLearnedRecipe(recipe, player)
+    local fn_name = "IsLearnedRecipe"
+    recipe = ArgRecipe(fn_name, recipe)
+    player = ArgPlayer(fn_name, player)
+    return recipe and player and SDK.Utils.Table.HasValue(Craft.GetLearnedRecipes(player), recipe)
+end
+
+--- Sends a request to lock a recipe.
+-- @tparam string recipe Valid recipe
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Craft.LockRecipe(recipe, player)
+    local fn_name = "LockRecipe"
+    recipe = ArgRecipe(fn_name, recipe)
+    player = ArgPlayer(fn_name, player)
+
+    if not recipe or not player then
+        return false
+    end
+
+    local component = GetComponent(fn_name, player, "builder")
+    if not component then
+        return false
+    end
+
+    if TheWorld.ismastersim then
+        local replica = GetReplica(fn_name, player, "builder")
+        if not replica then
+            return false
+        end
+
+        local recipes = SDK.Utils.Chain.Get(player, "components", "builder", "recipes")
+        if not recipes then
+            DebugErrorFn(fn_name, "Builder component recipes not found")
+            return false
+        end
+
+        DebugString("Lock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
+        for k, v in pairs(recipes) do
+            if v == recipe then
+                table.remove(recipes, k)
+            end
+        end
+        replica:RemoveRecipe(recipe)
+        return true
+    end
+
+    return SDK.Remote.Player.LockRecipe(recipe, player)
+end
+
+--- Sends a request to unlock a recipe.
+-- @tparam string recipe Valid recipe
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Craft.UnlockRecipe(recipe, player)
+    local fn_name = "UnlockRecipe"
+    recipe = ArgRecipe(fn_name, recipe)
+    player = ArgPlayer(fn_name, player)
+
+    if not recipe or not player then
+        return false
+    end
+
+    local component = GetComponent(fn_name, player, "builder")
+    if not component then
+        return false
+    end
+
+    if TheWorld.ismastersim then
+        DebugString("Unlock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
+        component:AddRecipe(recipe)
+        player:PushEvent("unlockrecipe", { recipe = recipe })
+        return true
+    end
+
+    return SDK.Remote.Player.UnlockRecipe(recipe, player)
+end
+
 --- Recipes
 -- @section recipes
 
@@ -207,22 +297,6 @@ function Craft.GetLearnedRecipes(player)
     return names
 end
 
---- Checks if a recipe is learned.
---
--- The learned recipes are retrieved using the `GetLearnedRecipes`.
---
--- **NB!** Free crafting doesn't affect this so it should be handled separately.
---
--- @tparam string recipe Recipe name
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Craft.IsLearnedRecipe(recipe, player)
-    local fn_name = "IsLearnedRecipe"
-    recipe = ArgRecipe(fn_name, recipe)
-    player = ArgPlayer(fn_name, player)
-    return recipe and player and SDK.Utils.Table.HasValue(Craft.GetLearnedRecipes(player), recipe)
-end
-
 --- Locks all character-specific recipes.
 --
 -- It locks all character-specific recipes except those stored earlier by the
@@ -248,49 +322,6 @@ function Craft.LockAllCharacterRecipes(player)
 
     DebugErrorFn("LockAllCharacterRecipes", "Character recipes not found")
     return false
-end
-
---- Sends a request to lock a recipe.
--- @tparam string recipe Valid recipe
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Craft.LockRecipe(recipe, player)
-    local fn_name = "LockRecipe"
-    recipe = ArgRecipe(fn_name, recipe)
-    player = ArgPlayer(fn_name, player)
-
-    if not recipe or not player then
-        return false
-    end
-
-    local component = GetComponent(fn_name, player, "builder")
-    if not component then
-        return false
-    end
-
-    if TheWorld.ismastersim then
-        local replica = GetReplica(fn_name, player, "builder")
-        if not replica then
-            return false
-        end
-
-        local recipes = SDK.Utils.Chain.Get(player, "components", "builder", "recipes")
-        if not recipes then
-            DebugErrorFn(fn_name, "Builder component recipes not found")
-            return false
-        end
-
-        DebugString("Lock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
-        for k, v in pairs(recipes) do
-            if v == recipe then
-                table.remove(recipes, k)
-            end
-        end
-        replica:RemoveRecipe(recipe)
-        return true
-    end
-
-    return SDK.Remote.Player.LockRecipe(recipe, player)
 end
 
 --- Unlocks all character-specific recipes.
@@ -342,34 +373,6 @@ function Craft.UnlockAllCharacterRecipes(player)
     )
 
     return false
-end
-
---- Sends a request to unlock a recipe.
--- @tparam string recipe Valid recipe
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Craft.UnlockRecipe(recipe, player)
-    local fn_name = "UnlockRecipe"
-    recipe = ArgRecipe(fn_name, recipe)
-    player = ArgPlayer(fn_name, player)
-
-    if not recipe or not player then
-        return false
-    end
-
-    local component = GetComponent(fn_name, player, "builder")
-    if not component then
-        return false
-    end
-
-    if TheWorld.ismastersim then
-        DebugString("Unlock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
-        component:AddRecipe(recipe)
-        player:PushEvent("unlockrecipe", { recipe = recipe })
-        return true
-    end
-
-    return SDK.Remote.Player.UnlockRecipe(recipe, player)
 end
 
 --- Lifecycle

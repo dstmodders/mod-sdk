@@ -174,20 +174,6 @@ describe("#sdk SDK.Remote.Player", function()
                 "foobar",
             }, 'c_gonext("foobar")', "foobar")
         end)
-
-        describe("ToggleFreeCrafting()", function()
-            TestRemoteInvalid("ToggleFreeCrafting", nil, "foo")
-            TestRemoteValid(
-                "ToggleFreeCrafting", {
-                    "Toggle free crafting:",
-                    "Player",
-                },
-                'player = LookupPlayerInstByUserID("KU_foobar") '
-                    .. "player.components.builder:GiveAllRecipes() "
-                    .. 'player:PushEvent("techlevelchange")',
-                _G.ThePlayer
-            )
-        end)
     end)
 
     describe("attribute", function()
@@ -547,7 +533,7 @@ describe("#sdk SDK.Remote.Player", function()
         end)
     end)
 
-    describe("recipe", function()
+    describe("craft", function()
         describe("LockRecipe()", function()
             local fn_name = "LockRecipe"
 
@@ -610,6 +596,20 @@ describe("#sdk SDK.Remote.Player", function()
                     .. 'player.components.builder:AddRecipe("foo") '
                     .. 'player:PushEvent("unlockrecipe", { recipe = "foo" })',
                 "foo",
+                _G.ThePlayer
+            )
+        end)
+
+        describe("ToggleFreeCrafting()", function()
+            TestRemoteInvalid("ToggleFreeCrafting", nil, "foo")
+            TestRemoteValid(
+                "ToggleFreeCrafting", {
+                    "Toggle free crafting:",
+                    "Player",
+                },
+                'player = LookupPlayerInstByUserID("KU_foobar") '
+                    .. "player.components.builder:GiveAllRecipes() "
+                    .. 'player:PushEvent("techlevelchange")',
                 _G.ThePlayer
             )
         end)
