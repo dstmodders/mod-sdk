@@ -33,7 +33,6 @@ local SDK = {
     modname = nil,
     path = nil,
     path_full = nil,
-    time_scale_prev = 1,
 
     -- constants
     OVERRIDE = {
@@ -75,6 +74,7 @@ local _MODULES = {
     RPC = "sdk/rpc",
     Test = "sdk/test",
     Thread = "sdk/thread",
+    Time = "sdk/time",
     Utils = {
         path = "sdk/utils",
         submodules = {
@@ -605,129 +605,6 @@ function SDK.SanitizeSubmodules(module, submodules)
     end
 
     return t
-end
-
---- Time Scale
--- @section time-scale
-
---- Checks if a game is paused.
--- @treturn boolean
-function SDK.IsPaused()
-    return TheSim:GetTimeScale() == 0
-end
-
---- Pauses a game.
--- @see SDK.Remote.SetTimeScale
--- @treturn boolean
-function SDK.Pause()
-    if SDK.IsPaused() then
-        SDK._DebugErrorFn(SDK, "Pause", "Game is already paused")
-        return false
-    end
-
-    local time_scale = TheSim:GetTimeScale()
-
-    SDK._DebugString("Pause game")
-    SDK.time_scale_prev = time_scale
-    TheSim:SetTimeScale(0)
-    SetPause(true, "console")
-
-    if InGamePlay()
-        and TheWorld
-        and not TheWorld.ismastersim
-        and SDK.IsLoaded("Remote")
-        and SDK.Remote.SetTimeScale(0)
-    then
-        SDK._DebugNoticeTimeScaleMismatch(SDK, "Pause")
-    end
-
-    return true
-end
-
---- Resumes a game from a pause.
--- @see SDK.Remote.SetTimeScale
--- @treturn boolean
-function SDK.Resume()
-    if not SDK.IsPaused() then
-        SDK._DebugErrorFn(SDK, "Resume", "Game is already resumed")
-        return false
-    end
-
-    local time_scale = SDK.time_scale_prev or 1
-
-    SDK._DebugString("Resume game")
-    SDK.time_scale_prev = 0
-    TheSim:SetTimeScale(time_scale)
-    SetPause(false, "console")
-
-    if InGamePlay()
-        and TheWorld
-        and not TheWorld.ismastersim
-        and SDK.IsLoaded("Remote")
-        and SDK.Remote.SetTimeScale(time_scale)
-    then
-        SDK._DebugNoticeTimeScaleMismatch(SDK, "Resume")
-    end
-
-    return true
-end
-
---- Sets a delta time scale.
--- @see SDK.SetTimeScale
--- @tparam number delta
--- @treturn boolean
-function SDK.SetDeltaTimeScale(delta)
-    delta = delta ~= nil and delta or 0
-
-    if not SDK.Utils.Value.IsNumber(delta) then
-        SDK._DebugErrorInvalidArg(SDK, "SetDeltaTimeScale", "delta", "must be a number")
-        return false
-    end
-
-    local time_scale
-    time_scale = TheSim:GetTimeScale() + delta
-    time_scale = time_scale < 0 and 0 or time_scale
-    time_scale = time_scale >= 4 and 4 or time_scale
-
-    SDK._DebugString("Delta time scale:", SDK.Utils.Value.ToFloatString(delta))
-    return SDK.SetTimeScale(time_scale)
-end
-
---- Sets a time scale.
--- @see SDK.Remote.SetTimeScale
--- @see SDK.SetDeltaTimeScale
--- @tparam number time_scale
--- @treturn boolean
-function SDK.SetTimeScale(time_scale)
-    if not SDK.Utils.Value.IsUnsigned(time_scale) or not SDK.Utils.Value.IsNumber(time_scale) then
-        SDK._DebugErrorInvalidArg(SDK, "SetTimeScale", "time_scale", "must be an unsigned number")
-        return false
-    end
-
-    SDK._DebugString("Time scale:", SDK.Utils.Value.ToFloatString(time_scale))
-    TheSim:SetTimeScale(time_scale)
-
-    if InGamePlay()
-        and TheWorld
-        and not TheWorld.ismastersim
-        and SDK.IsLoaded("Remote")
-        and SDK.Remote.SetTimeScale(time_scale)
-    then
-        SDK._DebugNoticeTimeScaleMismatch(SDK, "SetTimeScale")
-    end
-
-    return true
-end
-
---- Toggles a game pause.
--- @see SDK.Pause
--- @see SDK.Resume
--- @treturn boolean
-function SDK.TogglePause()
-    if SDK.IsPaused() then
-        return SDK.Resume()
-    end
-    return SDK.Pause()
 end
 
 --- Internal

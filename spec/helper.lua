@@ -33,6 +33,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/sdk"] = "sdk/sdk",
     ["yoursubdirectory/sdk/sdk/test"] = "sdk/test",
     ["yoursubdirectory/sdk/sdk/thread"] = "sdk/thread",
+    ["yoursubdirectory/sdk/sdk/time"] = "sdk/time",
     ["yoursubdirectory/sdk/sdk/utils"] = "sdk/utils",
     ["yoursubdirectory/sdk/sdk/utils/chain"] = "sdk/utils/chain",
     ["yoursubdirectory/sdk/sdk/utils/string"] = "sdk/utils/string",
@@ -214,6 +215,11 @@ end
 function TestArgUnitInterval(fn_name, args, name)
     name = name ~= nil and name or "number"
     TestArg(fn_name, name, "must be a unit interval", args)
+end
+
+function TestArgUnsigned(fn_name, args, name)
+    name = name ~= nil and name or "number"
+    TestArg(fn_name, name, "must be an unsigned number", args)
 end
 
 function TestArgUnsignedInteger(fn_name, args, name)

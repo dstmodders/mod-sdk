@@ -67,6 +67,7 @@ files["**/*.lua"] = {
         "TestArgSeason",
         "TestArgString",
         "TestArgUnitInterval",
+        "TestArgUnsigned",
         "TestArgUnsignedInteger",
         "TestRemoteInvalid",
         "TestRemoteValid",

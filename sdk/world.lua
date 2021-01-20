@@ -13,9 +13,7 @@
 -- @license MIT
 -- @release 0.1
 ----
-local World = {
-    timescale = 1,
-}
+local World = {}
 
 local SDK
 local Value

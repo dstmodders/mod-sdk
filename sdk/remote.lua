@@ -197,22 +197,23 @@ end
 --- Sends a request to set a time scale.
 --
 -- @usage SDK.Remote.SetTimeScale(4)
+--
 -- @usage SDK.Remote.SetTimeScale(0.5)
 --
--- @see SDK.Pause
--- @see SDK.Resume
--- @see SDK.SetTimeScale
--- @tparam string timescale
+-- @see SDK.Time.Pause
+-- @see SDK.Time.Resume
+-- @see SDK.Time.SetTimeScale
+-- @tparam string time_scale
 -- @treturn boolean
-function Remote.SetTimeScale(timescale)
-    timescale = ArgUnsigned("SetTimeScale", timescale, "timescale")
+function Remote.SetTimeScale(time_scale)
+    time_scale = ArgUnsigned("SetTimeScale", time_scale, "time_scale")
 
-    if not timescale then
+    if not time_scale then
         return false
     end
 
-    DebugString("Time scale:", Value.ToFloatString(timescale))
-    Remote.Send('TheSim:SetTimeScale(%s)', { timescale }, true)
+    DebugString("Time scale:", Value.ToFloatString(time_scale))
+    Remote.Send('TheSim:SetTimeScale(%s)', { time_scale }, true)
     return true
 end
 
