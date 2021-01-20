@@ -462,7 +462,7 @@ describe("#sdk SDK.Remote.World", function()
                 empty = {},
                 invalid = { 2 },
                 valid = { 1 },
-            }, "delta")
+            }, "level")
 
             describe("when not in a forest world", function()
                 before_each(function()

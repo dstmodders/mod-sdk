@@ -133,8 +133,8 @@ describe("#sdk SDK.Player.Attribute", function()
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
-        SDK.LoadModule("Player")
         SDK.LoadModule("Remote")
+        SDK.LoadModule("Player")
         Attribute = require "yoursubdirectory/sdk/sdk/player/attribute"
 
         SetTestModule(Attribute)

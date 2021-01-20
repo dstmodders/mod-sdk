@@ -8,9 +8,9 @@
 -- function. On non-master instances (dedicated servers) it calls the corresponding
 -- `SDK.Remote.Player` function for sending a request to change that attribute.
 --
---    if SDK.Player.Attribute.GetTemperature(ThePlayer) <= 0 then
---        SDK.Player.Attribute.SetTemperature(36, ThePlayer)
---    end
+--     if SDK.Player.Attribute.GetTemperature(ThePlayer) <= 0 then
+--         SDK.Player.Attribute.SetTemperature(36, ThePlayer)
+--     end
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

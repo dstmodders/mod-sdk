@@ -82,8 +82,8 @@ describe("#sdk SDK.Player.Craft", function()
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
-        SDK.LoadModule("Player")
         SDK.LoadModule("Remote")
+        SDK.LoadModule("Player")
         Craft = require "yoursubdirectory/sdk/sdk/player/craft"
 
         SetTestModule(Craft)

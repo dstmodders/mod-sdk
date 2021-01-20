@@ -277,13 +277,13 @@ function World.SetDeltaWetness(delta)
 end
 
 --- Sends a request to set a snow level.
--- @tparam number delta
+-- @tparam number level
 -- @treturn boolean
-function World.SetSnowLevel(delta)
+function World.SetSnowLevel(level)
     local fn_name = "SetSnowLevel"
-    delta = ArgUnitInterval(fn_name, delta or 0, "delta")
+    level = ArgUnitInterval(fn_name, level or 0, "level")
 
-    if not delta then
+    if not level then
         return false
     end
 
@@ -292,8 +292,8 @@ function World.SetSnowLevel(delta)
         return false
     end
 
-    DebugString("Snow level:", Value.ToFloatString(delta))
-    World.PushEvent("ms_setsnowlevel", delta)
+    DebugString("Snow level:", Value.ToFloatString(level))
+    World.PushEvent("ms_setsnowlevel", level)
     return true
 end
 
