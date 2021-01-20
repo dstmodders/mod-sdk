@@ -73,12 +73,12 @@ function Craft.ToggleFreeCrafting(player)
         return false
     end
 
-    local component = GetComponent(fn_name, player, "builder")
-    if not component then
-        return false
-    end
-
     if TheWorld.ismastersim then
+        local component = GetComponent(fn_name, player, "builder")
+        if not component then
+            return false
+        end
+
         DebugString("Toggle free crafting:", player:GetDisplayName())
         component:GiveAllRecipes()
         player:PushEvent("techlevelchange")
@@ -120,12 +120,12 @@ function Craft.LockRecipe(recipe, player)
         return false
     end
 
-    local component = GetComponent(fn_name, player, "builder")
-    if not component then
-        return false
-    end
-
     if TheWorld.ismastersim then
+        local component = GetComponent(fn_name, player, "builder")
+        if not component then
+            return false
+        end
+
         local replica = GetReplica(fn_name, player, "builder")
         if not replica then
             return false
@@ -163,12 +163,12 @@ function Craft.UnlockRecipe(recipe, player)
         return false
     end
 
-    local component = GetComponent(fn_name, player, "builder")
-    if not component then
-        return false
-    end
-
     if TheWorld.ismastersim then
+        local component = GetComponent(fn_name, player, "builder")
+        if not component then
+            return false
+        end
+
         DebugString("Unlock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
         component:AddRecipe(recipe)
         player:PushEvent("unlockrecipe", { recipe = recipe })

@@ -122,12 +122,12 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
         return false
     end
 
-    local _component = GetComponent(fn_name, player, component)
-    if not _component then
-        return false
-    end
-
     if TheWorld.ismastersim then
+        local _component = GetComponent(fn_name, player, component)
+        if not _component then
+            return false
+        end
+
         table.insert(debug_args, "(" .. player:GetDisplayName() .. ")")
         DebugString(unpack(debug_args))
         setter_fn(_component, percent)
@@ -338,12 +338,12 @@ function Attribute.SetTemperature(temperature, player)
         return false
     end
 
-    local component = GetComponent(fn_name, player, "temperature")
-    if not component then
-        return false
-    end
-
     if TheWorld.ismastersim then
+        local component = GetComponent(fn_name, player, "temperature")
+        if not component then
+            return false
+        end
+
         DebugString(
             "Temperature:",
             Value.ToDegreeString(temperature),
