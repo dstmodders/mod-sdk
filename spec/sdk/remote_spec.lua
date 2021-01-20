@@ -46,15 +46,19 @@ describe("#sdk SDK.Remote", function()
         SDK = require "yoursubdirectory/sdk/sdk/sdk"
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
+        SDK.LoadModule("Debug")
         SDK.LoadModule("Remote")
         Remote = require "yoursubdirectory/sdk/sdk/remote"
 
-        -- spies
-        Remote.Send = spy.on(Remote, "Send")
-    end)
+        SetTestModule(Remote)
 
-    after_each(function()
-        package.loaded["yoursubdirectory/sdk/sdk/sdk"] = nil
+        -- spies
+        if SDK.IsLoaded("Debug") then
+            SDK.Debug.Error = spy.on(SDK.Debug, "Error")
+            SDK.Debug.String = spy.on(SDK.Debug, "String")
+        end
+
+        Remote.Send = spy.on(Remote, "Send")
     end)
 
     local function AssertSendWasCalled(fn, ...)
@@ -66,40 +70,6 @@ describe("#sdk SDK.Remote", function()
             match.is_ref(_G.TheNet),
             unpack(args)
         )
-    end
-
-    local function AssertSendWasNotCalled(fn)
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-        fn()
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-    end
-
-    local function TestRemoteInvalidArg(name, arg_name, explanation, ...)
-        local args = { ... }
-        local description = "when no arguments are passed"
-        if #args > 1 then
-            description = "when invalid arguments are passed"
-        elseif #args == 1 then
-            description = "when an invalid argument is passed"
-        end
-
-        describe(description, function()
-            it("should debug error string", function()
-                AssertDebugErrorInvalidArg(function()
-                    Remote[name](unpack(args))
-                end, name, arg_name, explanation)
-            end)
-
-            it("shouldn't call TheSim:SendRemoteExecute()", function()
-                AssertSendWasNotCalled(function()
-                    Remote[name](unpack(args))
-                end)
-            end)
-
-            it("should return false", function()
-                assert.is_false(Remote[name](unpack(args)))
-            end)
-        end)
     end
 
     local function TestRemoteValid(name, debug, send, ...)
@@ -246,14 +216,20 @@ describe("#sdk SDK.Remote", function()
         end)
 
         describe("SetTimeScale()", function()
-            TestRemoteInvalidArg("SetTimeScale", "timescale", "must be an unsigned number", "foo")
-            TestRemoteValid("SetTimeScale", { "Time scale:", "1" }, 'TheSim:SetTimeScale(1)', 1)
-            TestRemoteValid(
-                "SetTimeScale",
-                { "Time scale:", "0.50" },
-                'TheSim:SetTimeScale(0.50)',
-                0.5
-            )
+            local fn_name = "SetTimeScale"
+
+            TestArgUnsigned(fn_name, {
+                empty = {
+                    args = {},
+                    calls = 1,
+                },
+                invalid = { "foo" },
+                valid = { 1 },
+            }, "time_scale")
+
+            TestRemoteInvalid(fn_name, nil, "foo")
+            TestRemoteValid(fn_name, { "Time scale:", "1.00" }, 'TheSim:SetTimeScale(1)', 1)
+            TestRemoteValid(fn_name, { "Time scale:", "0.50" }, 'TheSim:SetTimeScale(0.50)', 0.5)
         end)
     end)
 end)

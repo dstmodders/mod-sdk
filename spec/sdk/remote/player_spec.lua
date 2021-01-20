@@ -83,8 +83,10 @@ describe("#sdk SDK.Remote.Player", function()
         SetTestModule(Player)
 
         -- spies
-        SDK.Debug.Error = spy.on(SDK.Debug, "Error")
-        SDK.Debug.String = spy.on(SDK.Debug, "String")
+        if SDK.IsLoaded("Debug") then
+            SDK.Debug.Error = spy.on(SDK.Debug, "Error")
+            SDK.Debug.String = spy.on(SDK.Debug, "String")
+        end
     end)
 
     local function AssertDebugErrorInvalidArg(fn, fn_name, arg_name, explanation)

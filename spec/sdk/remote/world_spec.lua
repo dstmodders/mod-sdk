@@ -59,8 +59,10 @@ describe("#sdk SDK.Remote.World", function()
         SetTestModule(World)
 
         -- spies
-        SDK.Debug.Error = spy.on(SDK.Debug, "Error")
-        SDK.Debug.String = spy.on(SDK.Debug, "String")
+        if SDK.IsLoaded("Debug") then
+            SDK.Debug.Error = spy.on(SDK.Debug, "Error")
+            SDK.Debug.String = spy.on(SDK.Debug, "String")
+        end
     end)
 
     local function TestRemoteValid(name, debug, data, ...)
