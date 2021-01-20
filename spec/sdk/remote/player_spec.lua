@@ -175,62 +175,6 @@ describe("#sdk SDK.Remote.Player", function()
             }, 'c_gonext("foobar")', "foobar")
         end)
 
-        describe("SendMiniEarthquake()", function()
-            local fn_name = "SendMiniEarthquake"
-
-            describe("when in a forest world", function()
-                before_each(function()
-                    _G.TheWorld.HasTag = spy.new(function(_, tag)
-                        return tag == "forest"
-                    end)
-                end)
-
-                TestRemoteInvalid(fn_name, {
-                    explanation = "must be in a cave",
-                    message = "Invalid world type",
-                })
-            end)
-
-            describe("when in a cave world", function()
-                before_each(function()
-                    _G.TheWorld.HasTag = spy.new(function(_, tag)
-                        return tag == "cave"
-                    end)
-                end)
-
-                TestRemoteInvalid(fn_name, nil, "foo", 20, 2.5, _G.ThePlayer)
-                TestRemoteInvalid(fn_name, nil, 20, -10, 2.5, _G.ThePlayer)
-                TestRemoteInvalid(fn_name, nil, 20, 20, true, _G.ThePlayer)
-                TestRemoteInvalid(fn_name, nil, 20, 20, 2.5, "foo")
-
-                TestRemoteValid(
-                    fn_name,
-                    { "Send mini earthquake:", "Player" },
-                    'TheWorld:PushEvent("ms_miniquake", { '
-                            .. 'target = LookupPlayerInstByUserID("KU_foobar"), '
-                            .. "num = 20, "
-                            .. "rad = 20, "
-                            .. "duration = 2.50 "
-                        .. '})'
-                )
-
-                TestRemoteValid(
-                    fn_name,
-                    { "Send mini earthquake:", "Player" },
-                    'TheWorld:PushEvent("ms_miniquake", { '
-                            .. 'target = LookupPlayerInstByUserID("KU_foobar"), '
-                            .. "num = 20, "
-                            .. "rad = 20, "
-                            .. "duration = 2.50 "
-                        .. '})',
-                    20,
-                    20,
-                    2.5,
-                    _G.ThePlayer
-                )
-            end)
-        end)
-
         describe("ToggleFreeCrafting()", function()
             TestRemoteInvalid("ToggleFreeCrafting", nil, "foo")
             TestRemoteValid(

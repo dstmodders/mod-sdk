@@ -25,6 +25,10 @@ local function ArgNumber(...)
     return SDK._ArgNumber(World, ...)
 end
 
+local function ArgPlayer(...)
+    return SDK._ArgPlayer(World, ...)
+end
+
 local function ArgPoint(...)
     return SDK._ArgPoint(World, ...)
 end
@@ -39,6 +43,10 @@ end
 
 local function ArgUnitInterval(...)
     return SDK._ArgUnitInterval(World, ...)
+end
+
+local function ArgUnsigned(...)
+    return SDK._ArgUnsigned(World, ...)
 end
 
 local function ArgUnsignedInteger(...)
@@ -202,6 +210,39 @@ function World.SendLightningStrike(pt)
 
     DebugString("Send lighting strike:", tostring(pt))
     World.PushEvent("ms_sendlightningstrike", pt)
+    return true
+end
+
+--- Sends a request to send a mini earthquake.
+-- @tparam[opt] number radius Default: 20
+-- @tparam[opt] number amount Default: 20
+-- @tparam[opt] number duration Default: 2.5
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function World.SendMiniEarthquake(radius, amount, duration, player)
+    local fn_name = "SendMiniEarthquake"
+    radius = ArgUnsignedInteger(fn_name, radius or 20, "radius")
+    amount = ArgUnsignedInteger(fn_name, amount or 20, "amount")
+    duration = ArgUnsigned(fn_name, duration or 2.5, "duration")
+    player = ArgPlayer(fn_name, player)
+
+    if not radius or not amount or not duration or not player then
+        return false
+    end
+
+    if not TheWorld:HasTag("cave") then
+        DebugErrorInvalidWorldType(fn_name, "must be in a cave")
+        return false
+    end
+
+    DebugString("Send mini earthquake:", player:GetDisplayName())
+    World.PushEvent("ms_miniquake", {
+        target = player,
+        num = amount,
+        rad = radius,
+        duration = duration,
+    })
+
     return true
 end
 

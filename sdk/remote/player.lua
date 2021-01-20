@@ -37,24 +37,12 @@ local function ArgRecipe(...)
     return SDK._ArgRecipe(Player, ...)
 end
 
-local function ArgUnsigned(...)
-    return SDK._ArgUnsigned(Player, ...)
-end
-
-local function ArgUnsignedInteger(...)
-    return SDK._ArgUnsignedInteger(Player, ...)
-end
-
 local function DebugErrorFn(...)
     SDK._DebugErrorFn(Player, ...)
 end
 
 local function DebugErrorInvalidArg(...)
     SDK._DebugErrorInvalidArg(Player, ...)
-end
-
-local function DebugErrorInvalidWorldType(...)
-    SDK._DebugErrorInvalidWorldType(Player, ...)
 end
 
 local function DebugString(...)
@@ -130,41 +118,6 @@ function Player.GoNext(prefab)
 
     DebugString("Go next:", prefab)
     Remote.Send('c_gonext(%s)', { prefab }, true)
-    return true
-end
-
---- Sends a request to send a mini earthquake.
--- @tparam[opt] number radius Default: 20
--- @tparam[opt] number amount Default: 20
--- @tparam[opt] number duration Default: 2.5
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Player.SendMiniEarthquake(radius, amount, duration, player)
-    local fn_name = "SendMiniEarthquake"
-    radius = ArgUnsignedInteger(fn_name, radius or 20, "radius")
-    amount = ArgUnsignedInteger(fn_name, amount or 20, "amount")
-    duration = ArgUnsigned(fn_name, duration or 2.5, "duration")
-    player = ArgPlayer(fn_name, player)
-
-    if not radius or not amount or not duration or not player then
-        return false
-    end
-
-    if not TheWorld:HasTag("cave") then
-        DebugErrorInvalidWorldType(fn_name, "must be in a cave")
-        return false
-    end
-
-    DebugString("Send mini earthquake:", player:GetDisplayName())
-    Remote.Send('TheWorld:PushEvent("ms_miniquake", %s)', {
-        {
-            target = player,
-            num = amount,
-            rad = radius,
-            duration = duration,
-        },
-    }, true)
-
     return true
 end
 
