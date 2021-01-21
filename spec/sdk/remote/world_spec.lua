@@ -277,30 +277,6 @@ describe("#sdk SDK.Remote.World", function()
     end)
 
     describe("weather", function()
-        describe("ForcePrecipitation()", function()
-            local fn_name = "ForcePrecipitation"
-
-            TestRemoteValid(
-                fn_name,
-                { "Force precipitation:", "true" },
-                'TheWorld:PushEvent("ms_forceprecipitation", true)'
-            )
-
-            TestRemoteValid(
-                fn_name,
-                { "Force precipitation:", "true" },
-                'TheWorld:PushEvent("ms_forceprecipitation", true)',
-                true
-            )
-
-            TestRemoteValid(
-                fn_name,
-                { "Force precipitation:", "false" },
-                'TheWorld:PushEvent("ms_forceprecipitation", false)',
-                false
-            )
-        end)
-
         describe("SendLightningStrike()", function()
             local pt
             local fn_name = "SendLightningStrike"
@@ -452,6 +428,30 @@ describe("#sdk SDK.Remote.World", function()
                 { "Delta wetness:", "1.00" },
                 'TheWorld:PushEvent("ms_deltawetness", 1)',
                 1
+            )
+        end)
+
+        describe("SetPrecipitation()", function()
+            local fn_name = "SetPrecipitation"
+
+            TestRemoteValid(
+                fn_name,
+                { "Precipitation:", "true" },
+                'TheWorld:PushEvent("ms_forceprecipitation", true)'
+            )
+
+            TestRemoteValid(
+                fn_name,
+                { "Precipitation:", "true" },
+                'TheWorld:PushEvent("ms_forceprecipitation", true)',
+                true
+            )
+
+            TestRemoteValid(
+                fn_name,
+                { "Precipitation:", "false" },
+                'TheWorld:PushEvent("ms_forceprecipitation", false)',
+                false
             )
         end)
 

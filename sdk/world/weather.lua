@@ -255,7 +255,7 @@ function Weather.SetPrecipitation(bool)
         return true
     end
 
-    return SDK.Remote.World.ForcePrecipitation(bool)
+    return SDK.Remote.World.SetPrecipitation(bool)
 end
 
 --- Sets a snow level.

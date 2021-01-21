@@ -182,16 +182,6 @@ end
 --- Weather
 -- @section weather
 
---- Sends a request to force precipitation.
--- @tparam[opt] boolean bool
--- @treturn boolean
-function World.ForcePrecipitation(bool)
-    bool = bool ~= false and true or false
-    DebugString("Force precipitation:", tostring(bool))
-    World.PushEvent("ms_forceprecipitation", bool)
-    return true
-end
-
 --- Sends a request to send a lightning strike.
 -- @tparam Vector3 pt Point
 -- @treturn boolean
@@ -273,6 +263,16 @@ function World.SetDeltaWetness(delta)
 
     DebugString("Delta wetness:", Value.ToFloatString(delta))
     World.PushEvent("ms_deltawetness", delta)
+    return true
+end
+
+--- Sends a request to set precipitation.
+-- @tparam[opt] boolean bool
+-- @treturn boolean
+function World.SetPrecipitation(bool)
+    bool = bool ~= false and true or false
+    DebugString("Precipitation:", tostring(bool))
+    World.PushEvent("ms_forceprecipitation", bool)
     return true
 end
 

@@ -450,7 +450,7 @@ describe("#sdk SDK.World.Weather", function()
                     _G.TheWorld.ismastersim = false
                 end)
 
-                TestRemoteWorld("SetPrecipitation", "ForcePrecipitation", true)
+                TestRemoteWorld("SetPrecipitation", "SetPrecipitation", true)
             end)
         end)
 
