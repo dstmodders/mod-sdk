@@ -86,6 +86,7 @@ local _MODULES = {
     World = {
         path = "sdk/world",
         submodules = {
+            Season = "sdk/world/season",
             Weather = "sdk/world/weather",
         },
     },

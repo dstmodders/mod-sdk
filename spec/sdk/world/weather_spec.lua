@@ -81,14 +81,14 @@ describe("#sdk SDK.World.Weather", function()
         _G.TestDebugString(fn, "[world]", "[weather]", ...)
     end
 
-    local function TestGetState(name, state, value)
-        describe(name .. "()", function()
+    local function TestGetState(fn_name, state, value)
+        describe(fn_name .. "()", function()
             before_each(function()
                 _G.TheWorld.state[state] = value
             end)
 
             it("should return TheWorld.state." .. state, function()
-                assert.is_equal(value, Weather[name]())
+                assert.is_equal(value, Weather[fn_name]())
             end)
         end)
     end

@@ -113,6 +113,7 @@ end
 -- @section season
 
 --- Sends a request to advance a season.
+-- @see SDK.World.Season.AdvanceSeason
 -- @tparam[opt] number days
 -- @treturn boolean
 function World.AdvanceSeason(days)
@@ -130,6 +131,7 @@ function World.AdvanceSeason(days)
 end
 
 --- Sends a request to retreat a season.
+-- @see SDK.World.Season.RetreatSeason
 -- @tparam[opt] number days
 -- @treturn boolean
 function World.RetreatSeason(days)
@@ -147,6 +149,7 @@ function World.RetreatSeason(days)
 end
 
 --- Sends a request to set a season.
+-- @see SDK.World.Season.SetSeason
 -- @tparam string season
 -- @treturn boolean
 function World.SetSeason(season)
@@ -162,6 +165,7 @@ function World.SetSeason(season)
 end
 
 --- Sends a request to set a season length.
+-- @see SDK.World.Season.SetSeasonLength
 -- @tparam string season
 -- @tparam number length
 -- @treturn boolean

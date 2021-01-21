@@ -153,6 +153,7 @@ function World._DoInit(sdk, submodules)
     Value = SDK.Utils.Value
 
     submodules = submodules ~= nil and submodules or {
+        Season = "sdk/world/season",
         Weather = "sdk/world/weather",
     }
 
