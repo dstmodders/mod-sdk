@@ -113,10 +113,10 @@ end
 -- @section season
 
 --- Sends a request to advance a season.
--- @tparam number days
+-- @tparam[opt] number days
 -- @treturn boolean
 function World.AdvanceSeason(days)
-    days = ArgUnsignedInteger("AdvanceSeason", days, "days")
+    days = ArgUnsignedInteger("AdvanceSeason", days or 1, "days")
 
     if not days then
         return false
@@ -130,10 +130,10 @@ function World.AdvanceSeason(days)
 end
 
 --- Sends a request to retreat a season.
--- @tparam number days
+-- @tparam[opt] number days
 -- @treturn boolean
 function World.RetreatSeason(days)
-    days = ArgUnsignedInteger("RetreatSeason", days, "days")
+    days = ArgUnsignedInteger("RetreatSeason", days or 1, "days")
 
     if not days then
         return false
@@ -183,6 +183,7 @@ end
 -- @section weather
 
 --- Sends a request to send a lightning strike.
+-- @see SDK.World.Weather.SendLightningStrike
 -- @tparam Vector3 pt Point
 -- @treturn boolean
 function World.SendLightningStrike(pt)
@@ -204,6 +205,7 @@ function World.SendLightningStrike(pt)
 end
 
 --- Sends a request to send a mini earthquake.
+-- @see SDK.World.Weather.SendMiniEarthquake
 -- @tparam[opt] number radius Default: 20
 -- @tparam[opt] number amount Default: 20
 -- @tparam[opt] number duration Default: 2.5
@@ -237,6 +239,7 @@ function World.SendMiniEarthquake(radius, amount, duration, player)
 end
 
 --- Sends a request to set a delta moisture.
+-- @see SDK.World.Weather.SetDeltaMoisture
 -- @tparam[opt] number delta
 -- @treturn boolean
 function World.SetDeltaMoisture(delta)
@@ -252,6 +255,7 @@ function World.SetDeltaMoisture(delta)
 end
 
 --- Sends a request to set a delta wetness.
+-- @see SDK.World.Weather.SetDeltaWetness
 -- @tparam[opt] number delta
 -- @treturn boolean
 function World.SetDeltaWetness(delta)
@@ -267,6 +271,7 @@ function World.SetDeltaWetness(delta)
 end
 
 --- Sends a request to set precipitation.
+-- @see SDK.World.Weather.SetPrecipitation
 -- @tparam[opt] boolean bool
 -- @treturn boolean
 function World.SetPrecipitation(bool)
@@ -277,6 +282,7 @@ function World.SetPrecipitation(bool)
 end
 
 --- Sends a request to set a snow level.
+-- @see SDK.World.Weather.SetSnowLevel
 -- @tparam number level
 -- @treturn boolean
 function World.SetSnowLevel(level)

@@ -174,10 +174,7 @@ describe("#sdk SDK.Remote.World", function()
             local fn_name = "AdvanceSeason"
 
             TestArgUnsignedInteger(fn_name, {
-                empty = {
-                    args = {},
-                    calls = 1,
-                },
+                empty = {},
                 invalid = { -10 },
                 valid = { 10 }
             }, "days")
@@ -199,10 +196,7 @@ describe("#sdk SDK.Remote.World", function()
             local fn_name = "RetreatSeason"
 
             TestArgUnsignedInteger(fn_name, {
-                empty = {
-                    args = {},
-                    calls = 1,
-                },
+                empty = {},
                 invalid = { -10 },
                 valid = { 10 }
             }, "days")

@@ -4,8 +4,8 @@
 -- _**NB!** Requires_ `SDK.Remote.World` _to be loaded to work on dedicated servers with
 -- administrator rights._
 --
--- Supports both master and non-master instances. On non-master instances (dedicated
--- servers) it calls the corresponding `SDK.Remote.World` function.
+-- Supports both master and non-master instances. On non-master instances (dedicated servers) it
+-- calls the corresponding `SDK.Remote.World` function.
 --
 --     if SDK.World.Weather.HasPrecipitation() then
 --         SDK.World.Weather.SetPrecipitation(false)
@@ -84,6 +84,7 @@ function Weather.GetWeatherComponent()
 end
 
 --- Sends a lightning strike.
+-- @see SDK.Remote.World.SendLightningStrike
 -- @tparam Vector3 pt Point
 -- @treturn boolean
 function Weather.SendLightningStrike(pt)
@@ -109,6 +110,7 @@ function Weather.SendLightningStrike(pt)
 end
 
 --- Sends a mini earthquake.
+-- @see SDK.Remote.World.SendMiniEarthquake
 -- @tparam[opt] number radius Default: 20
 -- @tparam[opt] number amount Default: 20
 -- @tparam[opt] number duration Default: 2.5
@@ -206,6 +208,7 @@ end
 -- @section set
 
 --- Sets a delta moisture.
+-- @see SDK.Remote.World.SetDeltaMoisture
 -- @tparam[opt] number delta
 -- @treturn boolean
 function Weather.SetDeltaMoisture(delta)
@@ -225,6 +228,7 @@ function Weather.SetDeltaMoisture(delta)
 end
 
 --- Sets a delta wetness.
+-- @see SDK.Remote.World.SetDeltaWetness
 -- @tparam[opt] number delta
 -- @treturn boolean
 function Weather.SetDeltaWetness(delta)
@@ -244,6 +248,7 @@ function Weather.SetDeltaWetness(delta)
 end
 
 --- Sets a precipitation state.
+-- @see SDK.Remote.World.SetPrecipitation
 -- @tparam[opt] boolean bool
 -- @treturn boolean
 function Weather.SetPrecipitation(bool)
@@ -259,6 +264,7 @@ function Weather.SetPrecipitation(bool)
 end
 
 --- Sets a snow level.
+-- @see SDK.Remote.World.SetSnowLevel
 -- @tparam number level
 -- @treturn boolean
 function Weather.SetSnowLevel(level)
