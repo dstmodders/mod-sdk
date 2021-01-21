@@ -299,7 +299,7 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             fn()
-                            assert.spy(SDK._Info).was_called(30)
+                            assert.spy(SDK._Info).was_called(31)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
@@ -329,6 +329,7 @@ describe("#sdk SDK", function()
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Value")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World.Weather")
                             assert.spy(SDK._Info).was_called_with("Added world post initializer")
                         end)
                     end
@@ -396,7 +397,7 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             SDK.Load(env, "yoursubdirectory/sdk", modules)
-                            assert.spy(SDK._Info).was_called(13)
+                            assert.spy(SDK._Info).was_called(14)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Attribute")
@@ -409,6 +410,7 @@ describe("#sdk SDK", function()
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Value")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World.Weather")
                             assert.spy(SDK._Info).was_called_with("Added world post initializer")
                         end)
                     end)
@@ -593,6 +595,11 @@ describe("#sdk SDK", function()
                 },
                 World = {
                     path = "sdk/world",
+                    submodules = {
+                        Weather = {
+                            path = "sdk/world/weather",
+                        },
+                    },
                 },
             }
 

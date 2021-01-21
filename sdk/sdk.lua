@@ -83,7 +83,12 @@ local _MODULES = {
             Value = "sdk/utils/value",
         }
     },
-    World = "sdk/world",
+    World = {
+        path = "sdk/world",
+        submodules = {
+            Weather = "sdk/world/weather",
+        },
+    },
 }
 
 local _IS_IN_CHARACTER_SELECT = false
@@ -108,7 +113,7 @@ local function AddWorldPostInit()
         if SDK.IsLoaded("World") and SDK.IsLoaded("DebugUpvalue") then
             SDK.OnLoadComponent(
                 SDK.World.IsCave() and "caveweather" or "weather",
-                SDK.World.WeatherOnUpdate
+                SDK.World.Weather.OverrideOnUpdate
             )
         end
 

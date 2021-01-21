@@ -40,6 +40,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/utils/table"] = "sdk/utils/table",
     ["yoursubdirectory/sdk/sdk/utils/value"] = "sdk/utils/value",
     ["yoursubdirectory/sdk/sdk/world"] = "sdk/world",
+    ["yoursubdirectory/sdk/sdk/world/weather"] = "sdk/world/weather",
     ["yoursubdirectory/sdk/spec/class"] = "spec/class",
     ["yoursubdirectory/sdk/spec/submodule"] = "spec/submodule",
     ["yoursubdirectory/sdk/spec/vector3"] = "spec/vector3",
@@ -225,6 +226,30 @@ end
 function TestArgUnsignedInteger(fn_name, args, name)
     name = name ~= nil and name or "number"
     TestArg(fn_name, name, "must be an unsigned integer", args)
+end
+
+function TestDebugError(fn, ...)
+    TestDebugErrorCalls(fn, 1, ...)
+end
+
+function TestDebugErrorCalls(fn, calls, ...)
+    local it = require "busted".it
+    local args = { ... }
+    it("should debug error string", function()
+        AssertDebugErrorCalls(fn, calls, unpack(args))
+    end)
+end
+
+function TestDebugString(fn, ...)
+    TestDebugStringCalls(fn, 1, ...)
+end
+
+function TestDebugStringCalls(fn, calls, ...)
+    local it = require "busted".it
+    local args = { ... }
+    it("should debug string", function()
+        AssertDebugStringCalls(fn, calls, unpack(args))
+    end)
 end
 
 function TestRemoteInvalid(name, error, ...)

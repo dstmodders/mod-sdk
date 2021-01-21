@@ -14,7 +14,6 @@ describe("#sdk SDK.World", function()
 
     teardown(function()
         -- globals
-        _G.SetPause = nil
         _G.TheNet = nil
         _G.ThePlayer = nil
         _G.TheWorld = nil
@@ -25,8 +24,6 @@ describe("#sdk SDK.World", function()
 
     before_each(function()
         -- globals
-        _G.SetPause = spy.new(Empty)
-
         _G.TheNet = mock({
             SendWorldRollbackRequestToServer = Empty,
         })
@@ -347,60 +344,6 @@ describe("#sdk SDK.World", function()
                     AssertChainNil(function()
                         assert.is_nil(World.GetTimeUntilPhase())
                     end, _G.TheWorld, "net", "components", "clock")
-                end)
-            end)
-        end)
-    end)
-
-    describe("weather", function()
-        describe("GetWeatherComponent()", function()
-            describe("when in the cave", function()
-                before_each(function()
-                    _G.TheWorld.net.components.caveweather = "caveweather"
-                    World.IsCave = ReturnValueFn(true)
-                end)
-
-                it("should return CaveWeather component", function()
-                    assert.is_equal("caveweather", World.GetWeatherComponent())
-                end)
-
-                describe("and a caveweather component is missing", function()
-                    before_each(function()
-                        _G.TheWorld.net.components.caveweather = nil
-                    end)
-
-                    it("should return nil", function()
-                        assert.is_nil(World.GetWeatherComponent())
-                    end)
-                end)
-            end)
-
-            describe("when not in the cave", function()
-                before_each(function()
-                    _G.TheWorld.net.components.weather = "weather"
-                    World.IsCave = ReturnValueFn(false)
-                end)
-
-                it("should return Weather component", function()
-                    assert.is_equal("weather", World.GetWeatherComponent())
-                end)
-
-                describe("and a weather component is not available", function()
-                    before_each(function()
-                        _G.TheWorld.net.components.weather = nil
-                    end)
-
-                    it("should return nil", function()
-                        assert.is_nil(World.GetWeatherComponent())
-                    end)
-                end)
-            end)
-
-            describe("when some chain fields are missing", function()
-                it("should return nil", function()
-                    AssertChainNil(function()
-                        assert.is_nil(World.GetWeatherComponent())
-                    end, _G.TheWorld, "net", "net", "components")
                 end)
             end)
         end)

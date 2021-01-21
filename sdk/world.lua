@@ -18,11 +18,6 @@ local World = {}
 local SDK
 local Value
 
-local _MOISTURE_FLOOR
-local _MOISTURE_RATE
-local _PEAK_PRECIPITATION_RATE
-local _WETNESS_RATE
-
 --- Helpers
 -- @section helpers
 
@@ -146,104 +141,24 @@ function World.GetTimeUntilPhase(phase)
     return clock and clock:GetTimeUntilPhase(phase)
 end
 
---- Weather
--- @section weather
-
---- Gets a moisture floor value.
--- @treturn number
-function World.GetMoistureFloor()
-    return _MOISTURE_FLOOR
-end
-
---- Gets a moisture rate value.
--- @treturn number
-function World.GetMoistureRate()
-    return _MOISTURE_RATE
-end
-
---- Gets a peak precipitation rate.
--- @treturn number
-function World.GetPeakPrecipitationRate()
-    return _PEAK_PRECIPITATION_RATE
-end
-
---- Gets the `weather` component.
---
--- Returns the component based on the world type: cave or forest.
---
--- @treturn[1] Weather
--- @treturn[2] CaveWeather
-function World.GetWeatherComponent()
-    local components = SDK.Utils.Chain.Get(TheWorld, "net", "components")
-    if components then
-        return World.IsCave() and components.caveweather or components.weather
-    end
-    return nil
-end
-
---- Gets a wetness rate value.
--- @treturn number
-function World.GetWetnessRate()
-    return _WETNESS_RATE
-end
-
---- Checks if there is precipitation.
--- @treturn boolean
-function World.IsPrecipitation()
-    return World.GetState("precipitation") ~= "none"
-        or World.GetState("moisture") >= World.GetState("moistureceil")
-end
-
---- Overrides `Weather:OnUpdate()`.
--- @tparam Weather|CaveWeather self
-function World.WeatherOnUpdate(self)
-    local _moisturefloor = SDK.DebugUpvalue.GetUpvalue(self.GetDebugString, "_moisturefloor")
-    local _moisturerate = SDK.DebugUpvalue.GetUpvalue(self.GetDebugString, "_moisturerate")
-    local _temperature = SDK.DebugUpvalue.GetUpvalue(self.GetDebugString, "_temperature")
-
-    local _peakprecipitationrate = SDK.DebugUpvalue.GetUpvalue(
-        self.GetDebugString,
-        "_peakprecipitationrate"
-    )
-
-    local CalculatePrecipitationRate = SDK.DebugUpvalue.GetUpvalue(
-        self.GetDebugString,
-        "CalculatePrecipitationRate"
-    )
-
-    local CalculateWetnessRate = SDK.DebugUpvalue.GetUpvalue(
-        self.GetDebugString,
-        "CalculateWetnessRate"
-    )
-
-    local precipitation_rate
-    if CalculatePrecipitationRate and type(CalculatePrecipitationRate) == "function" then
-        precipitation_rate = CalculatePrecipitationRate()
-    end
-
-    local wetness_rate
-    if CalculatePrecipitationRate and type(CalculatePrecipitationRate) == "function"
-        and _temperature and type(_temperature) == "number"
-    then
-        wetness_rate = CalculateWetnessRate(_temperature, precipitation_rate)
-    end
-
-    _WETNESS_RATE = wetness_rate
-    _MOISTURE_FLOOR = type(_moisturefloor) == "userdata" and _moisturefloor:value()
-    _MOISTURE_RATE = type(_moisturerate) == "userdata" and _moisturerate:value()
-    _PEAK_PRECIPITATION_RATE = type(_peakprecipitationrate) == "userdata"
-        and _peakprecipitationrate:value()
-end
-
 --- Lifecycle
 -- @section lifecycle
 
 --- Initializes.
 -- @tparam SDK sdk
+-- @tparam table submodules
 -- @treturn SDK.World
-function World._DoInit(sdk)
+function World._DoInit(sdk, submodules)
     SDK = sdk
     Value = SDK.Utils.Value
+
+    submodules = submodules ~= nil and submodules or {
+        Weather = "sdk/world/weather",
+    }
+
+    SDK._SetModuleName(SDK, World, "World")
+    SDK.LoadSubmodules(World, submodules)
+
     return SDK._DoInitModule(SDK, World, "World", "TheWorld")
 end
 
