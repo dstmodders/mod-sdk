@@ -391,6 +391,36 @@ function Test.TableHasValue(t, value)
     return SDK.Utils.Table.HasValue(t, value)
 end
 
+--- Test
+-- @section test
+
+--- Tests if returns false.
+function Test.TestReturnFalse(fn)
+    local assert = require("busted").assert
+    local it = require "busted".it
+    it("should return false", function()
+        assert.is_false(fn())
+    end)
+end
+
+--- Tests if returns true.
+function Test.TestReturnTrue(fn)
+    local assert = require("busted").assert
+    local it = require "busted".it
+    it("should return true", function()
+        assert.is_true(fn())
+    end)
+end
+
+--- Tests if returns nil.
+function Test.TestReturnNil(fn)
+    local assert = require("busted").assert
+    local it = require "busted".it
+    it("should return nil", function()
+        assert.is_nil(fn())
+    end)
+end
+
 --- Lifecycle
 -- @section lifecycle
 
@@ -435,6 +465,9 @@ function Test._DoInit(sdk)
         _G.shallowcopy = Test.shallowcopy
         _G.TableCount = Test.TableCount
         _G.TableHasValue = Test.TableHasValue
+        _G.TestReturnFalse = Test.TestReturnFalse
+        _G.TestReturnNil = Test.TestReturnNil
+        _G.TestReturnTrue = Test.TestReturnTrue
         _G.userdata = Test.userdata
     end
 
