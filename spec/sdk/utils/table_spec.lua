@@ -9,94 +9,120 @@ describe("#sdk SDK.Utils.Table", function()
     end)
 
     describe("Compare()", function()
-        it("should return true when both tables have the same reference", function()
-            local test = {}
-            assert.is_true(Table.Compare(test, test))
+        describe("when both tables have the same reference", function()
+            TestReturnTrue(function()
+                local t = {}
+                return Table.Compare(t, t)
+            end)
         end)
 
-        it("should return true when both tables with nested ones are the same", function()
-            local first = { first = {}, second = { third = {} } }
-            local second = { first = {}, second = { third = {} } }
-            assert.is_true(Table.Compare(first, second))
+        describe("when both tables with nested ones are the same", function()
+            TestReturnTrue(function()
+                local a = { first = {}, second = { third = {} } }
+                local b = { first = {}, second = { third = {} } }
+                return Table.Compare(a, b)
+            end)
         end)
 
-        it("should return false when one of the tables is nil", function()
-            local test = {}
-            assert.is_false(Table.Compare(nil, test))
-            assert.is_false(Table.Compare(test, nil))
+        describe("when one of the tables is nil", function()
+            it("should return false", function()
+                local t = {}
+                assert.is_false(Table.Compare(nil, t))
+                assert.is_false(Table.Compare(t, nil))
+            end)
         end)
 
-        it("should return false when one of the tables is not a table type", function()
-            local test = {}
-            assert.is_false(Table.Compare("table", test))
-            assert.is_false(Table.Compare(test, "table"))
+        describe("when one of the tables is not a table type", function()
+            it("should return false", function()
+                local t = {}
+                assert.is_false(Table.Compare("table", t))
+                assert.is_false(Table.Compare(t, "table"))
+            end)
         end)
 
-        it("should return false when both tables with nested ones are not the same", function()
-            local first = { first = {}, second = { third = {} } }
-            local second = { first = {}, second = { third = { "fourth" } } }
-            assert.is_false(Table.Compare(first, second))
+        describe("when both tables with nested ones are not the same", function()
+            TestReturnFalse(function()
+                local a = { first = {}, second = { third = {} } }
+                local b = { first = {}, second = { third = { "fourth" } } }
+                return Table.Compare(a, b)
+            end)
         end)
     end)
 
     describe("Count()", function()
-        it("should return false when the passed parameter is not a table", function()
-            assert.is_false(Table.Count("test"))
-        end)
-
-        describe("in the table with default indexes", function()
-            it("should count the number of elements", function()
-                local test = { one = 1, two = 2, three = 3, four = 4, five = 5 }
-                assert.is_equal(5, Table.Count(test))
+        describe("when the passed parameter is not a table", function()
+            TestReturnFalse(function()
+                return Table.Count("test")
             end)
         end)
 
-        describe("in the table with custom indexes", function()
-            it("should count the number of elements", function()
-                local test = { 1, 2, 3, 4, 5 }
-                assert.is_equal(5, Table.Count(test))
+        describe("when the table with default indexes", function()
+            it("should return the number of elements", function()
+                local t = { one = 1, two = 2, three = 3, four = 4, five = 5 }
+                assert.is_equal(5, Table.Count(t))
+            end)
+        end)
+
+        describe("when the table with custom indexes", function()
+            it("should return the number of elements", function()
+                local t = { 1, 2, 3, 4, 5 }
+                assert.is_equal(5, Table.Count(t))
             end)
         end)
     end)
 
     describe("HasValue()", function()
-        it("should return false when the passed parameter is not a table", function()
-            assert.is_false(Table.HasValue("test"))
-        end)
-
-        describe("in the table with default indexes", function()
-            it("should return true when the element is in the table", function()
-                local test = { one = 1, two = 2, three = 3, four = 4, five = 5 }
-                assert.is_true(Table.HasValue(test, 3))
-            end)
-
-            it("should return false when the element is not in the table", function()
-                local test = { one = 1, two = 2, three = 3, four = 4, five = 5 }
-                assert.is_false(Table.HasValue(test, 6))
+        describe("when the passed parameter is not a table", function()
+            TestReturnFalse(function()
+                return Table.HasValue("test")
             end)
         end)
 
-        describe("in the table with custom indexes", function()
-            it("should return true when the element is in the table", function()
-                local test = { 1, 2, 3, 4, 5 }
-                assert.is_true(Table.HasValue(test, 3))
+        describe("when the table with default indexes", function()
+            describe("and the element is in the table", function()
+                TestReturnTrue(function()
+                    local t = { one = 1, two = 2, three = 3, four = 4, five = 5 }
+                    return Table.HasValue(t, 3)
+                end)
             end)
 
-            it("should return false when the element is not in the table", function()
-                local test = { one = 1, two = 2, three = 3, four = 4, five = 5 }
-                assert.is_false(Table.HasValue(test, 6))
+            describe("and the element is not in the table", function()
+                TestReturnFalse(function()
+                    local t = { one = 1, two = 2, three = 3, four = 4, five = 5 }
+                    return Table.HasValue(t, 6)
+                end)
+            end)
+        end)
+
+        describe("when the table with custom indexes", function()
+            describe("and the element is in the table", function()
+                TestReturnTrue(function()
+                    local t = { 1, 2, 3, 4, 5 }
+                    return Table.HasValue(t, 3)
+                end)
+            end)
+
+            describe("and the element is not in the table", function()
+                TestReturnFalse(function()
+                    local t = { one = 1, two = 2, three = 3, four = 4, five = 5 }
+                    return Table.HasValue(t, 6)
+                end)
             end)
         end)
     end)
 
     describe("KeyByValue()", function()
-        it("should return false when the passed parameter is not a table", function()
-            assert.is_false(Table.KeyByValue("test"))
+        describe("when the passed parameter is not a table", function()
+            TestReturnFalse(function()
+                return Table.KeyByValue("test")
+            end)
         end)
 
-        it("should return the key when the valid table and value passed", function()
-            local test = { one = 1, two = 2, three = 3, four = 4, five = 5 }
-            assert.is_equal("two", Table.KeyByValue(test, 2))
+        describe("when the valid table and value passed", function()
+            it("should return the key", function()
+                local t = { one = 1, two = 2, three = 3, four = 4, five = 5 }
+                assert.is_equal("two", Table.KeyByValue(t, 2))
+            end)
         end)
     end)
 
@@ -118,31 +144,39 @@ describe("#sdk SDK.Utils.Table", function()
     end)
 
     describe("NextValue()", function()
-        it("should return the next value", function()
-            local t = { "a", "b", "c" }
-            assert.is_equal("c", Table.NextValue(t, "b"))
+        describe("when there is a next value", function()
+            it("should return the next value", function()
+                local t = { "a", "b", "c" }
+                assert.is_equal("c", Table.NextValue(t, "b"))
+            end)
         end)
 
-        it("should return the first value when there is no next one", function()
-            local t = { "a", "b", "c" }
-            assert.is_equal("a", Table.NextValue(t, "c"))
+        describe("when there is no next value", function()
+            it("should return the first value", function()
+                local t = { "a", "b", "c" }
+                assert.is_equal("a", Table.NextValue(t, "c"))
+            end)
         end)
     end)
 
     describe("SortAlphabetically()", function()
-        it("should return false when the passed parameter is not a table", function()
-            assert.is_false(Table.SortAlphabetically("test"))
+        describe("when the passed parameter is not a table", function()
+            TestReturnFalse(function()
+                return Table.SortAlphabetically("test")
+            end)
         end)
 
-        it("should return true when both tables with nested ones are the same", function()
-            local test = { "one", "two", "three", "four", "five" }
-            local expected = { "five", "four", "one", "three", "two" }
-            local result = Table.SortAlphabetically(test)
+        describe("when both tables with nested ones are the same", function()
+            it("should return true", function()
+                local test = { "one", "two", "three", "four", "five" }
+                local expected = { "five", "four", "one", "three", "two" }
+                local result = Table.SortAlphabetically(test)
 
-            assert.is_equal(#expected, #result)
-            for k, v in pairs(result) do
-                assert.is_equal(expected[k], v)
-            end
+                assert.is_equal(#expected, #result)
+                for k, v in pairs(result) do
+                    assert.is_equal(expected[k], v)
+                end
+            end)
         end)
     end)
 end)

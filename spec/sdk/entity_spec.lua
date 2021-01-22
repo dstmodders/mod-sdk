@@ -109,6 +109,10 @@ describe("#sdk SDK.Entity", function()
         describe("GetTentSleeper()", function()
             local entity
 
+            local fn = function()
+                return Entity.GetTentSleeper(entity)
+            end
+
             before_each(function()
                 entity = {
                     components = {
@@ -133,14 +137,12 @@ describe("#sdk SDK.Entity", function()
 
                 describe("and some chain fields are missing", function()
                     it("should return nil", function()
-                        AssertChainNil(function()
-                            Entity.GetTentSleeper(entity)
-                        end, entity, "components", "sleepingbag", "sleeper")
+                        AssertChainNil(fn, entity, "components", "sleepingbag", "sleeper")
                     end)
                 end)
 
                 it("should return sleeper", function()
-                    assert.is_equal(_G.AllPlayers[2], Entity.GetTentSleeper(entity))
+                    assert.is_equal(_G.AllPlayers[2], fn())
                 end)
             end)
 
@@ -154,14 +156,12 @@ describe("#sdk SDK.Entity", function()
                         entity.HasTag = spy.new(ReturnValueFn(false))
                     end)
 
-                    it("should return nil", function()
-                        assert.is_nil(Entity.GetTentSleeper(entity))
-                    end)
+                    TestReturnNil(fn)
                 end)
 
                 describe('and the passed entity has "tent" and "hassleeper" tags', function()
                     it("should return sleeper", function()
-                        assert.is_equal(_G.AllPlayers[2], Entity.GetTentSleeper(entity))
+                        assert.is_equal(_G.AllPlayers[2], fn())
                     end)
                 end)
             end)

@@ -95,56 +95,40 @@ describe("#sdk SDK.Player.Craft", function()
         end
     end)
 
-    local function AssertDebugString(fn, ...)
-        _G.AssertDebugString(fn, "[player]", "[craft]", ...)
-    end
-
-    local function TestDebugError(fn, ...)
-        local args = { ... }
-        it("should debug error string", function()
-            AssertDebugError(fn, unpack(args))
-        end)
+    local function TestDebugError(fn, fn_name, ...)
+        _G.TestDebugError(fn, "SDK.Player.Craft." .. fn_name .. "():", ...)
     end
 
     local function TestDebugErrorNoComponent(fn, fn_name, entity, name)
-        it("should debug error string", function()
-            AssertDebugError(
-                fn,
-                string.format("SDK.Player.Craft.%s():", fn_name),
-                name:gsub("^%l", string.upper),
-                "component is not available",
-                "(" .. entity:GetDisplayName() .. ")"
-            )
-        end)
+        TestDebugError(
+            fn,
+            fn_name,
+            name:gsub("^%l", string.upper),
+            "component is not available",
+            "(" .. entity:GetDisplayName() .. ")"
+        )
     end
 
     local function TestDebugErrorNoReplica(fn, fn_name, entity, name)
-        it("should debug error string", function()
-            AssertDebugError(
-                fn,
-                string.format("SDK.Player.Craft.%s():", fn_name),
-                name:gsub("^%l", string.upper),
-                "replica is not available",
-                "(" .. entity:GetDisplayName() .. ")"
-            )
-        end)
+        TestDebugError(
+            fn,
+            fn_name,
+            name:gsub("^%l", string.upper),
+            "replica is not available",
+            "(" .. entity:GetDisplayName() .. ")"
+        )
     end
 
     local function TestDebugString(fn, ...)
-        local args = { ... }
-        it("should debug string", function()
-            AssertDebugString(fn, unpack(args))
-        end)
-    end
-
-    local function TestNoDebugError(fn)
-        it("shouldn't debug error string", function()
-            AssertDebugErrorCalls(fn, 0)
-        end)
+        _G.TestDebugString(fn, "[player]", "[craft]", ...)
     end
 
     describe("free crafting", function()
         describe("HasFreeCrafting()", function()
+            local fn = function()
+                return Craft.HasFreeCrafting()
+            end
+
             Craft = require "yoursubdirectory/sdk/sdk/player/craft"
 
             TestArgPlayer("HasFreeCrafting", {
@@ -154,7 +138,7 @@ describe("#sdk SDK.Player.Craft", function()
             })
 
             describe("when a valid player is passed", function()
-                local function TestIsFreeBuildModeWasCalled(fn)
+                local function TestIsFreeBuildModeWasCalled()
                     it("should call [player].player_classified.isfreebuildmode:value()", function()
                         assert.spy(_G.ThePlayer.player_classified.isfreebuildmode.value)
                             .was_not_called()
@@ -175,13 +159,8 @@ describe("#sdk SDK.Player.Craft", function()
                         )
                     end)
 
-                    TestIsFreeBuildModeWasCalled(function()
-                        Craft.HasFreeCrafting()
-                    end)
-
-                    it("should return true", function()
-                        assert.is_true(Craft.HasFreeCrafting())
-                    end)
+                    TestIsFreeBuildModeWasCalled()
+                    TestReturnTrue(fn)
                 end)
 
                 describe("and a free crafting is disabled", function()
@@ -189,19 +168,18 @@ describe("#sdk SDK.Player.Craft", function()
                         ReturnValueFn(false)
                     )
 
-                    TestIsFreeBuildModeWasCalled(function()
-                        Craft.HasFreeCrafting()
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Craft.HasFreeCrafting())
-                    end)
+                    TestIsFreeBuildModeWasCalled()
+                    TestReturnFalse(fn)
                 end)
             end)
         end)
 
         describe("ToggleFreeCrafting()", function()
             local _fn
+
+            local fn = function()
+                return Craft.ToggleFreeCrafting(_G.ThePlayer)
+            end
 
             setup(function()
                 _fn = SDK.Remote.Player.ToggleFreeCrafting
@@ -232,13 +210,8 @@ describe("#sdk SDK.Player.Craft", function()
                             _G.ThePlayer.components.builder = nil
                         end)
 
-                        TestDebugErrorNoComponent(function()
-                            Craft.ToggleFreeCrafting(_G.ThePlayer)
-                        end, "ToggleFreeCrafting", _G.ThePlayer, "builder")
-
-                        it("should return false", function()
-                            assert.is_false(Craft.ToggleFreeCrafting(_G.ThePlayer))
-                        end)
+                        TestDebugErrorNoComponent(fn, "ToggleFreeCrafting", _G.ThePlayer, "builder")
+                        TestReturnFalse(fn)
                     end)
 
                     describe("and a builder component is available", function()
@@ -248,18 +221,13 @@ describe("#sdk SDK.Player.Craft", function()
                             })
                         end)
 
-                        TestNoDebugError(function()
-                            Craft.ToggleFreeCrafting(_G.ThePlayer)
-                        end)
-
-                        TestDebugString(function()
-                            Craft.ToggleFreeCrafting(_G.ThePlayer)
-                        end, "Toggle free crafting:", "Player")
+                        TestDebugErrorCalls(fn, 0)
+                        TestDebugString(fn, "Toggle free crafting:", "Player")
 
                         it("should call [player].components.builder:GiveAllRecipes()", function()
                             assert.spy(_G.ThePlayer.components.builder.GiveAllRecipes)
                                 .was_not_called()
-                            Craft.ToggleFreeCrafting(_G.ThePlayer)
+                            fn()
                             assert.spy(_G.ThePlayer.components.builder.GiveAllRecipes).was_called(1)
                             assert.spy(_G.ThePlayer.components.builder.GiveAllRecipes)
                                 .was_called_with(
@@ -269,7 +237,7 @@ describe("#sdk SDK.Player.Craft", function()
 
                         it("should call [player]:PushEvent()", function()
                             assert.spy(_G.ThePlayer.PushEvent).was_not_called()
-                            Craft.ToggleFreeCrafting(_G.ThePlayer)
+                            fn()
                             assert.spy(_G.ThePlayer.PushEvent).was_called(1)
                             assert.spy(_G.ThePlayer.PushEvent).was_called_with(
                                 match.is_ref(_G.ThePlayer),
@@ -277,9 +245,7 @@ describe("#sdk SDK.Player.Craft", function()
                             )
                         end)
 
-                        it("should return true", function()
-                            assert.is_true(Craft.ToggleFreeCrafting(_G.ThePlayer))
-                        end)
+                        TestReturnTrue(fn)
                     end)
                 end)
 
@@ -290,7 +256,7 @@ describe("#sdk SDK.Player.Craft", function()
 
                     it("should call SDK.Remote.Player.ToggleFreeCrafting()", function()
                         assert.spy(SDK.Remote.Player.ToggleFreeCrafting).was_not_called()
-                        Craft.ToggleFreeCrafting(_G.ThePlayer)
+                        fn()
                         assert.spy(SDK.Remote.Player.ToggleFreeCrafting).was_called(1)
                         assert.spy(SDK.Remote.Player.ToggleFreeCrafting).was_called_with(
                             _G.ThePlayer
@@ -299,9 +265,9 @@ describe("#sdk SDK.Player.Craft", function()
 
                     it("should return SDK.Remote.Player.ToggleFreeCrafting() value", function()
                         SDK.Remote.Player.ToggleFreeCrafting = ReturnValueFn(true)
-                        assert.is_true(Craft.ToggleFreeCrafting(_G.ThePlayer))
+                        assert.is_true(fn())
                         SDK.Remote.Player.ToggleFreeCrafting = ReturnValueFn(false)
-                        assert.is_false(Craft.ToggleFreeCrafting(_G.ThePlayer))
+                        assert.is_false(fn())
                     end)
                 end)
             end)
@@ -326,27 +292,27 @@ describe("#sdk SDK.Player.Craft", function()
             })
 
             describe("when an invalid recipe is passed", function()
-                it("should return nil", function()
-                    assert.is_nil(Craft.IsLearnedRecipe("foobar", _G.ThePlayer))
+                TestReturnNil(function()
+                    return Craft.IsLearnedRecipe("foobar", _G.ThePlayer)
                 end)
             end)
 
             describe("when an invalid player is passed", function()
-                it("should return nil", function()
-                    assert.is_nil(Craft.IsLearnedRecipe("foo", "foo"))
+                TestReturnNil(function()
+                    return Craft.IsLearnedRecipe("foo", "foo")
                 end)
             end)
 
             describe("when valid arguments are passed", function()
                 describe("when a recipe is learned", function()
-                    it("should return true", function()
-                        assert.is_true(Craft.IsLearnedRecipe("foo", _G.ThePlayer))
+                    TestReturnTrue(function()
+                        return Craft.IsLearnedRecipe("foo", _G.ThePlayer)
                     end)
                 end)
 
                 describe("when a recipe is not learned", function()
-                    it("should return false", function()
-                        assert.is_false(Craft.IsLearnedRecipe("bar", _G.ThePlayer))
+                    TestReturnFalse(function()
+                        return Craft.IsLearnedRecipe("bar", _G.ThePlayer)
                     end)
                 end)
             end)
@@ -354,6 +320,10 @@ describe("#sdk SDK.Player.Craft", function()
 
         describe("LockRecipe()", function()
             local _fn
+
+            local fn = function()
+                return Craft.LockRecipe("foo", _G.ThePlayer)
+            end
 
             setup(function()
                 _fn = SDK.Remote.Player.LockRecipe
@@ -393,13 +363,8 @@ describe("#sdk SDK.Player.Craft", function()
                             _G.ThePlayer.components.builder = nil
                         end)
 
-                        TestDebugErrorNoComponent(function()
-                            Craft.LockRecipe("foo", _G.ThePlayer)
-                        end, "LockRecipe", _G.ThePlayer, "builder")
-
-                        it("should return false", function()
-                            assert.is_false(Craft.LockRecipe("foo", _G.ThePlayer))
-                        end)
+                        TestDebugErrorNoComponent(fn, "LockRecipe", _G.ThePlayer, "builder")
+                        TestReturnFalse(fn)
                     end)
 
                     describe("and a builder component is available", function()
@@ -407,22 +372,15 @@ describe("#sdk SDK.Player.Craft", function()
                             _G.ThePlayer.components.builder.recipes = { "foo" }
                         end)
 
-                        TestNoDebugError(function()
-                            Craft.LockRecipe("foo", _G.ThePlayer)
-                        end)
+                        TestDebugErrorCalls(fn, 0)
 
                         describe("and a builder replica is not available", function()
                             before_each(function()
                                 _G.ThePlayer.replica.builder = nil
                             end)
 
-                            TestDebugErrorNoReplica(function()
-                                Craft.LockRecipe("foo", _G.ThePlayer)
-                            end, "LockRecipe", _G.ThePlayer, "builder")
-
-                            it("should return false", function()
-                                assert.is_false(Craft.LockRecipe("foo", _G.ThePlayer))
-                            end)
+                            TestDebugErrorNoReplica(fn, "LockRecipe", _G.ThePlayer, "builder")
+                            TestReturnFalse(fn)
                         end)
 
                         describe("and a builder replica is available", function()
@@ -448,10 +406,8 @@ describe("#sdk SDK.Player.Craft", function()
                                 end)
 
                                 TestDebugError(
-                                    function()
-                                        Craft.LockRecipe("foo", _G.ThePlayer)
-                                    end,
-                                    "SDK.Player.Craft.LockRecipe():",
+                                    fn,
+                                    "LockRecipe",
                                     "Builder component recipes not found"
                                 )
 
@@ -460,15 +416,13 @@ describe("#sdk SDK.Player.Craft", function()
                                     function()
                                         assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
                                               .was_not_called()
-                                        Craft.LockRecipe("foo", _G.ThePlayer)
+                                        fn()
                                         assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
                                               .was_not_called()
                                     end
                                 )
 
-                                it("should return false", function()
-                                    assert.is_false(Craft.LockRecipe("foo", _G.ThePlayer))
-                                end)
+                                TestReturnFalse(fn)
                             end)
 
                             describe("and a builder component recipes are available", function()
@@ -476,24 +430,19 @@ describe("#sdk SDK.Player.Craft", function()
                                     _G.ThePlayer.components.builder.recipes = { "foo" }
                                 end)
 
-                                TestNoDebugError(function()
-                                    Craft.LockRecipe("foo", _G.ThePlayer)
-                                end)
-
-                                TestDebugString(function()
-                                    Craft.LockRecipe("foo", _G.ThePlayer)
-                                end, "Lock recipe:", "foo", "(Player)")
+                                TestDebugErrorCalls(fn, 0)
+                                TestDebugString(fn, "Lock recipe:", "foo", "(Player)")
 
                                 it("should remove a builder component recipe", function()
                                     assert.is_equal(1, #_G.ThePlayer.components.builder.recipes)
-                                    Craft.LockRecipe("foo", _G.ThePlayer)
+                                    fn()
                                     assert.is_equal(0, #_G.ThePlayer.components.builder.recipes)
                                 end)
 
                                 it("should call [player].replica.builder:RemoveRecipe()", function()
                                     assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
                                         .was_not_called()
-                                    Craft.LockRecipe("foo", _G.ThePlayer)
+                                    fn()
                                     assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
                                         .was_called(1)
                                     assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
@@ -503,9 +452,7 @@ describe("#sdk SDK.Player.Craft", function()
                                         )
                                 end)
 
-                                it("should return true", function()
-                                    assert.is_true(Craft.LockRecipe("foo", _G.ThePlayer))
-                                end)
+                                TestReturnTrue(fn)
                             end)
                         end)
                     end)
@@ -518,7 +465,7 @@ describe("#sdk SDK.Player.Craft", function()
 
                     it("should call SDK.Remote.Player.LockRecipe()", function()
                         assert.spy(SDK.Remote.Player.LockRecipe).was_not_called()
-                        Craft.LockRecipe("foo", _G.ThePlayer)
+                        fn()
                         assert.spy(SDK.Remote.Player.LockRecipe).was_called(1)
                         assert.spy(SDK.Remote.Player.LockRecipe).was_called_with(
                             "foo",
@@ -528,9 +475,9 @@ describe("#sdk SDK.Player.Craft", function()
 
                     it("should return SDK.Remote.Player.LockRecipe() value", function()
                         SDK.Remote.Player.LockRecipe = ReturnValueFn(true)
-                        assert.is_true(Craft.LockRecipe("foo", _G.ThePlayer))
+                        assert.is_true(fn())
                         SDK.Remote.Player.LockRecipe = ReturnValueFn(false)
-                        assert.is_false(Craft.LockRecipe("foo", _G.ThePlayer))
+                        assert.is_false(fn())
                     end)
                 end)
             end)
@@ -538,6 +485,10 @@ describe("#sdk SDK.Player.Craft", function()
 
         describe("UnlockRecipe()", function()
             local _fn
+
+            local fn = function()
+                return Craft.UnlockRecipe("foo", _G.ThePlayer)
+            end
 
             setup(function()
                 _fn = SDK.Remote.Player.UnlockRecipe
@@ -577,13 +528,8 @@ describe("#sdk SDK.Player.Craft", function()
                             _G.ThePlayer.components.builder = nil
                         end)
 
-                        TestDebugErrorNoComponent(function()
-                            Craft.UnlockRecipe("foo", _G.ThePlayer)
-                        end, "UnlockRecipe", _G.ThePlayer, "builder")
-
-                        it("should return false", function()
-                            assert.is_false(Craft.UnlockRecipe("foo", _G.ThePlayer))
-                        end)
+                        TestDebugErrorNoComponent(fn, "UnlockRecipe", _G.ThePlayer, "builder")
+                        TestReturnFalse(fn)
                     end)
 
                     describe("and a builder component is available", function()
@@ -593,17 +539,12 @@ describe("#sdk SDK.Player.Craft", function()
                             })
                         end)
 
-                        TestNoDebugError(function()
-                            Craft.UnlockRecipe("foo", _G.ThePlayer)
-                        end)
-
-                        TestDebugString(function()
-                            Craft.UnlockRecipe("foo", _G.ThePlayer)
-                        end, "Unlock recipe:", "foo", "(Player)")
+                        TestDebugErrorCalls(fn, 0)
+                        TestDebugString(fn, "Unlock recipe:", "foo", "(Player)")
 
                         it("should call [player].components.builder:AddRecipe()", function()
                             assert.spy(_G.ThePlayer.components.builder.AddRecipe).was_not_called()
-                            Craft.UnlockRecipe("foo", _G.ThePlayer)
+                            fn()
                             assert.spy(_G.ThePlayer.components.builder.AddRecipe).was_called(1)
                             assert.spy(_G.ThePlayer.components.builder.AddRecipe).was_called_with(
                                 match.is_ref(_G.ThePlayer.components.builder),
@@ -613,7 +554,7 @@ describe("#sdk SDK.Player.Craft", function()
 
                         it("should call [player]:PushEvent()", function()
                             assert.spy(_G.ThePlayer.PushEvent).was_not_called()
-                            Craft.UnlockRecipe("foo", _G.ThePlayer)
+                            fn()
                             assert.spy(_G.ThePlayer.PushEvent).was_called(1)
                             assert.spy(_G.ThePlayer.PushEvent).was_called_with(
                                 match.is_ref(_G.ThePlayer),
@@ -622,9 +563,7 @@ describe("#sdk SDK.Player.Craft", function()
                             )
                         end)
 
-                        it("should return true", function()
-                            assert.is_true(Craft.UnlockRecipe("foo", _G.ThePlayer))
-                        end)
+                        TestReturnTrue(fn)
                     end)
                 end)
 
@@ -635,7 +574,7 @@ describe("#sdk SDK.Player.Craft", function()
 
                     it("should call SDK.Remote.Player.UnlockRecipe()", function()
                         assert.spy(SDK.Remote.Player.UnlockRecipe).was_not_called()
-                        Craft.UnlockRecipe("foo", _G.ThePlayer)
+                        fn()
                         assert.spy(SDK.Remote.Player.UnlockRecipe).was_called(1)
                         assert.spy(SDK.Remote.Player.UnlockRecipe).was_called_with(
                             "foo",
@@ -645,9 +584,9 @@ describe("#sdk SDK.Player.Craft", function()
 
                     it("should return SDK.Remote.Player.UnlockRecipe() value", function()
                         SDK.Remote.Player.UnlockRecipe = ReturnValueFn(true)
-                        assert.is_true(Craft.UnlockRecipe("foo", _G.ThePlayer))
+                        assert.is_true(fn())
                         SDK.Remote.Player.UnlockRecipe = ReturnValueFn(false)
-                        assert.is_false(Craft.UnlockRecipe("foo", _G.ThePlayer))
+                        assert.is_false(fn())
                     end)
                 end)
             end)
@@ -805,6 +744,10 @@ describe("#sdk SDK.Player.Craft", function()
         end)
 
         describe("GetLearnedRecipes()", function()
+            local fn = function()
+                return Craft.GetLearnedRecipes()
+            end
+
             TestArgPlayer("GetLearnedRecipes", {
                 empty = {},
                 invalid = { "foo" },
@@ -821,13 +764,8 @@ describe("#sdk SDK.Player.Craft", function()
                         _G.ThePlayer.components.builder = nil
                     end)
 
-                    TestDebugErrorNoComponent(function()
-                        Craft.GetLearnedRecipes()
-                    end, "GetLearnedRecipes", _G.ThePlayer, "builder")
-
-                    it("should return nil", function()
-                        assert.is_nil(Craft.GetLearnedRecipes())
-                    end)
+                    TestDebugErrorNoComponent(fn, "GetLearnedRecipes", _G.ThePlayer, "builder")
+                    TestReturnNil(fn)
                 end)
 
                 describe("and a builder component is available", function()
@@ -835,12 +773,10 @@ describe("#sdk SDK.Player.Craft", function()
                         _G.ThePlayer.components.builder.recipes = { "foo" }
                     end)
 
-                    TestNoDebugError(function()
-                        Craft.GetLearnedRecipes()
-                    end)
+                    TestDebugErrorCalls(fn, 0)
 
                     it("should return learned recipes", function()
-                        assert.is_same({ "foo" }, Craft.GetLearnedRecipes())
+                        assert.is_same({ "foo" }, fn())
                     end)
                 end)
             end)
@@ -855,13 +791,8 @@ describe("#sdk SDK.Player.Craft", function()
                         _G.ThePlayer.replica.builder = nil
                     end)
 
-                    TestDebugErrorNoReplica(function()
-                        Craft.GetLearnedRecipes()
-                    end, "GetLearnedRecipes", _G.ThePlayer, "builder")
-
-                    it("should return nil", function()
-                        assert.is_nil(Craft.GetLearnedRecipes())
-                    end)
+                    TestDebugErrorNoReplica(fn, "GetLearnedRecipes", _G.ThePlayer, "builder")
+                    TestReturnNil(fn)
                 end)
 
                 describe("and a builder replica is available", function()
@@ -876,13 +807,8 @@ describe("#sdk SDK.Player.Craft", function()
                             }
                         end)
 
-                        TestNoDebugError(function()
-                            Craft.GetLearnedRecipes()
-                        end)
-
-                        it("should return nil", function()
-                            assert.is_nil(Craft.GetLearnedRecipes())
-                        end)
+                        TestDebugErrorCalls(fn, 0)
+                        TestReturnNil(fn)
                     end)
 
                     describe("and recipes are available", function()
@@ -899,12 +825,10 @@ describe("#sdk SDK.Player.Craft", function()
                             }
                         end)
 
-                        TestNoDebugError(function()
-                            Craft.GetLearnedRecipes()
-                        end)
+                        TestDebugErrorCalls(fn, 0)
 
                         it("should return learned recipes", function()
-                            assert.is_same({ "foo" }, Craft.GetLearnedRecipes())
+                            assert.is_same({ "foo" }, fn())
                         end)
                     end)
                 end)
@@ -913,6 +837,10 @@ describe("#sdk SDK.Player.Craft", function()
 
         describe("LockAllCharacterRecipes()", function()
             local _fn
+
+            local fn = function()
+                return Craft.LockAllCharacterRecipes(_G.ThePlayer)
+            end
 
             setup(function()
                 _fn = Craft.LockRecipe
@@ -945,20 +873,15 @@ describe("#sdk SDK.Player.Craft", function()
                         }
                     end)
 
-                    TestNoDebugError(function()
-                        Craft.LockAllCharacterRecipes(_G.ThePlayer)
-                    end)
-
-                    TestDebugString(function()
-                        Craft.LockAllCharacterRecipes(_G.ThePlayer)
-                    end, "Locking and restoring all character recipes...")
+                    TestDebugErrorCalls(fn, 0)
+                    TestDebugString(fn, "Locking and restoring all character recipes...")
 
                     it(
                         "should call Craft.LockRecipe() respecting Craft.character_recipes",
                         function()
                             Craft.character_recipes[_G.ThePlayer.userid] = { "bar" }
                             assert.spy(Craft.LockRecipe).was_not_called()
-                            Craft.LockAllCharacterRecipes(_G.ThePlayer)
+                            fn()
                             assert.spy(Craft.LockRecipe).was_called(1)
                             assert.spy(Craft.LockRecipe).was_called_with(
                                 "foo",
@@ -969,13 +892,11 @@ describe("#sdk SDK.Player.Craft", function()
 
                     it("should reset Craft.character_recipes", function()
                         Craft.character_recipes[_G.ThePlayer.userid] = { "foo", "bar" }
-                        Craft.LockAllCharacterRecipes(_G.ThePlayer)
+                        fn()
                         assert.is_same({}, Craft.character_recipes[_G.ThePlayer.userid])
                     end)
 
-                    it("should return true", function()
-                        assert.is_true(Craft.LockAllCharacterRecipes(_G.ThePlayer))
-                    end)
+                    TestReturnTrue(fn)
                 end)
 
                 describe("and there are no character recipes", function()
@@ -987,19 +908,17 @@ describe("#sdk SDK.Player.Craft", function()
                         }
                     end)
 
-                    TestDebugError(
-                        function()
-                            Craft.LockAllCharacterRecipes(_G.ThePlayer)
-                        end,
-                        "SDK.Player.Craft.LockAllCharacterRecipes():",
-                        "Character recipes not found"
-                    )
+                    TestDebugError(fn, "LockAllCharacterRecipes", "Character recipes not found")
                 end)
             end)
         end)
 
         describe("UnlockAllCharacterRecipes()", function()
             local _fn
+
+            local fn = function()
+                return Craft.UnlockAllCharacterRecipes(_G.ThePlayer)
+            end
 
             setup(function()
                 _fn = Craft.UnlockRecipe
@@ -1029,18 +948,14 @@ describe("#sdk SDK.Player.Craft", function()
                     end)
 
                     TestDebugError(
-                        function()
-                            Craft.UnlockAllCharacterRecipes(_G.ThePlayer)
-                        end,
-                        "SDK.Player.Craft.UnlockAllCharacterRecipes():",
+                        fn,
+                        "UnlockAllCharacterRecipes",
                         "Already",
                         "1",
                         "recipe is stored"
                     )
 
-                    it("should return false", function()
-                        assert.is_false(Craft.UnlockAllCharacterRecipes(_G.ThePlayer))
-                    end)
+                    TestReturnFalse(fn)
                 end)
 
                 describe("and there are no stored character recipes", function()
@@ -1063,9 +978,7 @@ describe("#sdk SDK.Player.Craft", function()
                             Craft.FilterRecipesByLearned = spy.new(ReturnValueFn({}))
                         end)
 
-                        TestDebugString(function()
-                            Craft.UnlockAllCharacterRecipes(_G.ThePlayer)
-                        end, "Unlocking all character recipes...")
+                        TestDebugString(fn, "Unlocking all character recipes...")
                     end)
 
                     describe("and there are learned recipes", function()
@@ -1076,7 +989,7 @@ describe("#sdk SDK.Player.Craft", function()
                         it("should debug strings", function()
                             if SDK.IsLoaded("Debug") then
                                 assert.spy(SDK.Debug.String).was_not_called()
-                                Craft.UnlockAllCharacterRecipes(_G.ThePlayer)
+                                fn()
                                 assert.spy(SDK.Debug.String).was_called(2)
                                 assert.spy(SDK.Debug.String).was_called_with(
                                     "[player]",
@@ -1093,9 +1006,9 @@ describe("#sdk SDK.Player.Craft", function()
                             end
                         end)
 
-                        it("should call SDK.Remote.Player.UnlockRecipe()", function()
+                        it("should call Craft.UnlockRecipe()", function()
                             assert.spy(Craft.UnlockRecipe).was_not_called()
-                            Craft.UnlockAllCharacterRecipes(_G.ThePlayer)
+                            fn()
                             assert.spy(Craft.UnlockRecipe).was_called(1)
                             assert.spy(Craft.UnlockRecipe).was_called_with(
                                 "foo",
@@ -1103,9 +1016,7 @@ describe("#sdk SDK.Player.Craft", function()
                             )
                         end)
 
-                        it("should return true", function()
-                            assert.is_true(Craft.UnlockAllCharacterRecipes(_G.ThePlayer))
-                        end)
+                        TestReturnTrue(fn)
                     end)
                 end)
             end)

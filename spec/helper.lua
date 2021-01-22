@@ -267,27 +267,27 @@ function TestRemoteInvalid(name, error, ...)
     end
 
     describe(description, function()
+        local fn = function()
+            return _MODULE[name](unpack(args))
+        end
+
         if error then
-            it("should debug error string", function()
-                AssertDebugError(
-                    function()
-                        _MODULE[name](unpack(args))
-                    end,
-                    string.format("%s.%s():", tostring(_MODULE), name),
-                    error.message,
-                    error.explanation and "(" .. error.explanation .. ")"
-                )
-            end)
+            TestDebugError(
+                fn,
+                string.format("%s.%s():", tostring(_MODULE), name),
+                error.message,
+                error.explanation and "(" .. error.explanation .. ")"
+            )
         end
 
         it("shouldn't call TheSim:SendRemoteExecute()", function()
             assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-            _MODULE[name](unpack(args))
+            fn()
             assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
         end)
 
-        it("should return false", function()
-            assert.is_false(_MODULE[name](unpack(args)))
+        TestReturnFalse(function()
+            return fn()
         end)
     end)
 end
@@ -307,18 +307,23 @@ function TestRemoteValid(name, options, ...)
     end
 
     describe(description, function()
+        local fn = function()
+            return _MODULE[name](unpack(args))
+        end
+
         if options.debug and options.debug.args then
-            it("should debug string", function()
-                AssertDebugString(function()
-                    _MODULE[name](unpack(args))
-                end, "[remote]", "[" .. options.debug.name .. "]", unpack(options.debug.args))
-            end)
+            TestDebugString(
+                fn,
+                "[remote]",
+                "[" .. options.debug.name .. "]",
+                unpack(options.debug.args)
+            )
         end
 
         if options.send then
             it("should call TheSim:SendRemoteExecute()", function()
                 assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-                _MODULE[name](unpack(args))
+                fn()
                 assert.spy(_G.TheNet.SendRemoteExecute).was_called(options.send.calls or 1)
                 assert.spy(_G.TheNet.SendRemoteExecute).was_called_with(
                     match.is_ref(_G.TheNet),
@@ -329,8 +334,6 @@ function TestRemoteValid(name, options, ...)
             end)
         end
 
-        it("should return true", function()
-            assert.is_true(_MODULE[name](unpack(args)))
-        end)
+        TestReturnTrue(fn)
     end)
 end

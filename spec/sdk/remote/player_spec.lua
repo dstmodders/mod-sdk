@@ -93,27 +93,44 @@ describe("#sdk SDK.Remote.Player", function()
         _G.AssertDebugErrorInvalidArg(fn, Player, fn_name, arg_name, explanation)
     end
 
-    local function AssertSendWasCalled(fn, ...)
-        local args = { ..., 1, 3 }
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-        fn()
-        assert.spy(_G.TheNet.SendRemoteExecute).was_called(1)
-        assert.spy(_G.TheNet.SendRemoteExecute).was_called_with(
-            match.is_ref(_G.TheNet),
-            unpack(args)
-        )
+    local function TestDebugError(fn, fn_name, ...)
+        _G.TestDebugError(fn, "SDK.Remote.Player." .. fn_name .. "():", ...)
     end
 
-    local function AssertSendWasNotCalled(fn)
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
-        fn()
-        assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
+    local function TestDebugString(fn, ...)
+        _G.TestDebugString(fn, "[remote]", "[player]", ...)
+    end
+
+    local function TestSendRemoteExecuteCalls(fn, calls, ...)
+        local args = { ... }
+        it((calls > 0 and "should" or "shouldn't")
+            .. " call TheNet:SendRemoteExecute()", function()
+            assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
+            fn()
+            assert.spy(_G.TheNet.SendRemoteExecute).was_called(calls)
+            if calls > 0 and #args > 0 then
+                assert.spy(_G.TheNet.SendRemoteExecute).was_called_with(
+                    match.is_ref(_G.TheNet),
+                    unpack(args),
+                    1,
+                    3
+                )
+            end
+        end)
+    end
+
+    local function TestSendRemoteExecute(fn, ...)
+        TestSendRemoteExecuteCalls(fn, 1, ...)
     end
 
     local function TestRemotePlayerIsGhost(name, player, ...)
         local args = { ..., player }
         describe("when a player is a ghost", function()
             local _HasTag
+
+            local fn = function()
+                return Player[name](unpack(args))
+            end
 
             before_each(function()
                 _HasTag = player.HasTag
@@ -126,25 +143,9 @@ describe("#sdk SDK.Remote.Player", function()
                 player.HasTag = _HasTag
             end)
 
-            it("should debug error string", function()
-                AssertDebugError(
-                    function()
-                        Player[name](unpack(args))
-                    end,
-                    string.format("SDK.Remote.Player.%s():", name),
-                    "Player shouldn't be a ghost"
-                )
-            end)
-
-            it("shouldn't call TheSim:SendRemoteExecute()", function()
-                AssertSendWasNotCalled(function()
-                    Player[name](unpack(args))
-                end)
-            end)
-
-            it("should return false", function()
-                assert.is_false(Player[name](unpack(args)))
-            end)
+            TestDebugError(fn, name, "Player shouldn't be a ghost")
+            TestSendRemoteExecuteCalls(fn, 0)
+            TestReturnFalse(fn)
         end)
     end
 
@@ -308,6 +309,10 @@ describe("#sdk SDK.Remote.Player", function()
             })
 
             describe("when a player is not a ghost", function()
+                local fn = function()
+                    return Player.SetWerenessPercent(25, _G.ThePlayer)
+                end
+
                 describe("and a player is a Woodie", function()
                     before_each(function()
                         _G.ThePlayer.HasTag = spy.new(function(_, tag)
@@ -316,22 +321,10 @@ describe("#sdk SDK.Remote.Player", function()
                     end)
 
                     describe("when valid arguments are passed", function()
-                        it("should debug string", function()
-                            AssertDebugString(function()
-                                Player.SetWerenessPercent(25, _G.ThePlayer)
-                            end, "[remote]", "[player]", "Wereness:", "25.00%", "(Player)")
-                        end)
-
-                        it("should call TheSim:SendRemoteExecute()", function()
-                            AssertSendWasCalled(function()
-                                Player.SetWerenessPercent(25, _G.ThePlayer)
-                            end, 'LookupPlayerInstByUserID("KU_foobar")'
-                                .. ".components.wereness:SetPercent(0.25)")
-                        end)
-
-                        it("should return true", function()
-                            assert.is_true(Player.SetWerenessPercent(25, _G.ThePlayer))
-                        end)
+                        TestDebugString(fn, "Wereness:", "25.00%", "(Player)")
+                        TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar")'
+                            .. ".components.wereness:SetPercent(0.25)")
+                        TestReturnTrue(fn)
                     end)
 
                     TestRemoteInvalid("SetWerenessPercent", nil, "foo")
@@ -346,25 +339,9 @@ describe("#sdk SDK.Remote.Player", function()
                     end)
 
                     describe("when valid arguments are passed", function()
-                        it("should debug error string", function()
-                            AssertDebugError(
-                                function()
-                                    Player.SetWerenessPercent(25, _G.ThePlayer)
-                                end,
-                                "SDK.Remote.Player.SetWerenessPercent():",
-                                "Player should be a Woodie"
-                            )
-                        end)
-
-                        it("shouldn't call TheSim:SendRemoteExecute()", function()
-                            AssertSendWasNotCalled(function()
-                                Player.SetWerenessPercent(25, _G.ThePlayer)
-                            end)
-                        end)
-
-                        it("should return false", function()
-                            assert.is_false(Player.SetWerenessPercent(25, _G.ThePlayer))
-                        end)
+                        TestDebugError(fn, "SetWerenessPercent", "Player should be a Woodie")
+                        TestSendRemoteExecuteCalls(fn, 0)
+                        TestReturnFalse(fn)
                     end)
 
                     TestRemoteInvalid("SetWerenessPercent", nil, "foo")
@@ -400,65 +377,51 @@ describe("#sdk SDK.Remote.Player", function()
             })
 
             describe("when serialized argument is passed", function()
-                it("should call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasCalled(function()
-                        Player.CallFn("Foo", "foo")
-                    end, 'LookupPlayerInstByUserID("KU_foobar"):Foo("foo")')
-                end)
+                local fn = function()
+                    return Player.CallFn("Foo", "foo")
+                end
 
-                it("should return true", function()
-                    assert.is_true(Player.CallFn("Foo", "foo"))
-                end)
+                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar"):Foo("foo")')
+                TestReturnTrue(fn)
             end)
 
             describe("when serialized arguments are passed", function()
-                it("should call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasCalled(function()
-                        Player.CallFn("Foo", args_valid)
-                    end, 'LookupPlayerInstByUserID("KU_foobar"):Foo('
-                            .. '"foo", '
-                            .. '"bar", '
-                            .. "0, "
-                            .. "1, "
-                            .. "true, "
-                            .. "false, "
-                            .. 'LookupPlayerInstByUserID("KU_foobar")'
-                        .. ")")
-                end)
+                local fn = function()
+                    return Player.CallFn("Foo", args_valid)
+                end
 
-                it("should return true", function()
-                    assert.is_true(Player.CallFn("Foo", args_valid))
-                end)
+                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar"):Foo('
+                        .. '"foo", '
+                        .. '"bar", '
+                        .. "0, "
+                        .. "1, "
+                        .. "true, "
+                        .. "false, "
+                        .. 'LookupPlayerInstByUserID("KU_foobar")'
+                    .. ")")
+                TestReturnTrue(fn)
             end)
 
             describe("when nil argument is passed", function()
-                it("should call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasCalled(function()
-                        Player.CallFn("Foo")
-                    end, 'LookupPlayerInstByUserID("KU_foobar"):Foo()')
-                end)
+                local fn = function()
+                    return Player.CallFn("Foo")
+                end
 
-                it("should return true", function()
-                    assert.is_true(Player.CallFn("Foo"))
-                end)
+                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar"):Foo()')
+                TestReturnTrue(fn)
             end)
 
             describe("when non-serialized arguments are passed", function()
+                local fn = function()
+                    return Player.CallFn("Foo", args_invalid)
+                end
+
                 it("should debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        Player.CallFn("Foo", args_invalid)
-                    end, "CallFn", "args", "can't be serialized")
+                    AssertDebugErrorInvalidArg(fn, "CallFn", "args", "can't be serialized")
                 end)
 
-                it("shouldn't call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasNotCalled(function()
-                        Player.CallFn("Foo", args_invalid)
-                    end)
-                end)
-
-                it("should return false", function()
-                    assert.is_false(Player.CallFn("Foo", args_invalid))
-                end)
+                TestSendRemoteExecuteCalls(fn, 0)
+                TestReturnFalse(fn)
             end)
         end)
 
@@ -470,65 +433,54 @@ describe("#sdk SDK.Remote.Player", function()
             })
 
             describe("when serialized argument is passed", function()
-                it("should call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasCalled(function()
-                        Player.CallFnComponent("foo", "Bar", "foo")
-                    end, 'LookupPlayerInstByUserID("KU_foobar").components.foo:Bar("foo")')
-                end)
+                local fn = function()
+                    return Player.CallFnComponent("foo", "Bar", "foo")
+                end
 
-                it("should return true", function()
-                    assert.is_true(Player.CallFnComponent("foo", "Bar", "foo"))
-                end)
+                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar")'
+                    .. '.components.foo:Bar("foo")')
+                TestReturnTrue(fn)
             end)
 
             describe("when serialized arguments are passed", function()
-                it("should call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasCalled(function()
-                        Player.CallFnComponent("foo", "Bar", args_valid)
-                    end, 'LookupPlayerInstByUserID("KU_foobar").components.foo:Bar('
-                            .. '"foo", '
-                            .. '"bar", '
-                            .. "0, "
-                            .. "1, "
-                            .. "true, "
-                            .. "false, "
-                            .. 'LookupPlayerInstByUserID("KU_foobar")'
-                        .. ")")
-                end)
+                local fn = function()
+                    return Player.CallFnComponent("foo", "Bar", args_valid)
+                end
 
-                it("should return true", function()
-                    assert.is_true(Player.CallFnComponent("foo", "Bar", args_valid))
-                end)
+                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar")'
+                    .. ".components.foo:Bar("
+                        .. '"foo", '
+                        .. '"bar", '
+                        .. "0, "
+                        .. "1, "
+                        .. "true, "
+                        .. "false, "
+                        .. 'LookupPlayerInstByUserID("KU_foobar")'
+                    .. ")")
+                TestReturnTrue(fn)
             end)
 
             describe("when nil argument is passed", function()
-                it("should call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasCalled(function()
-                        Player.CallFnComponent("foo", "Bar")
-                    end, 'LookupPlayerInstByUserID("KU_foobar").components.foo:Bar()')
-                end)
+                local fn = function()
+                    return Player.CallFnComponent("foo", "Bar")
+                end
 
-                it("should return true", function()
-                    assert.is_true(Player.CallFnComponent("foo", "Bar"))
-                end)
+                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar")'
+                    .. ".components.foo:Bar()")
+                TestReturnTrue(fn)
             end)
 
             describe("when non-serialized arguments are passed", function()
+                local fn = function()
+                    return Player.CallFnComponent("foo", "Bar", args_invalid)
+                end
+
                 it("should debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        Player.CallFnComponent("foo", "Bar", args_invalid)
-                    end, "CallFnComponent", "args", "can't be serialized")
+                    AssertDebugErrorInvalidArg(fn, "CallFnComponent", "args", "can't be serialized")
                 end)
 
-                it("shouldn't call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasNotCalled(function()
-                        Player.CallFnComponent("foo", "Bar", args_invalid)
-                    end)
-                end)
-
-                it("should return false", function()
-                    assert.is_false(Player.CallFnComponent("foo", "Bar", args_invalid))
-                end)
+                TestSendRemoteExecuteCalls(fn, 0)
+                TestReturnFalse(fn)
             end)
         end)
     end)

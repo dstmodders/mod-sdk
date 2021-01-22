@@ -249,20 +249,26 @@ describe("#sdk SDK.Player", function()
         end
     end)
 
-    local function AssertDebugString(fn, ...)
-        _G.AssertDebugString(fn, "[player]", ...)
+    local function TestDebugError(fn, fn_name, ...)
+        _G.TestDebugError(fn, "SDK.Player." .. fn_name .. "():", ...)
+    end
+
+    local function TestDebugString(fn, ...)
+        _G.TestDebugString(fn, "[player]", ...)
     end
 
     describe("general", function()
         describe("CanHandleKey()", function()
+            local fn = function()
+                return Player.CanHandleKey()
+            end
+
             describe("when not in a gameplay", function()
                 before_each(function()
                     _G.InGamePlay = spy.new(ReturnValueFn(false))
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Player.CanHandleKey())
-                end)
+                TestReturnFalse(fn)
             end)
 
             describe("when in a gameplay", function()
@@ -282,9 +288,7 @@ describe("#sdk SDK.Player", function()
                         Player.IsHUDChatInputScreenOpen = _IsHUDChatInputScreenOpen
                     end)
 
-                    it("should return false", function()
-                        assert.is_false(Player.CanHandleKey())
-                    end)
+                    TestReturnFalse(fn)
                 end)
 
                 describe("and a console screen is open", function()
@@ -299,9 +303,7 @@ describe("#sdk SDK.Player", function()
                         Player.IsHUDConsoleScreenOpen = _IsHUDConsoleScreenOpen
                     end)
 
-                    it("should return false", function()
-                        assert.is_false(Player.CanHandleKey())
-                    end)
+                    TestReturnFalse(fn)
                 end)
 
                 describe("and a writeable screen is active", function()
@@ -316,18 +318,20 @@ describe("#sdk SDK.Player", function()
                         Player.IsHUDWriteableScreenActive = _IsHUDWriteableScreenActive
                     end)
 
-                    it("should return false", function()
-                        assert.is_false(Player.CanHandleKey())
-                    end)
+                    TestReturnFalse(fn)
                 end)
             end)
         end)
 
         describe("GetClientTable()", function()
             describe("when a player is passed", function()
-                it("should call TheNet.GetClientTableForUser()", function()
+                local fn = function()
+                    return Player.GetClientTable(_G.ThePlayer)
+                end
+
+                it("should call TheNet:GetClientTableForUser()", function()
                     assert.spy(_G.TheNet.GetClientTableForUser).was_not_called()
-                    Player.GetClientTable(_G.ThePlayer)
+                    fn()
                     assert.spy(_G.TheNet.GetClientTableForUser).was_called(1)
                     assert.spy(_G.TheNet.GetClientTableForUser).was_called_with(
                         _G.TheNet,
@@ -336,14 +340,13 @@ describe("#sdk SDK.Player", function()
                 end)
 
                 it("should return a client table for user", function()
-                    local table = Player.GetClientTable(_G.ThePlayer)
-                    assert.is_equal(_G.ThePlayer.userid, table.userid)
+                    assert.is_equal(_G.ThePlayer.userid, fn().userid)
                 end)
 
                 describe("when some chain fields are missing", function()
                     it("should return nil", function()
                         AssertChainNil(function()
-                            assert.is_nil(Player.GetClientTable(_G.ThePlayer))
+                            assert.is_nil(fn())
                         end, _G.TheNet, "GetClientTableForUser")
                     end)
                 end)
@@ -351,7 +354,7 @@ describe("#sdk SDK.Player", function()
 
             describe("when a player is not passed", function()
                 describe("and the host is not ignored", function()
-                    it("shouldn't call TheNet.GetServerIsClientHosted()", function()
+                    it("shouldn't call TheNet:GetServerIsClientHosted()", function()
                         assert.spy(_G.TheNet.GetServerIsClientHosted).was_not_called()
                         Player.GetClientTable()
                         assert.spy(_G.TheNet.GetServerIsClientHosted).was_not_called()
@@ -365,7 +368,7 @@ describe("#sdk SDK.Player", function()
                 end)
 
                 describe("and the host is ignored", function()
-                    it("should call TheNet.GetServerIsClientHosted()", function()
+                    it("should call TheNet:GetServerIsClientHosted()", function()
                         assert.spy(_G.TheNet.GetServerIsClientHosted).was_not_called()
                         Player.GetClientTable(nil, true)
                         assert.spy(_G.TheNet.GetServerIsClientHosted).was_called(1)
@@ -382,14 +385,14 @@ describe("#sdk SDK.Player", function()
                     end)
                 end)
 
-                it("should call TheNet.GetClientTable()", function()
+                it("should call TheNet:GetClientTable()", function()
                     assert.spy(_G.TheNet.GetClientTable).was_not_called()
                     Player.GetClientTable()
                     assert.spy(_G.TheNet.GetClientTable).was_called(1)
                     assert.spy(_G.TheNet.GetClientTable).was_called_with(_G.TheNet)
                 end)
 
-                it("shouldn't call TheNet.GetClientTableForUser()", function()
+                it("shouldn't call TheNet:GetClientTableForUser()", function()
                     assert.spy(_G.TheNet.GetClientTableForUser).was_not_called()
                     Player.GetClientTable()
                     assert.spy(_G.TheNet.GetClientTableForUser).was_not_called()
@@ -420,24 +423,17 @@ describe("#sdk SDK.Player", function()
         end)
 
         describe("IsAdmin()", function()
-            local GetClientTable
-
-            before_each(function()
-                GetClientTable = TheNet.GetClientTable
-            end)
-
-            describe("when the TheNet.GetClientTable() returns an empty table", function()
+            describe("when the TheNet:GetClientTable() returns an empty table", function()
                 before_each(function()
                     _G.TheNet = MockTheNet({})
-                    GetClientTable = TheNet.GetClientTable
                 end)
 
-                it("should call TheNet.GetClientTable()", function()
+                it("should call TheNet:GetClientTable()", function()
                     EachPlayer(function(player)
                         Player.IsAdmin(player)
-                        assert.spy(GetClientTable).was_called(1)
+                        assert.spy(_G.TheNet.GetClientTable).was_called(1)
                     end, {}, function()
-                        GetClientTable:clear()
+                        _G.TheNet.GetClientTable:clear()
                     end)
                 end)
 
@@ -449,26 +445,28 @@ describe("#sdk SDK.Player", function()
             end)
 
             describe("when a player is an admin", function()
-                it("should call TheNet.GetClientTable()", function()
-                    assert.spy(GetClientTable).was_not_called()
-                    Player.IsAdmin(inst)
-                    assert.spy(GetClientTable).was_called(1)
-                    assert.spy(GetClientTable).was_called_with(TheNet)
+                local fn = function()
+                    return Player.IsAdmin(inst)
+                end
+
+                it("should call TheNet:GetClientTable()", function()
+                    assert.spy(_G.TheNet.GetClientTable).was_not_called()
+                    fn()
+                    assert.spy(_G.TheNet.GetClientTable).was_called(1)
+                    assert.spy(_G.TheNet.GetClientTable).was_called_with(_G.TheNet)
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Player.IsAdmin(inst))
-                end)
+                TestReturnTrue(fn)
             end)
 
             describe("when a player is not an admin", function()
-                it("should call TheNet.GetClientTable()", function()
+                it("should call TheNet:GetClientTable()", function()
                     EachPlayer(function(player)
                         Player.IsAdmin(player)
-                        assert.spy(GetClientTable).was_called(1)
-                        assert.spy(GetClientTable).was_called_with(TheNet)
+                        assert.spy(_G.TheNet.GetClientTable).was_called(1)
+                        assert.spy(_G.TheNet.GetClientTable).was_called_with(_G.TheNet)
                     end, { inst }, function()
-                        GetClientTable:clear()
+                        _G.TheNet.GetClientTable:clear()
                     end)
                 end)
 
@@ -492,20 +490,22 @@ describe("#sdk SDK.Player", function()
             describe("when a player is dead", function()
                 local player
 
+                local fn = function()
+                    return Player.IsGhost(player)
+                end
+
                 setup(function()
                     player = player_dead
                 end)
 
                 it("should call [player]:HasTag()", function()
                     assert.spy(player.HasTag).was_not_called()
-                    Player.IsGhost(player)
+                    fn()
                     assert.spy(player.HasTag).was_called(1)
                     assert.spy(player.HasTag).was_called_with(match.is_ref(player), "playerghost")
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Player.IsGhost(player))
-                end)
+                TestReturnTrue(fn)
             end)
 
             describe("when a player is not dead", function()
@@ -538,16 +538,17 @@ describe("#sdk SDK.Player", function()
         end)
 
         describe("IsHUDChatInputScreenOpen()", function()
-            it("should return [player].HUD.IsChatInputScreenOpen() value", function()
-                assert.is_equal(
-                    _G.ThePlayer.HUD.IsChatInputScreenOpen(),
-                    Player.IsHUDChatInputScreenOpen()
-                )
+            local fn = function()
+                return Player.IsHUDChatInputScreenOpen()
+            end
+
+            it("should return [player].HUD:IsChatInputScreenOpen() value", function()
+                assert.is_equal(_G.ThePlayer.HUD.IsChatInputScreenOpen(), fn())
             end)
 
-            it("should call [player].HUD.IsChatInputScreenOpen()", function()
+            it("should call [player].HUD:IsChatInputScreenOpen()", function()
                 assert.spy(_G.ThePlayer.HUD.IsChatInputScreenOpen).was_not_called()
-                Player.IsHUDChatInputScreenOpen()
+                fn()
                 assert.spy(_G.ThePlayer.HUD.IsChatInputScreenOpen).was_called(1)
                 assert.spy(_G.ThePlayer.HUD.IsChatInputScreenOpen).was_called_with(
                     match.is_ref(_G.ThePlayer.HUD)
@@ -557,23 +558,24 @@ describe("#sdk SDK.Player", function()
             describe("when some chain fields are missing", function()
                 it("should return nil", function()
                     AssertChainNil(function()
-                        assert.is_nil(Player.IsHUDChatInputScreenOpen())
+                        assert.is_nil(fn())
                     end, _G.ThePlayer, "HUD", "IsChatInputScreenOpen")
                 end)
             end)
         end)
 
         describe("IsHUDConsoleScreenOpen()", function()
+            local fn = function()
+                return Player.IsHUDConsoleScreenOpen()
+            end
+
             it("should return [player].HUD.IsConsoleScreenOpen() value", function()
-                assert.is_equal(
-                    _G.ThePlayer.HUD.IsConsoleScreenOpen(),
-                    Player.IsHUDConsoleScreenOpen()
-                )
+                assert.is_equal(_G.ThePlayer.HUD.IsConsoleScreenOpen(), fn())
             end)
 
-            it("should call [player].HUD.IsConsoleScreenOpen()", function()
+            it("should call [player].HUD:IsConsoleScreenOpen()", function()
                 assert.spy(_G.ThePlayer.HUD.IsConsoleScreenOpen).was_not_called()
-                Player.IsHUDConsoleScreenOpen()
+                fn()
                 assert.spy(_G.ThePlayer.HUD.IsConsoleScreenOpen).was_called(1)
                 assert.spy(_G.ThePlayer.HUD.IsConsoleScreenOpen).was_called_with(
                     match.is_ref(_G.ThePlayer.HUD)
@@ -583,20 +585,24 @@ describe("#sdk SDK.Player", function()
             describe("when some chain fields are missing", function()
                 it("should return nil", function()
                     AssertChainNil(function()
-                        assert.is_nil(Player.IsHUDConsoleScreenOpen())
+                        assert.is_nil(fn())
                     end, _G.ThePlayer, "HUD", "IsConsoleScreenOpen")
                 end)
             end)
         end)
 
         describe("IsHUDHasInputFocus()", function()
+            local fn = function()
+                return Player.IsHUDHasInputFocus()
+            end
+
             it("should return [player].HUD.HasInputFocus() value", function()
-                assert.is_equal(_G.ThePlayer.HUD.HasInputFocus(), Player.IsHUDHasInputFocus())
+                assert.is_equal(_G.ThePlayer.HUD.HasInputFocus(), fn())
             end)
 
             it("should call [player].HUD.HasInputFocus()", function()
                 assert.spy(_G.ThePlayer.HUD.HasInputFocus).was_not_called()
-                Player.IsHUDHasInputFocus()
+                fn()
                 assert.spy(_G.ThePlayer.HUD.HasInputFocus).was_called(1)
                 assert.spy(_G.ThePlayer.HUD.HasInputFocus).was_called_with(
                     match.is_ref(_G.ThePlayer.HUD)
@@ -606,21 +612,23 @@ describe("#sdk SDK.Player", function()
             describe("when some chain fields are missing", function()
                 it("should return nil", function()
                     AssertChainNil(function()
-                        assert.is_nil(Player.IsHUDHasInputFocus())
+                        assert.is_nil(fn())
                     end, _G.ThePlayer, "HUD", "HasInputFocus")
                 end)
             end)
         end)
 
         describe("IsHUDWriteableScreenActive()", function()
+            local fn = function()
+                return Player.IsHUDWriteableScreenActive()
+            end
+
             describe("when [player].HUD.writeablescreen is an active one", function()
                 before_each(function()
                     _G.ThePlayer.HUD.writeablescreen = active_screen
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Player.IsHUDWriteableScreenActive())
-                end)
+                TestReturnTrue(fn)
             end)
 
             describe("when [player].HUD.writeablescreen is not an active one", function()
@@ -628,14 +636,12 @@ describe("#sdk SDK.Player", function()
                     _G.ThePlayer.HUD.writeablescreen = nil
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Player.IsHUDWriteableScreenActive())
-                end)
+                TestReturnFalse(fn)
             end)
 
-            it("should call TheFrontEnd.GetActiveScreen()", function()
+            it("should call TheFrontEnd:GetActiveScreen()", function()
                 assert.spy(_G.TheFrontEnd.GetActiveScreen).was_not_called()
-                Player.IsHUDWriteableScreenActive()
+                fn()
                 assert.spy(_G.TheFrontEnd.GetActiveScreen).was_called(1)
                 assert.spy(_G.TheFrontEnd.GetActiveScreen).was_called_with(
                     match.is_ref(_G.TheFrontEnd)
@@ -645,7 +651,7 @@ describe("#sdk SDK.Player", function()
             describe("when some chain fields are missing", function()
                 it("should return false", function()
                     AssertChainNil(function()
-                        assert.is_false(Player.IsHUDWriteableScreenActive())
+                        assert.is_false(fn())
                     end, _G.TheFrontEnd, "GetActiveScreen")
                 end)
             end)
@@ -655,9 +661,13 @@ describe("#sdk SDK.Player", function()
             describe("when a player is idle", function()
                 describe("based on the state graph", function()
                     local function TestIdle(player)
+                        local fn = function()
+                            return Player.IsIdle(player)
+                        end
+
                         it("should call [player].sg.HasStateTag()", function()
                             assert.spy(player.sg.HasStateTag).was_not_called()
-                            Player.IsIdle(player)
+                            fn()
                             assert.spy(player.sg.HasStateTag).was_called(1)
                             assert.spy(player.sg.HasStateTag).was_called_with(
                                 match.is_ref(player.sg),
@@ -665,15 +675,13 @@ describe("#sdk SDK.Player", function()
                             )
                         end)
 
-                        it("shouldn't call [player].AnimState.IsCurrentAnimation()", function()
+                        it("shouldn't call [player].AnimState:IsCurrentAnimation()", function()
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
-                            Player.IsIdle(player)
+                            fn()
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
                         end)
 
-                        it("should return true", function()
-                            assert.is_true(Player.IsIdle(player))
-                        end)
+                        TestReturnTrue(fn)
                     end
 
                     describe("and is a normal player", function()
@@ -691,13 +699,17 @@ describe("#sdk SDK.Player", function()
 
                 describe("based on the animation", function()
                     local function TestIdle(player)
+                        local fn = function()
+                            return Player.IsIdle(player)
+                        end
+
                         before_each(function()
                             player.sg = nil
                         end)
 
                         it("should call [player].AnimState.IsCurrentAnimation()", function()
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
-                            Player.IsIdle(player)
+                            fn()
                             assert.spy(player.AnimState.IsCurrentAnimation).was_called(1)
                             assert.spy(player.AnimState.IsCurrentAnimation).was_called_with(
                                 match.is_ref(player.AnimState),
@@ -705,9 +717,7 @@ describe("#sdk SDK.Player", function()
                             )
                         end)
 
-                        it("should return true", function()
-                            assert.is_true(Player.IsIdle(player))
-                        end)
+                        TestReturnTrue(fn)
                     end
 
                     describe("and is a normal player", function()
@@ -738,7 +748,7 @@ describe("#sdk SDK.Player", function()
                         end)
                     end)
 
-                    it("shouldn't call [player].AnimState.IsCurrentAnimation()", function()
+                    it("shouldn't call [player].AnimState:IsCurrentAnimation()", function()
                         EachPlayer(function(player)
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
                             Player.IsIdle(player)
@@ -803,6 +813,10 @@ describe("#sdk SDK.Player", function()
         end)
 
         describe("IsOnPlatform()", function()
+            local fn = function()
+                return Player.IsOnPlatform()
+            end
+
             before_each(function()
                 _G.TheWorld = {
                     Map = {
@@ -813,31 +827,27 @@ describe("#sdk SDK.Player", function()
 
             describe("when some of the world chain fields are missing", function()
                 it("should return nil", function()
-                    AssertChainNil(function()
-                        Player.IsOnPlatform()
-                    end, _G.TheWorld, "Map", "GetPlatformAtPoint")
+                    AssertChainNil(fn, _G.TheWorld, "Map", "GetPlatformAtPoint")
                 end)
             end)
 
             describe("when some of inst chain fields are missing", function()
                 it("should return nil", function()
-                    AssertChainNil(function()
-                        Player.IsOnPlatform()
-                    end, _G.ThePlayer, "GetPosition", "Get")
+                    AssertChainNil(fn, _G.ThePlayer, "GetPosition", "Get")
                 end)
             end)
 
             describe("when both world and inst are set", function()
-                it("should call self.inst:GetPosition()", function()
+                it("should call [player]:GetPosition()", function()
                     assert.spy(_G.ThePlayer.GetPosition).was_called(0)
-                    Player.IsOnPlatform()
+                    fn()
                     assert.spy(_G.ThePlayer.GetPosition).was_called(1)
                     assert.spy(_G.ThePlayer.GetPosition).was_called_with(match.is_ref(_G.ThePlayer))
                 end)
 
-                it("should call self.world.Map:GetPlatformAtPoint()", function()
+                it("should call TheWorld.Map:GetPlatformAtPoint()", function()
                     assert.spy(_G.TheWorld.Map.GetPlatformAtPoint).was_called(0)
-                    Player.IsOnPlatform()
+                    fn()
                     assert.spy(_G.TheWorld.Map.GetPlatformAtPoint).was_called(1)
                     assert.spy(_G.TheWorld.Map.GetPlatformAtPoint).was_called_with(
                         match.is_ref(_G.TheWorld.Map),
@@ -847,9 +857,7 @@ describe("#sdk SDK.Player", function()
                     )
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Player.IsOnPlatform())
-                end)
+                TestReturnTrue(fn)
             end)
         end)
 
@@ -886,22 +894,26 @@ describe("#sdk SDK.Player", function()
             describe("when a player is over water", function()
                 local player
 
+                local fn = function()
+                    return Player.IsOverWater(player)
+                end
+
                 before_each(function()
                     player = player_over_water
                 end)
 
-                it("should call [player].Transform.GetWorldPosition()", function()
+                it("should call [player].Transform:GetWorldPosition()", function()
                     assert.spy(player.Transform.GetWorldPosition).was_not_called()
-                    Player.IsOverWater(player)
+                    fn()
                     assert.spy(player.Transform.GetWorldPosition).was_called(1)
                     assert.spy(player.Transform.GetWorldPosition).was_called_with(
                         match.is_ref(player.Transform)
                     )
                 end)
 
-                it("should call TheWorld.Map.IsVisualGroundAtPoint()", function()
+                it("should call TheWorld.Map:IsVisualGroundAtPoint()", function()
                     assert.spy(_G.TheWorld.Map.IsVisualGroundAtPoint).was_not_called()
-                    Player.IsOverWater(player)
+                    fn()
                     assert.spy(_G.TheWorld.Map.IsVisualGroundAtPoint).was_called(1)
                     assert.spy(_G.TheWorld.Map.IsVisualGroundAtPoint).was_called_with(
                         match.is_ref(_G.TheWorld.Map),
@@ -909,9 +921,9 @@ describe("#sdk SDK.Player", function()
                     )
                 end)
 
-                it("shouldn call TheWorld.Map.GetTileAtPoint()", function()
+                it("shouldn call TheWorld.Map:GetTileAtPoint()", function()
                     assert.spy(_G.TheWorld.Map.GetTileAtPoint).was_not_called()
-                    Player.IsOverWater(player)
+                    fn()
                     assert.spy(_G.TheWorld.Map.GetTileAtPoint).was_called(1)
                     assert.spy(_G.TheWorld.Map.GetTileAtPoint).was_called_with(
                         match.is_ref(_G.TheWorld.Map),
@@ -919,20 +931,18 @@ describe("#sdk SDK.Player", function()
                     )
                 end)
 
-                it("should call [player].GetCurrentPlatform()", function()
+                it("should call [player]:GetCurrentPlatform()", function()
                     assert.spy(player.GetCurrentPlatform).was_not_called()
-                    Player.IsOverWater(player)
+                    fn()
                     assert.spy(player.GetCurrentPlatform).was_called(1)
                     assert.spy(player.GetCurrentPlatform).was_called_with(match.is_ref(player))
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Player.IsOverWater(player))
-                end)
+                TestReturnTrue(fn)
             end)
 
             describe("when a player is not over water", function()
-                it("should call [player].Transform.GetWorldPosition()", function()
+                it("should call [player].Transform:GetWorldPosition()", function()
                     EachPlayer(function(player)
                         assert.spy(player.Transform.GetWorldPosition).was_not_called()
                         Player.IsOverWater(player)
@@ -943,7 +953,7 @@ describe("#sdk SDK.Player", function()
                     end, { player_over_water })
                 end)
 
-                it("should call TheWorld.Map.IsVisualGroundAtPoint()", function()
+                it("should call TheWorld.Map:IsVisualGroundAtPoint()", function()
                     assert.spy(_G.TheWorld.Map.IsVisualGroundAtPoint).was_not_called()
                     Player.IsOverWater()
                     assert.spy(_G.TheWorld.Map.IsVisualGroundAtPoint).was_called(1)
@@ -953,13 +963,13 @@ describe("#sdk SDK.Player", function()
                     )
                 end)
 
-                it("shouldn't call TheWorld.Map.GetTileAtPoint()", function()
+                it("shouldn't call TheWorld.Map:GetTileAtPoint()", function()
                     assert.spy(_G.TheWorld.Map.GetTileAtPoint).was_not_called()
                     Player.IsOverWater()
                     assert.spy(_G.TheWorld.Map.GetTileAtPoint).was_not_called()
                 end)
 
-                it("shouldn't call [player].GetCurrentPlatform()", function()
+                it("shouldn't call [player]:GetCurrentPlatform()", function()
                     EachPlayer(function(player)
                         assert.spy(player.GetCurrentPlatform).was_not_called()
                         Player.IsOverWater(player)
@@ -988,8 +998,8 @@ describe("#sdk SDK.Player", function()
 
         describe("IsOwner()", function()
             describe("when a player is an owner", function()
-                it("should return true", function()
-                    assert.is_true(Player.IsOwner(inst))
+                TestReturnTrue(function()
+                    return Player.IsOwner(inst)
                 end)
             end)
 
@@ -1044,14 +1054,18 @@ describe("#sdk SDK.Player", function()
             describe("when a player is running", function()
                 local player
 
+                local fn = function()
+                    return Player.IsRunning(player)
+                end
+
                 before_each(function()
                     player = player_running
                 end)
 
                 describe("and the state graph is available", function()
-                    it("should call [player].sg.HasStateTag()", function()
+                    it("should call [player].sg:HasStateTag()", function()
                         assert.spy(player.sg.HasStateTag).was_not_called()
-                        Player.IsRunning(player)
+                        fn()
                         assert.spy(player.sg.HasStateTag).was_called(1)
                         assert.spy(player.sg.HasStateTag).was_called_with(
                             match.is_ref(player.sg),
@@ -1059,15 +1073,13 @@ describe("#sdk SDK.Player", function()
                         )
                     end)
 
-                    it("shouldn't call [player].AnimState.IsCurrentAnimation()", function()
+                    it("shouldn't call [player].AnimState:IsCurrentAnimation()", function()
                         assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
-                        Player.IsRunning(player)
+                        fn()
                         assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
                     end)
 
-                    it("should return true", function()
-                        assert.is_true(Player.IsRunning(player))
-                    end)
+                    TestReturnTrue(fn)
                 end)
 
                 describe("and the state graph is not available", function()
@@ -1075,9 +1087,9 @@ describe("#sdk SDK.Player", function()
                         player.sg = nil
                     end)
 
-                    it("should call [player].AnimState.IsCurrentAnimation()", function()
+                    it("should call [player].AnimState:IsCurrentAnimation()", function()
                         assert.spy(player.AnimState.IsCurrentAnimation).was_not_called(2)
-                        Player.IsRunning(player)
+                        fn()
                         assert.spy(player.AnimState.IsCurrentAnimation).was_called(2)
                         assert.spy(player.AnimState.IsCurrentAnimation).was_called_with(
                             match.is_ref(player.AnimState),
@@ -1089,14 +1101,12 @@ describe("#sdk SDK.Player", function()
                         )
                     end)
 
-                    it("should return true", function()
-                        assert.is_true(Player.IsRunning(player))
-                    end)
+                    TestReturnTrue(fn)
 
                     describe("when some chain fields are missing", function()
                         it("should return nil", function()
                             AssertChainNil(function()
-                                assert.is_nil(Player.IsRunning(player))
+                                assert.is_nil(fn())
                             end, player, "AnimState", "IsCurrentAnimation")
                         end)
                     end)
@@ -1105,7 +1115,7 @@ describe("#sdk SDK.Player", function()
 
             describe("when a player is not running", function()
                 describe("and the state graph is available", function()
-                    it("should call [player].sg.HasStateTag()", function()
+                    it("should call [player].sg:HasStateTag()", function()
                         EachPlayer(function(player)
                             assert.spy(player.sg.HasStateTag).was_not_called()
                             Player.IsRunning(player)
@@ -1119,7 +1129,7 @@ describe("#sdk SDK.Player", function()
                         end)
                     end)
 
-                    it("shouldn't call [player].AnimState.IsCurrentAnimation()", function()
+                    it("shouldn't call [player].AnimState:IsCurrentAnimation()", function()
                         EachPlayer(function(player)
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
                             Player.IsRunning(player)
@@ -1141,7 +1151,7 @@ describe("#sdk SDK.Player", function()
                         player_running.sg = nil
                     end)
 
-                    it("should call [player].AnimState.IsCurrentAnimation()", function()
+                    it("should call [player].AnimState:IsCurrentAnimation()", function()
                         EachPlayer(function(player)
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
                             Player.IsRunning(player)
@@ -1164,13 +1174,17 @@ describe("#sdk SDK.Player", function()
             describe("when a player is sinking", function()
                 local player
 
+                local fn = function()
+                    return Player.IsSinking(player)
+                end
+
                 setup(function()
                     player = player_sinking
                 end)
 
-                it("should call [player].AnimState.IsCurrentAnimation()", function()
+                it("should call [player].AnimState:IsCurrentAnimation()", function()
                     assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
-                    Player.IsSinking(player)
+                    fn()
                     assert.spy(player.AnimState.IsCurrentAnimation).was_called(1)
                     assert.spy(player.AnimState.IsCurrentAnimation).was_called_with(
                         match.is_ref(player.AnimState),
@@ -1182,13 +1196,11 @@ describe("#sdk SDK.Player", function()
                     )
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Player.IsSinking(player))
-                end)
+                TestReturnTrue(fn)
             end)
 
             describe("when a player is not sinking", function()
-                it("should call [player].AnimState.IsCurrentAnimation()", function()
+                it("should call [player].AnimState:IsCurrentAnimation()", function()
                     EachPlayer(function(player)
                         assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
                         Player.IsSinking(player)
@@ -1255,6 +1267,10 @@ describe("#sdk SDK.Player", function()
 
     describe("movement prediction", function()
         describe("HasMovementPrediction()", function()
+            local fn = function()
+                return Player.HasMovementPrediction(inst)
+            end
+
             describe("when a locomotor component is available", function()
                 before_each(function()
                     inst.components = {
@@ -1262,9 +1278,7 @@ describe("#sdk SDK.Player", function()
                     }
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Player.HasMovementPrediction(inst))
-                end)
+                TestReturnTrue(fn)
             end)
 
             describe("when a locomotor component is not available", function()
@@ -1274,9 +1288,7 @@ describe("#sdk SDK.Player", function()
                     }
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Player.HasMovementPrediction(inst))
-                end)
+                TestReturnFalse(fn)
             end)
 
             describe("when some chain fields are missing", function()
@@ -1295,55 +1307,65 @@ describe("#sdk SDK.Player", function()
                 }
             end)
 
+            local function TestSetSettingCalls(fn, calls, ...)
+                local args = { ... }
+                it((calls > 0 and "should" or "shouldn't")
+                    .. " call TheSim:SetSetting()", function()
+                    assert.spy(_G.TheSim.SetSetting).was_not_called()
+                    fn()
+                    assert.spy(_G.TheSim.SetSetting).was_called(calls)
+                    if calls > 0 and #args > 0 then
+                        assert.spy(_G.TheSim.SetSetting).was_called_with(
+                            match.is_ref(_G.TheSim),
+                            unpack(args)
+                        )
+                    end
+                end)
+            end
+
+            local function TestSetSetting(fn, ...)
+                TestSetSettingCalls(fn, 1, ...)
+            end
+
             describe("when is master simulation", function()
                 before_each(function()
                     _G.TheWorld.ismastersim = true
                 end)
 
                 describe("and enabling", function()
-                    it("should debug error string", function()
-                        AssertDebugError(
-                            function()
-                                Player.SetMovementPrediction(true, inst)
-                            end,
-                            "SDK.Player.SetMovementPrediction():",
-                            "Can't be toggled on the master simulation"
-                        )
-                    end)
+                    local fn = function()
+                        return Player.SetMovementPrediction(true, inst)
+                    end
 
-                    it("shouldn't call [player].EnableMovementPrediction()", function()
+                    TestDebugError(
+                        fn,
+                        "SetMovementPrediction",
+                        "Can't be toggled on the master simulation"
+                    )
+
+                    it("shouldn't call [player]:EnableMovementPrediction()", function()
                         assert.spy(inst.EnableMovementPrediction).was_not_called()
-                        Player.SetMovementPrediction(true, inst)
+                        fn()
                         assert.spy(inst.EnableMovementPrediction).was_not_called()
                     end)
 
-                    it("shouldn't call TheSim:SetSetting()", function()
-                        assert.spy(_G.TheSim.SetSetting).was_not_called()
-                        Player.SetMovementPrediction(false, inst)
-                        assert.spy(_G.TheSim.SetSetting).was_not_called()
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player.SetMovementPrediction(true, inst))
-                    end)
+                    TestSetSettingCalls(fn, 0)
+                    TestReturnFalse(fn)
                 end)
 
                 describe("and disabling", function()
-                    it("shouldn't call [player].EnableMovementPrediction()", function()
+                    local fn = function()
+                        return Player.SetMovementPrediction(false, inst)
+                    end
+
+                    it("shouldn't call [player]:EnableMovementPrediction()", function()
                         assert.spy(inst.EnableMovementPrediction).was_not_called()
-                        Player.SetMovementPrediction(false, inst)
+                        fn()
                         assert.spy(inst.EnableMovementPrediction).was_not_called()
                     end)
 
-                    it("shouldn't call TheSim:SetSetting()", function()
-                        assert.spy(_G.TheSim.SetSetting).was_not_called()
-                        Player.SetMovementPrediction(false, inst)
-                        assert.spy(_G.TheSim.SetSetting).was_not_called()
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player.SetMovementPrediction(false, inst))
-                    end)
+                    TestSetSettingCalls(fn, 0)
+                    TestReturnFalse(fn)
                 end)
             end)
 
@@ -1353,15 +1375,19 @@ describe("#sdk SDK.Player", function()
                 end)
 
                 describe("and enabling", function()
+                    local fn = function()
+                        return Player.SetMovementPrediction(true, inst)
+                    end
+
                     it("shouldn't call [player].components.locomotor:Stop()", function()
                         assert.spy(inst.components.locomotor.Stop).was_not_called()
-                        Player.SetMovementPrediction(true, inst)
+                        fn()
                         assert.spy(inst.components.locomotor.Stop).was_not_called()
                     end)
 
-                    it("should call [player].EnableMovementPrediction()", function()
+                    it("should call [player]:EnableMovementPrediction()", function()
                         assert.spy(inst.EnableMovementPrediction).was_not_called()
-                        Player.SetMovementPrediction(true, inst)
+                        fn()
                         assert.spy(inst.EnableMovementPrediction).was_called(1)
                         assert.spy(inst.EnableMovementPrediction).was_called_with(
                             match.is_ref(inst),
@@ -1369,42 +1395,28 @@ describe("#sdk SDK.Player", function()
                         )
                     end)
 
-                    it("should call TheSim:SetSetting()", function()
-                        assert.spy(_G.TheSim.SetSetting).was_not_called()
-                        Player.SetMovementPrediction(true, inst)
-                        assert.spy(_G.TheSim.SetSetting).was_called(1)
-                        assert.spy(_G.TheSim.SetSetting).was_called_with(
-                            match.is_ref(_G.TheSim),
-                            "misc",
-                            "movementprediction",
-                            "true"
-                        )
-                    end)
-
-                    it("should debug string", function()
-                        AssertDebugString(function()
-                            Player.SetMovementPrediction(true, inst)
-                        end, "Movement prediction:", "enabled")
-                    end)
-
-                    it("should return true", function()
-                        assert.is_true(Player.SetMovementPrediction(true, inst))
-                    end)
+                    TestSetSetting(fn, "misc", "movementprediction", "true")
+                    TestDebugString(fn, "Movement prediction:", "enabled")
+                    TestReturnTrue(fn)
                 end)
 
                 describe("and disabling", function()
+                    local fn = function()
+                        return Player.SetMovementPrediction(false, inst)
+                    end
+
                     it("should call [player].components.locomotor:Stop()", function()
                         assert.spy(inst.components.locomotor.Stop).was_not_called()
-                        Player.SetMovementPrediction(false, inst)
+                        fn()
                         assert.spy(inst.components.locomotor.Stop).was_called(1)
                         assert.spy(inst.components.locomotor.Stop).was_called_with(
                             match.is_ref(inst.components.locomotor)
                         )
                     end)
 
-                    it("should call [player].EnableMovementPrediction()", function()
+                    it("should call [player]:EnableMovementPrediction()", function()
                         assert.spy(inst.EnableMovementPrediction).was_not_called()
-                        Player.SetMovementPrediction(false, inst)
+                        fn()
                         assert.spy(inst.EnableMovementPrediction).was_called(1)
                         assert.spy(inst.EnableMovementPrediction).was_called_with(
                             match.is_ref(inst),
@@ -1412,40 +1424,24 @@ describe("#sdk SDK.Player", function()
                         )
                     end)
 
-                    it("should call TheSim:SetSetting()", function()
-                        assert.spy(_G.TheSim.SetSetting).was_not_called()
-                        Player.SetMovementPrediction(false, inst)
-                        assert.spy(_G.TheSim.SetSetting).was_called(1)
-                        assert.spy(_G.TheSim.SetSetting).was_called_with(
-                            match.is_ref(_G.TheSim),
-                            "misc",
-                            "movementprediction",
-                            "false"
-                        )
-                    end)
-
-                    it("should debug string", function()
-                        AssertDebugString(function()
-                            Player.SetMovementPrediction(false, inst)
-                        end, "Movement prediction:", "disabled")
-                    end)
-
-                    it("should return false", function()
-                        assert.is_false(Player.SetMovementPrediction(false, inst))
-                    end)
+                    TestSetSetting(fn, "misc", "movementprediction", "false")
+                    TestDebugString(fn, "Movement prediction:", "disabled")
+                    TestReturnFalse(fn)
                 end)
             end)
         end)
 
         describe("ToggleMovementPrediction()", function()
+            local fn = function()
+                return Player.ToggleMovementPrediction(inst)
+            end
+
             describe("when movement prediction is enabled", function()
                 before_each(function()
                     Player.HasMovementPrediction = spy.new(ReturnValueFn(true))
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Player.ToggleMovementPrediction(inst))
-                end)
+                TestReturnFalse(fn)
             end)
 
             describe("when movement prediction is disabled", function()
@@ -1453,9 +1449,7 @@ describe("#sdk SDK.Player", function()
                     Player.HasMovementPrediction = spy.new(ReturnValueFn(false))
                 end)
 
-                it("should return false", function()
-                    assert.is_true(Player.ToggleMovementPrediction(inst))
-                end)
+                TestReturnTrue(fn)
             end)
         end)
     end)

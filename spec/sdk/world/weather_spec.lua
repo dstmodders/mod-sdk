@@ -101,8 +101,8 @@ describe("#sdk SDK.World.Weather", function()
                 SDK.Remote.World[name] = spy.new(ReturnValueFn(true))
             end)
 
-            it("should return true", function()
-                assert.is_true(Weather[fn_name](unpack(args)))
+            TestReturnTrue(function()
+                return Weather[fn_name](unpack(args))
             end)
         end)
 
@@ -111,18 +111,18 @@ describe("#sdk SDK.World.Weather", function()
                 SDK.Remote.World[name] = spy.new(ReturnValueFn(false))
             end)
 
-            it("should return false", function()
-                assert.is_false(Weather[fn_name](unpack(args)))
+            TestReturnFalse(function()
+                return Weather[fn_name](unpack(args))
             end)
         end)
     end
 
-    local function TestPushEventCalls(fn, ...)
+    local function TestPushEventCalls(fn, calls, ...)
         local args = { ... }
         it("should call TheWorld:PushEvent()", function()
             assert.spy(_G.TheWorld.PushEvent).was_not_called()
             fn()
-            assert.spy(_G.TheWorld.PushEvent).was_called(1)
+            assert.spy(_G.TheWorld.PushEvent).was_called(calls)
             assert.spy(_G.TheWorld.PushEvent).was_called_with(
                 match.is_ref(_G.TheWorld),
                 unpack(args)
@@ -130,8 +130,16 @@ describe("#sdk SDK.World.Weather", function()
         end)
     end
 
+    local function TestPushEvent(fn, ...)
+        TestPushEventCalls(fn, 1, ...)
+    end
+
     describe("general", function()
         describe("GetWeatherComponent()", function()
+            local fn = function()
+                return Weather.GetWeatherComponent()
+            end
+
             describe("when not in the forest", function()
                 before_each(function()
                     _G.TheWorld.net.components.weather = "weather"
@@ -141,7 +149,7 @@ describe("#sdk SDK.World.Weather", function()
                 end)
 
                 it("should return Weather component", function()
-                    assert.is_equal("weather", Weather.GetWeatherComponent())
+                    assert.is_equal("weather", fn())
                 end)
 
                 describe("and a weather component is not available", function()
@@ -149,9 +157,7 @@ describe("#sdk SDK.World.Weather", function()
                         _G.TheWorld.net.components.weather = nil
                     end)
 
-                    it("should return nil", function()
-                        assert.is_nil(Weather.GetWeatherComponent())
-                    end)
+                    TestReturnNil(fn)
                 end)
             end)
 
@@ -164,7 +170,7 @@ describe("#sdk SDK.World.Weather", function()
                 end)
 
                 it("should return CaveWeather component", function()
-                    assert.is_equal("caveweather", Weather.GetWeatherComponent())
+                    assert.is_equal("caveweather", fn())
                 end)
 
                 describe("and a caveweather component is missing", function()
@@ -172,16 +178,14 @@ describe("#sdk SDK.World.Weather", function()
                         _G.TheWorld.net.components.caveweather = nil
                     end)
 
-                    it("should return nil", function()
-                        assert.is_nil(Weather.GetWeatherComponent())
-                    end)
+                    TestReturnNil(fn)
                 end)
             end)
 
             describe("when some chain fields are missing", function()
                 it("should return nil", function()
                     AssertChainNil(function()
-                        assert.is_nil(Weather.GetWeatherComponent())
+                        assert.is_nil(fn())
                     end, _G.TheWorld, "net", "net", "components")
                 end)
             end)
@@ -189,6 +193,10 @@ describe("#sdk SDK.World.Weather", function()
 
         describe("SendLightningStrike()", function()
             local pt = Vector3(1, 0, 3)
+
+            local fn = function()
+                return Weather.SendLightningStrike(pt)
+            end
 
             before_each(function()
                 SDK.Remote.World.SendLightningStrike = spy.new(ReturnValueFn(true))
@@ -210,9 +218,12 @@ describe("#sdk SDK.World.Weather", function()
                     end)
                 end)
 
-                TestDebugError(function()
-                    Weather.SendLightningStrike(pt)
-                end, "SendLightningStrike", "Invalid world type", "(must be in a forest)")
+                TestDebugError(
+                    fn,
+                    "SendLightningStrike",
+                    "Invalid world type",
+                    "(must be in a forest)"
+                )
             end)
 
             describe("when in a forest world", function()
@@ -222,26 +233,16 @@ describe("#sdk SDK.World.Weather", function()
                     end)
                 end)
 
-                TestDebugErrorCalls(function()
-                    Weather.SendLightningStrike(pt)
-                end, 0)
+                TestDebugErrorCalls(fn, 0)
 
                 describe("when is master simulation", function()
                     before_each(function()
                         _G.TheWorld.ismastersim = true
                     end)
 
-                    TestDebugString(function()
-                        Weather.SendLightningStrike(pt)
-                    end, "Send lighting strike:", tostring(pt))
-
-                    TestPushEventCalls(function()
-                        Weather.SendLightningStrike(pt)
-                    end, "ms_sendlightningstrike", pt)
-
-                    it("should return true", function()
-                        assert.is_true(Weather.SendLightningStrike(pt))
-                    end)
+                    TestDebugString(fn, "Send lighting strike:", tostring(pt))
+                    TestPushEvent(fn, "ms_sendlightningstrike", pt)
+                    TestReturnTrue(fn)
                 end)
 
                 describe("when is non-master simulation", function()
@@ -255,6 +256,10 @@ describe("#sdk SDK.World.Weather", function()
         end)
 
         describe("SendMiniEarthquake()", function()
+            local fn = function()
+                return Weather.SendMiniEarthquake()
+            end
+
             before_each(function()
                 SDK.Remote.World.SendMiniEarthquake = spy.new(ReturnValueFn(true))
                 _G.TheWorld.HasTag = spy.new(function(_, tag)
@@ -293,26 +298,16 @@ describe("#sdk SDK.World.Weather", function()
                     end)
                 end)
 
-                TestDebugErrorCalls(function()
-                    Weather.SendMiniEarthquake()
-                end, 0)
+                TestDebugErrorCalls(fn, 0)
 
                 describe("when is master simulation", function()
                     before_each(function()
                         _G.TheWorld.ismastersim = true
                     end)
 
-                    TestDebugString(function()
-                        Weather.SendMiniEarthquake()
-                    end, "Send mini earthquake:", "Player")
-
-                    TestPushEventCalls(function()
-                        Weather.SendMiniEarthquake()
-                    end, "ms_miniquake", match.is_table())
-
-                    it("should return true", function()
-                        assert.is_true(Weather.SendMiniEarthquake())
-                    end)
+                    TestDebugString(fn, "Send mini earthquake:", "Player")
+                    TestPushEvent(fn, "ms_miniquake", match.is_table())
+                    TestReturnTrue(fn)
                 end)
 
                 describe("when is non-master simulation", function()
@@ -331,9 +326,12 @@ describe("#sdk SDK.World.Weather", function()
                     end)
                 end)
 
-                TestDebugError(function()
-                    Weather.SendMiniEarthquake()
-                end, "SendMiniEarthquake", "Invalid world type", "(must be in a cave)")
+                TestDebugError(
+                    fn,
+                    "SendMiniEarthquake",
+                    "Invalid world type",
+                    "(must be in a cave)"
+                )
             end)
         end)
     end)
@@ -347,6 +345,10 @@ describe("#sdk SDK.World.Weather", function()
 
     describe("set", function()
         describe("SetDeltaMoisture()", function()
+            local fn = function()
+                return Weather.SetDeltaMoisture(25)
+            end
+
             before_each(function()
                 SDK.Remote.World.SetDeltaMoisture = spy.new(ReturnValueFn(true))
             end)
@@ -362,17 +364,9 @@ describe("#sdk SDK.World.Weather", function()
                     _G.TheWorld.ismastersim = true
                 end)
 
-                TestDebugString(function()
-                    Weather.SetDeltaMoisture(25)
-                end, "Delta moisture:", "25.00")
-
-                TestPushEventCalls(function()
-                    Weather.SetDeltaMoisture(25)
-                end, "ms_deltamoisture", 25)
-
-                it("should return true", function()
-                    assert.is_true(Weather.SetDeltaMoisture(25))
-                end)
+                TestDebugString(fn, "Delta moisture:", "25.00")
+                TestPushEvent(fn, "ms_deltamoisture", 25)
+                TestReturnTrue(fn)
             end)
 
             describe("when is non-master simulation", function()
@@ -385,6 +379,10 @@ describe("#sdk SDK.World.Weather", function()
         end)
 
         describe("SetDeltaWetness()", function()
+            local fn = function()
+                return Weather.SetDeltaWetness(25)
+            end
+
             before_each(function()
                 SDK.Remote.World.SetDeltaWetness = spy.new(ReturnValueFn(true))
             end)
@@ -400,17 +398,9 @@ describe("#sdk SDK.World.Weather", function()
                     _G.TheWorld.ismastersim = true
                 end)
 
-                TestDebugString(function()
-                    Weather.SetDeltaWetness(25)
-                end, "Delta wetness:", "25.00")
-
-                TestPushEventCalls(function()
-                    Weather.SetDeltaWetness(25)
-                end, "ms_deltawetness", 25)
-
-                it("should return true", function()
-                    assert.is_true(Weather.SetDeltaWetness(25))
-                end)
+                TestDebugString(fn, "Delta wetness:", "25.00")
+                TestPushEvent(fn, "ms_deltawetness", 25)
+                TestReturnTrue(fn)
             end)
 
             describe("when is non-master simulation", function()
@@ -423,6 +413,10 @@ describe("#sdk SDK.World.Weather", function()
         end)
 
         describe("SetPrecipitation()", function()
+            local fn = function()
+                return Weather.SetPrecipitation(true)
+            end
+
             before_each(function()
                 SDK.Remote.World.SetPrecipitation = spy.new(ReturnValueFn(true))
             end)
@@ -432,17 +426,9 @@ describe("#sdk SDK.World.Weather", function()
                     _G.TheWorld.ismastersim = true
                 end)
 
-                TestDebugString(function()
-                    Weather.SetPrecipitation(true)
-                end, "Precipitation:", "true")
-
-                TestPushEventCalls(function()
-                    Weather.SetPrecipitation(true)
-                end, "ms_forceprecipitation", true)
-
-                it("should return true", function()
-                    assert.is_true(Weather.SetPrecipitation(true))
-                end)
+                TestDebugString(fn, "Precipitation:", "true")
+                TestPushEvent(fn, "ms_forceprecipitation", true)
+                TestReturnTrue(fn)
             end)
 
             describe("when is non-master simulation", function()
@@ -456,6 +442,10 @@ describe("#sdk SDK.World.Weather", function()
 
         describe("SetSnowLevel()", function()
             local level = 0.5
+
+            local fn = function()
+                return Weather.SetSnowLevel(level)
+            end
 
             before_each(function()
                 SDK.Remote.World.SetSnowLevel = spy.new(ReturnValueFn(true))
@@ -474,9 +464,7 @@ describe("#sdk SDK.World.Weather", function()
                     end)
                 end)
 
-                TestDebugError(function()
-                    Weather.SetSnowLevel(level)
-                end, "SetSnowLevel", "Invalid world type", "(must be in a forest)")
+                TestDebugError(fn, "SetSnowLevel", "Invalid world type", "(must be in a forest)")
             end)
 
             describe("when in a forest world", function()
@@ -486,26 +474,16 @@ describe("#sdk SDK.World.Weather", function()
                     end)
                 end)
 
-                TestDebugErrorCalls(function()
-                    Weather.SetSnowLevel(level)
-                end, 0)
+                TestDebugErrorCalls(fn, 0)
 
                 describe("when is master simulation", function()
                     before_each(function()
                         _G.TheWorld.ismastersim = true
                     end)
 
-                    TestDebugString(function()
-                        Weather.SetSnowLevel(level)
-                    end, "Snow level:", "0.50")
-
-                    TestPushEventCalls(function()
-                        Weather.SetSnowLevel(level)
-                    end, "ms_setsnowlevel", level)
-
-                    it("should return true", function()
-                        assert.is_true(Weather.SetSnowLevel(level))
-                    end)
+                    TestDebugString(fn, "Snow level:", "0.50")
+                    TestPushEvent(fn, "ms_setsnowlevel", level)
+                    TestReturnTrue(fn)
                 end)
 
                 describe("when is non-master simulation", function()

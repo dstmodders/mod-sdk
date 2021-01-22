@@ -183,8 +183,8 @@ describe("#sdk SDK", function()
                     assert.spy(SDK._Error).was_called_with("SDK.Load():", "required env not passed")
                 end)
 
-                it("should return false", function()
-                    assert.is_false(SDK.Load())
+                TestReturnFalse(function()
+                    return SDK.Load()
                 end)
             end)
 
@@ -199,8 +199,8 @@ describe("#sdk SDK", function()
                     )
                 end)
 
-                it("should return false", function()
-                    assert.is_false(SDK.Load({}))
+                TestReturnFalse(function()
+                    return SDK.Load({})
                 end)
             end)
 
@@ -263,8 +263,8 @@ describe("#sdk SDK", function()
                         assert.spy(SDK._Error).was_called_with("SDK.Load():", "path not resolved")
                     end)
 
-                    it("should return false", function()
-                        assert.is_false(SDK.Load(env, "yoursubdirectory/sdk"))
+                    TestReturnFalse(function()
+                        return SDK.Load(env, "yoursubdirectory/sdk")
                     end)
                 end)
 
@@ -441,9 +441,7 @@ describe("#sdk SDK", function()
                     assert.is_not_nil(SDK.Module)
                 end)
 
-                it("should return true", function()
-                    assert.is_true(fn())
-                end)
+                TestReturnTrue(fn)
             end
 
             local function TestNoAddModule(fn)
@@ -453,9 +451,7 @@ describe("#sdk SDK", function()
                     assert.is_nil(SDK.Module)
                 end)
 
-                it("should return false", function()
-                    assert.is_false(fn())
-                end)
+                TestReturnFalse(fn)
             end
 
             local function TestPrintInfoSubmodules(fn)

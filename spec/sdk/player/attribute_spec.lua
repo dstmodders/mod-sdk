@@ -160,6 +160,10 @@ describe("#sdk SDK.Player.Attribute", function()
 
     describe("attributes", function()
         local function TestComponentIsAvailable(fn_name, name, setter, debug, value)
+            local fn = function()
+                return Attribute[fn_name](25)
+            end
+
             describe("and a " .. name .. " component is available", function()
                 local _component
 
@@ -177,15 +181,13 @@ describe("#sdk SDK.Player.Attribute", function()
                     _G.ThePlayer.components[name] = _component
                 end)
 
-                TestDebugString(function()
-                    Attribute[fn_name](25)
-                end, unpack(debug))
+                TestDebugString(fn, unpack(debug))
 
                 it(
                     "should call [player].components." .. name .. ":" .. setter .. "()",
                     function()
                         assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
-                        Attribute[fn_name](25)
+                        fn()
                         assert.spy(_G.ThePlayer.components[name][setter]).was_called(1)
                         assert.spy(_G.ThePlayer.components[name][setter]).was_called_with(
                             match.is_ref(_G.ThePlayer.components[name]),
@@ -194,13 +196,15 @@ describe("#sdk SDK.Player.Attribute", function()
                     end
                 )
 
-                it("should return true", function()
-                    assert.is_true(Attribute[fn_name](25))
-                end)
+                TestReturnTrue(fn)
             end)
         end
 
         local function TestComponentIsNotAvailable(fn_name, name)
+            local fn = function()
+                return Attribute[fn_name](25)
+            end
+
             describe("and a " .. name .. " component is not available", function()
                 local _component
 
@@ -217,22 +221,22 @@ describe("#sdk SDK.Player.Attribute", function()
                 end)
 
                 TestDebugError(
-                    function()
-                        Attribute[fn_name](25)
-                    end,
+                    fn,
                     fn_name,
                     name:gsub("^%l", string.upper),
                     "component is not available",
                     "(" .. _G.ThePlayer:GetDisplayName() .. ")"
                 )
 
-                it("should return false", function()
-                    assert.is_false(Attribute[fn_name](25))
-                end)
+                TestReturnFalse(fn)
             end)
         end
 
         local function TestGetAttribute(name, fn_name)
+            local fn = function()
+                return Attribute[name]()
+            end
+
             describe(name .. "()", function()
                 TestArgPlayer(name, {
                     empty = {},
@@ -241,12 +245,12 @@ describe("#sdk SDK.Player.Attribute", function()
                 })
 
                 it("should return [player]." .. fn_name .. "() value", function()
-                    assert.is_equal(_G.ThePlayer[fn_name](_G.ThePlayer), Attribute[name]())
+                    assert.is_equal(_G.ThePlayer[fn_name](_G.ThePlayer), fn())
                 end)
 
                 it("should call [player]." .. fn_name .. "()", function()
                     assert.spy(_G.ThePlayer[fn_name]).was_not_called()
-                    Attribute[name]()
+                    fn()
                     assert.spy(_G.ThePlayer[fn_name]).was_called(1)
                     assert.spy(_G.ThePlayer[fn_name]).was_called_with(
                         match.is_ref(_G.ThePlayer)
@@ -256,7 +260,7 @@ describe("#sdk SDK.Player.Attribute", function()
                 describe("when some chain fields are missing", function()
                     it("should return nil", function()
                         AssertChainNil(function()
-                            assert.is_nil(Attribute[name]())
+                            assert.is_nil(fn())
                         end, _G.ThePlayer, fn_name)
                     end)
                 end)
@@ -302,42 +306,41 @@ describe("#sdk SDK.Player.Attribute", function()
         end
 
         local function TestInvalidPercentIsPassed(fn_name)
+            local fn = function()
+                return Attribute[fn_name]("foo")
+            end
+
             describe("when an invalid percent is passed", function()
                 it("should debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        Attribute[fn_name]("foo")
-                    end, fn_name, "percent", "must be a percent")
+                    AssertDebugErrorInvalidArg(fn, fn_name, "percent", "must be a percent")
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Attribute[fn_name]("foo"))
-                end)
+                TestReturnFalse(fn)
             end)
         end
 
         local function TestInvalidPlayerIsPassed(fn_name)
+            local fn = function()
+                return Attribute[fn_name](25, "foo")
+            end
+
             describe("when an invalid player is passed", function()
                 it("should debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        Attribute[fn_name](25, "foo")
-                    end, fn_name, "player", "must be a player")
+                    AssertDebugErrorInvalidArg(fn, fn_name, "player", "must be a player")
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Attribute[fn_name](25, "foo"))
-                end)
+                TestReturnFalse(fn)
             end)
         end
 
         local function TestPlayerIsGhost(fn_name)
-            describe("when a player is a ghost", function()
-                TestDebugError(function()
-                    Attribute[fn_name](25, player_dead)
-                end, fn_name, "Player shouldn't be a ghost")
+            local fn = function()
+                return Attribute[fn_name](25, player_dead)
+            end
 
-                it("should return false", function()
-                    assert.is_false(Attribute[fn_name](25, player_dead))
-                end)
+            describe("when a player is a ghost", function()
+                TestDebugError(fn, fn_name, "Player shouldn't be a ghost")
+                TestReturnFalse(fn)
             end)
         end
 
@@ -523,15 +526,20 @@ describe("#sdk SDK.Player.Attribute", function()
 
         describe("SetTemperature()", function()
             describe("when an invalid percent is passed", function()
+                local fn = function()
+                    return Attribute.SetTemperature("foo")
+                end
+
                 it("should debug error string", function()
-                    AssertDebugErrorInvalidArg(function()
-                        Attribute.SetTemperature("foo")
-                    end, "SetTemperature", "temperature", "must be an entity temperature")
+                    AssertDebugErrorInvalidArg(
+                        fn,
+                        "SetTemperature",
+                        "temperature",
+                        "must be an entity temperature"
+                    )
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Attribute.SetTemperature("foo"))
-                end)
+                TestReturnFalse(fn)
             end)
 
             TestInvalidPlayerIsPassed("SetTemperature")
@@ -571,13 +579,12 @@ describe("#sdk SDK.Player.Attribute", function()
             TestPlayerIsGhost("SetWerenessPercent")
 
             describe("when a player is a ghost", function()
-                TestDebugError(function()
-                    Attribute.SetWerenessPercent(25, player_dead)
-                end, "SetWerenessPercent", "Player shouldn't be a ghost")
+                local fn = function()
+                    return Attribute.SetWerenessPercent(25, player_dead)
+                end
 
-                it("should return false", function()
-                    assert.is_false(Attribute.SetWerenessPercent(25, player_dead))
-                end)
+                TestDebugError(fn, "SetWerenessPercent", "Player shouldn't be a ghost")
+                TestReturnFalse(fn)
             end)
 
             describe("when is master simulation", function()

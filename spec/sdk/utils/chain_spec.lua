@@ -112,28 +112,28 @@ describe("#sdk SDK.Utils.Chain", function()
 
             for _, field in pairs(fields) do
                 describe("and the previous parameter is a " .. field, function()
-                    it("should return nil", function()
-                        assert.is_nil(Chain.Get(
+                    TestReturnNil(function()
+                        return Chain.Get(
                             TheWorld,
                             "net",
                             "components",
                             "clock",
                             field,
                             true
-                        ), field)
+                        )
                     end)
                 end)
             end
 
             describe("and the previous parameter is a nil", function()
-                it("should return nil", function()
-                    assert.is_nil(Chain.Get(
+                TestReturnNil(function()
+                    return Chain.Get(
                         TheWorld,
                         "net",
                         "components",
                         "test",
                         true
-                    ))
+                    )
                 end)
             end)
         end)
@@ -146,7 +146,6 @@ describe("#sdk SDK.Utils.Chain", function()
                 "clock",
                 "GetTimeUntilPhase"
             ))
-
             assert.spy(GetTimeUntilPhase).was_not_called()
         end)
     end)
@@ -176,14 +175,14 @@ describe("#sdk SDK.Utils.Chain", function()
         end)
 
         describe("when all chain fields are available", function()
-            it("should return true", function()
-                assert.is_true(Chain.Validate(
+            TestReturnTrue(function()
+                return Chain.Validate(
                     TheWorld,
                     "net",
                     "components",
                     "clock",
                     "GetTimeUntilPhase"
-                ))
+                )
             end)
         end)
     end)

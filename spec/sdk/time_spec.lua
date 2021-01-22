@@ -52,20 +52,26 @@ describe("#sdk SDK.Time", function()
         end
     end)
 
-    local function AssertDebugString(fn, ...)
-        _G.AssertDebugString(fn, "[time]", ...)
+    local function TestDebugError(fn, fn_name, ...)
+        _G.TestDebugError(fn, "SDK.Time." .. fn_name .. "():", ...)
+    end
+
+    local function TestDebugString(fn, ...)
+        _G.TestDebugString(fn, "[time]", ...)
     end
 
     describe("pause", function()
         describe("IsPaused()", function()
+            local fn = function()
+                return Time.IsPaused()
+            end
+
             describe("when TheSim:GetTimeScale() returns 0", function()
                 before_each(function()
                     _G.TheSim.GetTimeScale = spy.new(ReturnValueFn(0))
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Time.IsPaused())
-                end)
+                TestReturnTrue(fn)
             end)
 
             describe("when TheSim:GetTimeScale() returns a non-0 value", function()
@@ -73,37 +79,37 @@ describe("#sdk SDK.Time", function()
                     _G.TheSim.GetTimeScale = spy.new(ReturnValueFn(1))
                 end)
 
-                it("should return false", function()
-                    assert.is_false(Time.IsPaused())
-                end)
+                TestReturnFalse(fn)
             end)
         end)
 
         describe("Pause()", function()
+            local fn = function()
+                return Time.Pause()
+            end
+
             local function TestLocal()
                 it("should set Time.time_scale_prev field", function()
                     Time.time_scale_prev = nil
-                    Time.Pause()
+                    fn()
                     assert.is_equal(1, Time.time_scale_prev)
                 end)
 
                 it("should call TheSim:SetTimeScale()", function()
                     assert.spy(_G.TheSim.SetTimeScale).was_not_called()
-                    Time.Pause()
+                    fn()
                     assert.spy(_G.TheSim.SetTimeScale).was_called(1)
                     assert.spy(_G.TheSim.SetTimeScale).was_called_with(match.is_ref(_G.TheSim), 0)
                 end)
 
                 it("should call SetPause()", function()
                     assert.spy(_G.SetPause).was_not_called()
-                    Time.Pause()
+                    fn()
                     assert.spy(_G.SetPause).was_called(1)
                     assert.spy(_G.SetPause).was_called_with(true, "console")
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Time.Pause())
-                end)
+                TestReturnTrue(fn)
             end
 
             describe("when the game is paused", function()
@@ -112,15 +118,8 @@ describe("#sdk SDK.Time", function()
                     SDK.Debug.Error = spy.new(ReturnValueFn(true))
                 end)
 
-                it("should debug error string", function()
-                    AssertDebugError(function()
-                        Time.Pause()
-                    end, "SDK.Time.Pause():", "Game is already paused")
-                end)
-
-                it("should return false", function()
-                    assert.is_false(Time.Pause())
-                end)
+                TestDebugError(fn, "Pause", "Game is already paused")
+                TestReturnFalse(fn)
             end)
 
             describe("when the game is not paused", function()
@@ -161,17 +160,12 @@ describe("#sdk SDK.Time", function()
 
                             it("should call SDK.Remote.SetTimeScale()", function()
                                 assert.spy(SDK.Remote.SetTimeScale).was_not_called()
-                                Time.Pause()
+                                fn()
                                 assert.spy(SDK.Remote.SetTimeScale).was_called(1)
                                 assert.spy(SDK.Remote.SetTimeScale).was_called_with(0)
                             end)
 
-                            it("should debug string", function()
-                                AssertDebugString(function()
-                                    Time.Pause()
-                                end, "Pause game")
-                            end)
-
+                            TestDebugString(fn, "Pause game")
                             TestLocal()
                         end)
 
@@ -182,7 +176,7 @@ describe("#sdk SDK.Time", function()
 
                             it("should call SDK.Remote.SetTimeScale()", function()
                                 assert.spy(SDK.Remote.SetTimeScale).was_not_called()
-                                Time.Pause()
+                                fn()
                                 assert.spy(SDK.Remote.SetTimeScale).was_called(1)
                                 assert.spy(SDK.Remote.SetTimeScale).was_called_with(0)
                             end)
@@ -190,7 +184,7 @@ describe("#sdk SDK.Time", function()
                             it("should debug strings", function()
                                 if SDK.IsLoaded("Debug") then
                                     assert.spy(SDK.Debug.String).was_not_called()
-                                    Time.Pause()
+                                    fn()
                                     assert.spy(SDK.Debug.String).was_called(2)
                                     assert.spy(SDK.Debug.String).was_called_with(
                                         "[time]",
@@ -213,10 +207,14 @@ describe("#sdk SDK.Time", function()
         end)
 
         describe("Resume()", function()
+            local fn = function()
+                return Time.Resume()
+            end
+
             local function TestLocal()
                 it("should call TheSim:SetTimeScale()", function()
                     assert.spy(_G.TheSim.SetTimeScale).was_not_called()
-                    Time.Resume()
+                    fn()
                     assert.spy(_G.TheSim.SetTimeScale).was_called(1)
                     assert.spy(_G.TheSim.SetTimeScale).was_called_with(
                         match.is_ref(_G.TheSim),
@@ -226,14 +224,12 @@ describe("#sdk SDK.Time", function()
 
                 it("should call SetPause()", function()
                     assert.spy(_G.SetPause).was_not_called()
-                    Time.Resume()
+                    fn()
                     assert.spy(_G.SetPause).was_called(1)
                     assert.spy(_G.SetPause).was_called_with(false, "console")
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Time.Resume())
-                end)
+                TestReturnTrue(fn)
             end
 
             describe("when the game is not paused", function()
@@ -241,15 +237,8 @@ describe("#sdk SDK.Time", function()
                     Time.IsPaused = spy.new(ReturnValueFn(false))
                 end)
 
-                it("should debug error string", function()
-                    AssertDebugError(function()
-                        Time.Resume()
-                    end, "SDK.Time.Resume():", "Game is already resumed")
-                end)
-
-                it("should return false", function()
-                    assert.is_false(Time.Resume())
-                end)
+                TestDebugError(fn, "Resume", "Game is already resumed")
+                TestReturnFalse(fn)
             end)
 
             describe("when the game is paused", function()
@@ -267,12 +256,7 @@ describe("#sdk SDK.Time", function()
                             _G.TheWorld.ismastersim = true
                         end)
 
-                        it("should debug string", function()
-                            AssertDebugString(function()
-                                Time.Resume()
-                            end, "Resume game")
-                        end)
-
+                        TestDebugString(fn, "Resume game")
                         TestLocal()
                     end)
 
@@ -296,19 +280,14 @@ describe("#sdk SDK.Time", function()
 
                             it("should call SDK.Remote.SetTimeScale()", function()
                                 assert.spy(SDK.Remote.SetTimeScale).was_not_called()
-                                Time.Resume()
+                                fn()
                                 assert.spy(SDK.Remote.SetTimeScale).was_called(1)
                                 assert.spy(SDK.Remote.SetTimeScale).was_called_with(
                                     Time.time_scale_prev
                                 )
                             end)
 
-                            it("should debug string", function()
-                                AssertDebugString(function()
-                                    Time.Resume()
-                                end, "Resume game")
-                            end)
-
+                            TestDebugString(fn, "Resume game")
                             TestLocal()
                         end)
 
@@ -319,7 +298,7 @@ describe("#sdk SDK.Time", function()
 
                             it("should call SDK.Remote.SetTimeScale()", function()
                                 assert.spy(SDK.Remote.SetTimeScale).was_not_called()
-                                Time.Resume()
+                                fn()
                                 assert.spy(SDK.Remote.SetTimeScale).was_called(1)
                                 assert.spy(SDK.Remote.SetTimeScale).was_called_with(
                                     Time.time_scale_prev
@@ -329,7 +308,7 @@ describe("#sdk SDK.Time", function()
                             it("should debug strings", function()
                                 if SDK.IsLoaded("Debug") then
                                     assert.spy(SDK.Debug.String).was_not_called()
-                                    Time.Resume()
+                                    fn()
                                     assert.spy(SDK.Debug.String).was_called(2)
                                     assert.spy(SDK.Debug.String).was_called_with(
                                         "[time]",
@@ -352,6 +331,10 @@ describe("#sdk SDK.Time", function()
         end)
 
         describe("TogglePause()", function()
+            local fn = function()
+                return Time.TogglePause()
+            end
+
             before_each(function()
                 Time.Pause = spy.new(Empty)
                 Time.Resume = spy.new(Empty)
@@ -364,14 +347,14 @@ describe("#sdk SDK.Time", function()
 
                 it("should call Time.Resume()", function()
                     assert.spy(Time.Resume).was_not_called()
-                    Time.TogglePause()
+                    fn()
                     assert.spy(Time.Resume).was_called(1)
                     assert.spy(Time.Resume).was_called_with()
                 end)
 
                 it("shouldn't call Time.Pause()", function()
                     assert.spy(Time.Pause).was_not_called()
-                    Time.TogglePause()
+                    fn()
                     assert.spy(Time.Pause).was_not_called()
                 end)
             end)
@@ -383,14 +366,14 @@ describe("#sdk SDK.Time", function()
 
                 it("should call Time.Pause()", function()
                     assert.spy(Time.Pause).was_not_called()
-                    Time.TogglePause()
+                    fn()
                     assert.spy(Time.Pause).was_called(1)
                     assert.spy(Time.Pause).was_called_with()
                 end)
 
                 it("shouldn't call Time.Resume()", function()
                     assert.spy(Time.Resume).was_not_called()
-                    Time.TogglePause()
+                    fn()
                     assert.spy(Time.Resume).was_not_called()
                 end)
             end)
@@ -410,6 +393,10 @@ describe("#sdk SDK.Time", function()
             end)
 
             local function TestValidDeltaIsPassed(delta, set, debug)
+                local fn = function()
+                    return Time.SetDeltaTimeScale(delta)
+                end
+
                 describe("when a valid delta is passed", function()
                     describe("(" .. delta .. ")", function()
                         describe("and Time.SetTimeScale() returns true", function()
@@ -419,20 +406,13 @@ describe("#sdk SDK.Time", function()
 
                             it("should call Time.SetTimeScale()", function()
                                 assert.spy(Time.SetTimeScale).was_not_called()
-                                Time.SetDeltaTimeScale(delta)
+                                fn()
                                 assert.spy(Time.SetTimeScale).was_called(1)
                                 assert.spy(Time.SetTimeScale).was_called_with(set)
                             end)
 
-                            it("should debug string", function()
-                                AssertDebugString(function()
-                                    Time.SetDeltaTimeScale(delta)
-                                end, "Delta time scale:", debug)
-                            end)
-
-                            it("should return true", function()
-                                assert.is_true(Time.SetDeltaTimeScale(delta))
-                            end)
+                            TestDebugString(fn, "Delta time scale:", debug)
+                            TestReturnTrue(fn)
                         end)
 
                         describe("and Time.SetTimeScale() returns false", function()
@@ -442,20 +422,13 @@ describe("#sdk SDK.Time", function()
 
                             it("should call Time.SetTimeScale()", function()
                                 assert.spy(Time.SetTimeScale).was_not_called()
-                                Time.SetDeltaTimeScale(delta)
+                                fn()
                                 assert.spy(Time.SetTimeScale).was_called(1)
                                 assert.spy(Time.SetTimeScale).was_called_with(set)
                             end)
 
-                            it("should debug string", function()
-                                AssertDebugString(function()
-                                    Time.SetDeltaTimeScale(delta)
-                                end, "Delta time scale:", debug)
-                            end)
-
-                            it("should return false", function()
-                                assert.is_false(Time.SetDeltaTimeScale(delta))
-                            end)
+                            TestDebugString(fn, "Delta time scale:", debug)
+                            TestReturnFalse(fn)
                         end)
                     end)
                 end)
@@ -474,17 +447,19 @@ describe("#sdk SDK.Time", function()
         end)
 
         describe("SetTimeScale()", function()
+            local fn = function()
+                return Time.SetTimeScale(1)
+            end
+
             local function TestLocal()
                 it("should call TheSim:SetTimeScale()", function()
                     assert.spy(_G.TheSim.SetTimeScale).was_not_called()
-                    Time.SetTimeScale(1)
+                    fn()
                     assert.spy(_G.TheSim.SetTimeScale).was_called(1)
                     assert.spy(_G.TheSim.SetTimeScale).was_called_with(match.is_ref(_G.TheSim), 1)
                 end)
 
-                it("should return true", function()
-                    assert.is_true(Time.SetTimeScale(1))
-                end)
+                TestReturnTrue(fn)
             end
 
             TestArgUnsigned("SetTimeScale", {
@@ -529,7 +504,7 @@ describe("#sdk SDK.Time", function()
 
                         it("should call SDK.Remote.SetTimeScale()", function()
                             assert.spy(SDK.Remote.SetTimeScale).was_not_called()
-                            Time.SetTimeScale(1)
+                            fn()
                             assert.spy(SDK.Remote.SetTimeScale).was_called(1)
                             assert.spy(SDK.Remote.SetTimeScale).was_called_with(1)
                         end)
@@ -544,7 +519,7 @@ describe("#sdk SDK.Time", function()
 
                         it("should call SDK.Remote.SetTimeScale()", function()
                             assert.spy(SDK.Remote.SetTimeScale).was_not_called()
-                            Time.SetTimeScale(1)
+                            fn()
                             assert.spy(SDK.Remote.SetTimeScale).was_called(1)
                             assert.spy(SDK.Remote.SetTimeScale).was_called_with(1)
                         end)

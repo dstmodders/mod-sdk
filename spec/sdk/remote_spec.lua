@@ -82,21 +82,19 @@ describe("#sdk SDK.Remote", function()
         end
 
         describe(description, function()
+            local fn = function()
+                return Remote[name](unpack(args))
+            end
+
             it("should debug string", function()
-                AssertDebugString(function()
-                    Remote[name](unpack(args))
-                end, "[remote]", unpack(debug))
+                AssertDebugString(fn, "[remote]", unpack(debug))
             end)
 
             it("should call TheSim:SendRemoteExecute()", function()
-                AssertSendWasCalled(function()
-                    Remote[name](unpack(args))
-                end, send)
+                AssertSendWasCalled(fn, send)
             end)
 
-            it("should return true", function()
-                assert.is_true(Remote[name](unpack(args)))
-            end)
+            TestReturnTrue(fn)
         end)
     end
 
@@ -209,8 +207,8 @@ describe("#sdk SDK.Remote", function()
             )
 
             describe("when non-serializable data as one of the values is passed", function()
-                it("should return nil", function()
-                    assert.is_nil(Remote.Serialize({ "foo", 0, 0.5, 1, true, false, _G.TheSim }))
+                TestReturnNil(function()
+                    return Remote.Serialize({ "foo", 0, 0.5, 1, true, false, _G.TheSim })
                 end)
             end)
         end)

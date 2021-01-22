@@ -181,6 +181,10 @@ describe("#sdk SDK.PersistentData", function()
         end)
 
         describe("Get()", function()
+            local fn = function()
+                return PersistentData.Get("foo")
+            end
+
             describe("when in the default mode", function()
                 before_each(function()
                     PersistentData.mode = PersistentData.DEFAULT
@@ -192,19 +196,15 @@ describe("#sdk SDK.PersistentData", function()
                     end)
 
                     it("should debug error string", function()
-                        AssertDebugError(function()
-                            PersistentData.Get("foo")
-                        end, "[get]", "foo")
+                        AssertDebugError(fn, "[get]", "foo")
                     end)
 
-                    it("should return nil", function()
-                        assert.is_nil(PersistentData.Get("foo"))
-                    end)
+                    TestReturnNil(fn)
 
                     describe("when some chain fields are missing", function()
                         it("should return nil", function()
                             AssertChainNil(function()
-                                assert.is_nil(PersistentData.Get("foo"))
+                                assert.is_nil(fn())
                             end, PersistentData, "data", "general")
                         end)
                     end)
@@ -218,19 +218,17 @@ describe("#sdk SDK.PersistentData", function()
                     end)
 
                     it("should debug string", function()
-                        AssertDebugString(function()
-                            PersistentData.Get("foo")
-                        end, "[get]", "foo")
+                        AssertDebugString(fn, "[get]", "foo")
                     end)
 
                     it("should return value", function()
-                        assert.is_equal("bar", PersistentData.Get("foo"))
+                        assert.is_equal("bar", fn())
                     end)
 
                     describe("when some chain fields are missing", function()
                         it("should return nil", function()
                             AssertChainNil(function()
-                                assert.is_nil(PersistentData.Get("foo"))
+                                assert.is_nil(fn())
                             end, PersistentData, "data", "general")
                         end)
                     end)
@@ -249,23 +247,19 @@ describe("#sdk SDK.PersistentData", function()
 
                     describe("and in gameplay", function()
                         it("should debug error string", function()
-                            AssertDebugError(function()
-                                PersistentData.Get("foo")
-                            end, "[get]", "[" .. MasterSessionId .. "]", "foo")
+                            AssertDebugError(fn, "[get]", "[" .. MasterSessionId .. "]", "foo")
                         end)
 
-                        it("should return nil", function()
-                            assert.is_nil(PersistentData.Get("foo"))
-                        end)
+                        TestReturnNil(fn)
 
                         describe("when some chain fields are missing", function()
                             it("should return nil", function()
                                 PersistentData.data.servers[MasterSessionId] = nil
-                                assert.is_nil(PersistentData.Get("foo"))
+                                assert.is_nil(fn())
                                 PersistentData.data.servers = nil
-                                assert.is_nil(PersistentData.Get("foo"))
+                                assert.is_nil(fn())
                                 PersistentData.data = nil
-                                assert.is_nil(PersistentData.Get("foo"))
+                                assert.is_nil(fn())
                             end)
                         end)
                     end)
@@ -290,21 +284,16 @@ describe("#sdk SDK.PersistentData", function()
                         end)
 
                         TestDebugErrorNoServerData("Get", "foo")
-
-                        it("should return nil", function()
-                            assert.is_nil(PersistentData.Get("foo"))
-                        end)
+                        TestReturnNil(fn)
                     end)
 
                     describe("and in gameplay", function()
                         it("should debug string", function()
-                            AssertDebugString(function()
-                                PersistentData.Get("foo")
-                            end, "[get]", "[" .. MasterSessionId .. "]", "foo")
+                            AssertDebugString(fn, "[get]", "[" .. MasterSessionId .. "]", "foo")
                         end)
 
                         it("should return value", function()
-                            assert.is_equal("bar", PersistentData.Get("foo"))
+                            assert.is_equal("bar", fn())
                         end)
 
                         describe("when no value", function()
@@ -318,20 +307,16 @@ describe("#sdk SDK.PersistentData", function()
                             end)
 
                             it("should debug error string", function()
-                                AssertDebugError(function()
-                                    PersistentData.Get("foo")
-                                end, "[get]", "[" .. MasterSessionId .. "]", "foo")
+                                AssertDebugError(fn, "[get]", "[" .. MasterSessionId .. "]", "foo")
                             end)
 
-                            it("should return nil", function()
-                                assert.is_nil(PersistentData.Get("foo"))
-                            end)
+                            TestReturnNil(fn)
                         end)
 
                         describe("when some chain fields are missing", function()
                             it("should return nil", function()
                                 AssertChainNil(function()
-                                    assert.is_nil(PersistentData.Get("foo"))
+                                    assert.is_nil(fn())
                                 end, PersistentData, "data", "servers", MasterSessionId)
                             end)
                         end)
@@ -341,15 +326,17 @@ describe("#sdk SDK.PersistentData", function()
         end)
 
         describe("Set()", function()
+            local fn = function()
+                return PersistentData.Set("foo", "bar")
+            end
+
             describe("when in the default mode", function()
                 before_each(function()
                     PersistentData.mode = PersistentData.DEFAULT
                 end)
 
                 it("should debug string", function()
-                    AssertDebugString(function()
-                        PersistentData.Set("foo", "bar")
-                    end, "[set]", "foo:", "bar")
+                    AssertDebugString(fn, "[set]", "foo:", "bar")
                 end)
 
                 describe("when some chain fields are missing", function()
@@ -394,14 +381,18 @@ describe("#sdk SDK.PersistentData", function()
                 describe("and in gameplay", function()
                     describe("and a server exists", function()
                         it("should debug string", function()
-                            AssertDebugString(function()
-                                PersistentData.Set("foo", "bar")
-                            end, "[set]", "[" .. MasterSessionId .. "]", "foo:", "bar")
+                            AssertDebugString(
+                                fn,
+                                "[set]",
+                                "[" .. MasterSessionId .. "]",
+                                "foo:",
+                                "bar"
+                            )
                         end)
 
                         it("should set is_dirty to true", function()
                             assert.is_false(PersistentData.is_dirty)
-                            PersistentData.Set("foo", "bar")
+                            fn()
                             assert.is_true(PersistentData.is_dirty)
                         end)
 
@@ -682,6 +673,10 @@ describe("#sdk SDK.PersistentData", function()
         end)
 
         describe("GetServer()", function()
+            local fn = function()
+                return PersistentData.GetServer()
+            end
+
             describe("when not in gameplay", function()
                 before_each(function()
                     _G.TheSim = nil
@@ -690,20 +685,18 @@ describe("#sdk SDK.PersistentData", function()
 
                 it("should set server_id field to nil", function()
                     assert.is_nil(PersistentData.server_id)
-                    PersistentData.GetServer()
+                    fn()
                     assert.is_nil(PersistentData.server_id)
                 end)
 
                 TestDebugErrorNoServerData("GetServer")
 
-                it("should return nil", function()
-                    assert.is_nil(PersistentData.GetServer())
-                end)
+                TestReturnNil(fn)
 
                 describe("when some chain fields are missing", function()
                     it("should return nil", function()
                         AssertChainNil(function()
-                            assert.is_nil(PersistentData.GetServer())
+                            assert.is_nil(fn())
                         end, PersistentData, "data", "servers", MasterSessionId)
                     end)
                 end)
@@ -723,7 +716,7 @@ describe("#sdk SDK.PersistentData", function()
                     end)
 
                     it("should set the server_id field", function()
-                        PersistentData.GetServer()
+                        fn()
                         assert.is_equal(MasterSessionId, PersistentData.server_id)
                     end)
 
@@ -732,7 +725,7 @@ describe("#sdk SDK.PersistentData", function()
                             time_previous,
                             PersistentData.data.servers[MasterSessionId].lastseen
                         )
-                        PersistentData.GetServer()
+                        fn()
                         assert.is_equal(
                             time_current,
                             PersistentData.data.servers[MasterSessionId].lastseen
@@ -740,7 +733,7 @@ describe("#sdk SDK.PersistentData", function()
                     end)
 
                     it("should set is_dirty true", function()
-                        PersistentData.GetServer()
+                        fn()
                         assert.is_true(PersistentData.is_dirty)
                     end)
 
@@ -750,7 +743,7 @@ describe("#sdk SDK.PersistentData", function()
                             data = {
                                 foo = "bar",
                             },
-                        }, PersistentData.GetServer())
+                        }, fn())
                     end)
                 end)
 
@@ -761,13 +754,13 @@ describe("#sdk SDK.PersistentData", function()
 
                     it("should set the server_id field", function()
                         assert.is_nil(PersistentData.server_id)
-                        PersistentData.GetServer()
+                        fn()
                         assert.is_equal(MasterSessionId, PersistentData.server_id)
                     end)
 
                     it("should set is_dirty to true", function()
                         assert.is_false(PersistentData.is_dirty)
-                        PersistentData.GetServer()
+                        fn()
                         assert.is_true(PersistentData.is_dirty)
                     end)
 
@@ -775,14 +768,14 @@ describe("#sdk SDK.PersistentData", function()
                         assert.is_same({
                             lastseen = time_current,
                             data = {},
-                        }, PersistentData.GetServer())
+                        }, fn())
                     end)
                 end)
 
                 describe("when some chain fields are missing", function()
                     it("should return nil", function()
                         AssertChainNil(function()
-                            assert.is_nil(PersistentData.GetServer())
+                            assert.is_nil(fn())
                         end, PersistentData, "data", "servers")
                     end)
                 end)
@@ -790,35 +783,34 @@ describe("#sdk SDK.PersistentData", function()
         end)
 
         describe("GetServerID()", function()
+            local fn = function()
+                return PersistentData.GetServerID()
+            end
+
             describe("when not in gameplay", function()
                 before_each(function()
                     _G.TheSim = nil
                     _G.TheWorld = nil
                 end)
 
-                it("should return nil", function()
-                    assert.is_nil(PersistentData.GetServerID())
-                end)
+                TestReturnNil(fn)
             end)
 
             describe("when in gameplay", function()
-                it(
-                    "should call TheWorld.net.components.shardstate:GetMasterSessionId()",
-                    function()
-                        assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId)
-                              .was_not_called()
-                        PersistentData.GetServerID()
-                        assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId)
-                              .was_called(1)
-                        assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId)
-                              .was_called_with(match.is_ref(
-                            _G.TheWorld.net.components.shardstate
-                        ))
-                    end
-                )
+                it("should call TheWorld.net.components.shardstate:GetMasterSessionId()", function()
+                    assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId)
+                          .was_not_called()
+                    fn()
+                    assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId)
+                          .was_called(1)
+                    assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId)
+                          .was_called_with(match.is_ref(
+                        _G.TheWorld.net.components.shardstate
+                    ))
+                end)
 
                 it("should return the master session id", function()
-                    assert.is_equal(MasterSessionId, PersistentData.GetServerID())
+                    assert.is_equal(MasterSessionId, fn())
                 end)
             end)
 
@@ -826,7 +818,7 @@ describe("#sdk SDK.PersistentData", function()
                 it("should return nil", function()
                     AssertChainNil(
                         function()
-                            assert.is_nil(PersistentData.GetServerID())
+                            assert.is_nil(fn())
                         end,
                         _G.TheWorld,
                         "net",
@@ -839,6 +831,10 @@ describe("#sdk SDK.PersistentData", function()
         end)
 
         describe("GetServerLastSeen()", function()
+            local fn = function()
+                return PersistentData.GetServerLastSeen()
+            end
+
             describe("when not in gameplay", function()
                 before_each(function()
                     _G.TheSim = nil
@@ -846,17 +842,14 @@ describe("#sdk SDK.PersistentData", function()
                 end)
 
                 TestDebugErrorNoServerData("GetServerLastSeen")
-
-                it("should return nil", function()
-                    assert.is_nil(PersistentData.GetServerLastSeen())
-                end)
+                TestReturnNil(fn)
 
                 describe("when some chain fields are missing", function()
                     it("should return nil", function()
                         PersistentData.data.servers[MasterSessionId].lastseen = nil
-                        assert.is_nil(PersistentData.GetServerLastSeen())
+                        assert.is_nil(fn())
                         AssertChainNil(function()
-                            assert.is_nil(PersistentData.GetServerLastSeen())
+                            assert.is_nil(fn())
                         end, PersistentData, "data", "servers", MasterSessionId)
                     end)
                 end)
@@ -876,7 +869,7 @@ describe("#sdk SDK.PersistentData", function()
                     end)
 
                     it("should return the current time", function()
-                        assert.is_equal(time_current, PersistentData.GetServerLastSeen())
+                        assert.is_equal(time_current, fn())
                     end)
                 end)
 
@@ -889,7 +882,7 @@ describe("#sdk SDK.PersistentData", function()
                 describe("when some chain fields are missing", function()
                     it("should return nil", function()
                         AssertChainNil(function()
-                            assert.is_nil(PersistentData.GetServerLastSeen())
+                            assert.is_nil(fn())
                         end, PersistentData, "data", "servers")
                     end)
                 end)
@@ -897,6 +890,10 @@ describe("#sdk SDK.PersistentData", function()
         end)
 
         describe("GetServerData()", function()
+            local fn = function()
+                return PersistentData.GetServerData()
+            end
+
             describe("when not in gameplay", function()
                 before_each(function()
                     _G.TheSim = nil
@@ -908,16 +905,14 @@ describe("#sdk SDK.PersistentData", function()
                 describe("when some chain fields are missing", function()
                     it("should return nil", function()
                         PersistentData.data.servers[MasterSessionId].data = nil
-                        assert.is_nil(PersistentData.GetServerData())
+                        assert.is_nil(fn())
                         AssertChainNil(function()
-                            assert.is_nil(PersistentData.GetServerData())
+                            assert.is_nil(fn())
                         end, PersistentData, "data", "servers", MasterSessionId)
                     end)
                 end)
 
-                it("should return nil", function()
-                    assert.is_nil(PersistentData.GetServerData())
-                end)
+                TestReturnNil(fn)
             end)
 
             describe("when in gameplay", function()
@@ -934,7 +929,7 @@ describe("#sdk SDK.PersistentData", function()
                     end)
 
                     it("should return the server data", function()
-                        assert.is_same({ foo = "bar" }, PersistentData.GetServerData())
+                        assert.is_same({ foo = "bar" }, fn())
                     end)
                 end)
 
@@ -944,14 +939,14 @@ describe("#sdk SDK.PersistentData", function()
                     end)
 
                     it("should return empty server data", function()
-                        assert.is_same({}, PersistentData.GetServerData())
+                        assert.is_same({}, fn())
                     end)
                 end)
 
                 describe("when some chain fields are missing", function()
                     it("should return nil", function()
                         AssertChainNil(function()
-                            assert.is_nil(PersistentData.GetServerData())
+                            assert.is_nil(fn())
                         end, PersistentData, "data", "servers")
                     end)
                 end)
