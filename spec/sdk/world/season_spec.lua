@@ -225,8 +225,8 @@ describe("#sdk SDK.World.Season", function()
                         _G.TheWorld.ismastersim = true
                     end)
 
-                    TestDebugString(fn, "Retreat season:", "3 days")
-                    TestPushEventCalls(fn, 3, "ms_retreatseason")
+                    TestDebugString(fn, "Retreat season:", "4 days")
+                    TestPushEventCalls(fn, 4, "ms_retreatseason")
                     TestReturnTrue(fn)
                 end)
 

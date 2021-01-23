@@ -74,7 +74,7 @@ end
 -- @treturn boolean
 function Season.RetreatSeason(days)
     local passed = Season.GetPassedDays() or 0
-    days = ArgUnsignedInteger("RetreatSeason", days or passed, "days")
+    days = ArgUnsignedInteger("RetreatSeason", days or passed + 1, "days")
 
     if not days then
         return false
