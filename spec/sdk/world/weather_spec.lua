@@ -267,28 +267,28 @@ describe("#sdk SDK.World.Weather", function()
                 end)
             end)
 
+            TestArgPlayer("SendMiniEarthquake", {
+                empty = { nil, 20, 20, 2.5 },
+                invalid = { "foo", 20, 20, 2.5 },
+                valid = { _G.ThePlayer, 20, 20, 2.5 },
+            }, "player")
+
             TestArgUnsignedInteger("SendMiniEarthquake", {
-                empty = { nil, 20, 2.5, _G.ThePlayer },
-                invalid = { "foo", 20, 2.5, _G.ThePlayer },
-                valid = { 20, 20, 2.5, _G.ThePlayer },
+                empty = { _G.ThePlayer, nil, 20, 2.5 },
+                invalid = { _G.ThePlayer, "foo", 20, 2.5 },
+                valid = { _G.ThePlayer, 20, 20, 2.5 },
             }, "radius")
 
             TestArgUnsignedInteger("SendMiniEarthquake", {
-                empty = { 20, nil, 2.5, _G.ThePlayer },
-                invalid = { 20, "foo", 2.5, _G.ThePlayer },
-                valid = { 20, 20, 2.5, _G.ThePlayer },
+                empty = { _G.ThePlayer, 20, nil, 2.5 },
+                invalid = { _G.ThePlayer, 20, "foo", 2.5 },
+                valid = { _G.ThePlayer, 20, 20, 2.5 },
             }, "amount")
 
             TestArgUnsigned("SendMiniEarthquake", {
-                empty = { 20, 20, nil, _G.ThePlayer },
-                invalid = { 20, 20, "foo", _G.ThePlayer },
-                valid = { 20, 20, 2.5, _G.ThePlayer },
-            }, "duration")
-
-            TestArgUnsigned("SendMiniEarthquake", {
-                empty = { 20, 20, nil, _G.ThePlayer },
-                invalid = { 20, 20, "foo", _G.ThePlayer },
-                valid = { 20, 20, 2.5, _G.ThePlayer },
+                empty = { _G.ThePlayer, 20, 20 },
+                invalid = { _G.ThePlayer, 20, 20, "foo" },
+                valid = { _G.ThePlayer, 20, 20, 2.5 },
             }, "duration")
 
             describe("when in a cave world", function()

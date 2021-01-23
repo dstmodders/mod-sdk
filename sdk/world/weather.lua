@@ -111,19 +111,19 @@ end
 
 --- Sends a mini earthquake.
 -- @see SDK.Remote.World.SendMiniEarthquake
+-- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @tparam[opt] number radius Default: 20
 -- @tparam[opt] number amount Default: 20
 -- @tparam[opt] number duration Default: 2.5
--- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
-function Weather.SendMiniEarthquake(radius, amount, duration, player)
+function Weather.SendMiniEarthquake(player, radius, amount, duration)
     local fn_name = "SendMiniEarthquake"
+    player = ArgPlayer(fn_name, player)
     radius = ArgUnsignedInteger(fn_name, radius or 20, "radius")
     amount = ArgUnsignedInteger(fn_name, amount or 20, "amount")
     duration = ArgUnsigned(fn_name, duration or 2.5, "duration")
-    player = ArgPlayer(fn_name, player)
 
-    if not radius or not amount or not duration or not player then
+    if not player or not radius or not amount or not duration then
         return false
     end
 
