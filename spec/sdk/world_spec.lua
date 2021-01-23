@@ -39,6 +39,11 @@ describe("#sdk SDK.World", function()
                 components = {},
             },
             state = {},
+            topology = {
+                ids = {
+                    "Forest hunters:6:WalrusHut_Grassy",
+                },
+            },
             HasTag = function(_, tag)
                 return tag == "forest"
             end
@@ -64,11 +69,33 @@ describe("#sdk SDK.World", function()
         _G.AssertDebugErrorInvalidArg(fn, World, fn_name, arg_name, explanation)
     end
 
+    local function TestDebugError(fn, fn_name, ...)
+        _G.TestDebugError(fn, "SDK.World." .. fn_name .. "():", ...)
+    end
+
     local function TestDebugString(fn, ...)
         _G.TestDebugString(fn, "[world]", ...)
     end
 
+    local function TestDebugStringCalls(fn, calls, ...)
+        _G.TestDebugStringCalls(fn, calls, "[world]", ...)
+    end
+
     describe("general", function()
+        describe("should have a", function()
+            describe("getter", function()
+                local getters = {
+                    nr_of_walrus_camps = "GetNrOfWalrusCamps",
+                }
+
+                for field, getter in pairs(getters) do
+                    it(getter .. "()", function()
+                        AssertModuleGetter(World, field, getter)
+                    end)
+                end
+            end)
+        end)
+
         describe("GetMeta()", function()
             describe("when no name is passed", function()
                 it("should return TheWorld.meta", function()
@@ -346,6 +373,69 @@ describe("#sdk SDK.World", function()
                         assert.is_nil(fn())
                     end, _G.TheWorld, "net", "components", "clock")
                 end)
+            end)
+        end)
+    end)
+
+    describe("internal", function()
+        describe("_GuessNrOfWalrusCamps()", function()
+            local fn = function()
+                return World._GuessNrOfWalrusCamps()
+            end
+
+            after_each(function()
+                World.nr_of_walrus_camps = 0
+            end)
+
+            describe("when some TheWorld.topology.ids chain fields are missing", function()
+                before_each(function()
+                    _G.TheWorld.topology.ids = nil
+                end)
+
+                TestDebugError(fn, "_GuessNrOfWalrusCamps", "No world topology IDs found")
+
+                it("should return false", function()
+                    AssertChainNil(function()
+                        assert.is_false(fn())
+                    end, _G.TheWorld, "topology", "ids")
+                end)
+            end)
+
+            describe("when a single Walrus Camp", function()
+                before_each(function()
+                    _G.TheWorld.topology.ids = {
+                        "Forest hunters:6:WalrusHut_Grassy",
+                    }
+                end)
+
+                it("should set World.nr_of_walrus_camps value", function()
+                    assert.is_equal(0, World.nr_of_walrus_camps)
+                    fn()
+                    assert.is_equal(1, World.nr_of_walrus_camps)
+                end)
+
+                TestDebugStringCalls(fn, 2, "Guessing the number of Walrus Camps...")
+                TestDebugStringCalls(fn, 2, "Found", "1", "Walrus Camp")
+            end)
+
+            describe("when multiple Walrus Camps", function()
+                before_each(function()
+                    _G.TheWorld.topology.ids = {
+                        "Forest hunters:6:WalrusHut_Grassy",
+                        "The hunters:4:WalrusHut_Plains",
+                        "The hunters:5:WalrusHut_Rocky",
+                        "The hunters:8:WalrusHut_Grassy",
+                    }
+                end)
+
+                it("should set World.nr_of_walrus_camps value", function()
+                    assert.is_equal(0, World.nr_of_walrus_camps)
+                    fn()
+                    assert.is_equal(4, World.nr_of_walrus_camps)
+                end)
+
+                TestDebugStringCalls(fn, 2, "Guessing the number of Walrus Camps...")
+                TestDebugStringCalls(fn, 2, "Found", "4", "Walrus Camps")
             end)
         end)
     end)

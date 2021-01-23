@@ -13,13 +13,20 @@
 -- @license MIT
 -- @release 0.1
 ----
-local World = {}
+local World = {
+    nr_of_walrus_camps = 0,
+}
 
 local SDK
+local Chain
 local Value
 
 --- Helpers
 -- @section helpers
+
+local function DebugErrorFn(fn_name, ...)
+    SDK._DebugErrorFn(World, fn_name, ...)
+end
 
 local function DebugErrorInvalidArg(fn_name, arg_name, explanation)
     SDK._DebugErrorInvalidArg(World, fn_name, arg_name, explanation)
@@ -42,6 +49,16 @@ function World.GetMeta(name)
         return meta[name]
     end
     return meta
+end
+
+--- Gets the number of Walrus Camps.
+--
+-- Returns the number of Walrus Camps guessed earlier by the `GuessNrOfWalrusCamps`.
+--
+-- @see GetNrOfWalrusCamps
+-- @treturn number
+function World.GetNrOfWalrusCamps()
+    return World.nr_of_walrus_camps
 end
 
 --- Gets a seed.
@@ -141,6 +158,46 @@ function World.GetTimeUntilPhase(phase)
     return clock and clock:GetTimeUntilPhase(phase)
 end
 
+--- Internal
+-- @section internal
+
+--- Guesses the number of Walrus Camps.
+--
+-- To get the guessed value use `GetNrOfWalrusCamps`.
+--
+-- Uses the topology IDs data to predict how many Walrus Camps and is called automatically when the
+-- world loads.
+--
+-- @see GetNrOfWalrusCamps
+-- @treturn boolean
+function World._GuessNrOfWalrusCamps()
+    local ids = Chain.Get(TheWorld, "topology", "ids")
+    if not ids then
+        DebugErrorFn("_GuessNrOfWalrusCamps", "No world topology IDs found")
+        return false
+    end
+
+    DebugString("Guessing the number of Walrus Camps...")
+    World.nr_of_walrus_camps = 0
+    for _, id in pairs(ids) do
+        if string.match(id, "WalrusHut_Grassy")
+            or string.match(id, "WalrusHut_Plains")
+            or string.match(id, "WalrusHut_Rocky")
+        then
+            World.nr_of_walrus_camps = World.nr_of_walrus_camps + 1
+        end
+    end
+
+    DebugString(
+        "Found",
+        tostring(World.nr_of_walrus_camps),
+        (World.nr_of_walrus_camps == 0 or World.nr_of_walrus_camps ~= 1)
+            and "Walrus Camps"
+            or "Walrus Camp"
+    )
+    return true
+end
+
 --- Lifecycle
 -- @section lifecycle
 
@@ -150,6 +207,7 @@ end
 -- @treturn SDK.World
 function World._DoInit(sdk, submodules)
     SDK = sdk
+    Chain = SDK.Utils.Chain
     Value = SDK.Utils.Value
 
     submodules = submodules ~= nil and submodules or {
@@ -159,6 +217,8 @@ function World._DoInit(sdk, submodules)
 
     SDK._SetModuleName(SDK, World, "World")
     SDK.LoadSubmodules(World, submodules)
+    SDK.OnEnterCharacterSelect(World._GuessNrOfWalrusCamps)
+    SDK.OnPlayerActivated(World._GuessNrOfWalrusCamps)
 
     return SDK._DoInitModule(SDK, World, "World", "TheWorld")
 end
