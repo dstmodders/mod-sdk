@@ -242,6 +242,7 @@ describe("#sdk SDK.World.Season", function()
     end)
 
     describe("get", function()
+        TestGetState("GetRemainingDays", "remainingdaysinseason", 20)
         TestGetState("GetSeason", "season", "autumn")
 
         describe("GetSeasonLength()", function()

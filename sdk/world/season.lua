@@ -50,7 +50,7 @@ end
 -- @tparam[opt] number days Number of days to advance (default: remaining days)
 -- @treturn boolean
 function Season.AdvanceSeason(days)
-    local remaining = World.GetState("remainingdaysinseason")
+    local remaining = Season.GetRemainingDays()
     days = ArgUnsignedInteger("AdvanceSeason", days or remaining, "days")
 
     if not days then
@@ -73,7 +73,7 @@ end
 -- @tparam[opt] number days Number of days to retreat (default: length - remaining days)
 -- @treturn boolean
 function Season.RetreatSeason(days)
-    local remaining = World.GetState("remainingdaysinseason") or 0
+    local remaining = Season.GetRemainingDays() or 0
     local length = Season.GetSeasonLength() or 0
     local retreat = length - remaining
     days = ArgUnsignedInteger("RetreatSeason", days or retreat, "days")
@@ -95,6 +95,12 @@ end
 
 --- Get
 -- @section get
+
+--- Gets remaining days in the current season.
+-- @treturn number
+function Season.GetRemainingDays()
+    return World.GetState("remainingdaysinseason")
+end
 
 --- Gets a season.
 -- @treturn number
