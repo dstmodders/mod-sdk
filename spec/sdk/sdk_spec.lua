@@ -299,7 +299,7 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             fn()
-                            assert.spy(SDK._Info).was_called(32)
+                            assert.spy(SDK._Info).was_called(33)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
@@ -329,6 +329,7 @@ describe("#sdk SDK", function()
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Value")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World.SaveData")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World.Season")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World.Weather")
                             assert.spy(SDK._Info).was_called_with("Added world post initializer")
@@ -370,6 +371,7 @@ describe("#sdk SDK", function()
                             "Thread",
                             "Time",
                             World = {
+                                "SaveData",
                                 "Season",
                                 "Weather"
                             },
@@ -401,7 +403,7 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             SDK.Load(env, "yoursubdirectory/sdk", modules)
-                            assert.spy(SDK._Info).was_called(15)
+                            assert.spy(SDK._Info).was_called(16)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Attribute")
@@ -414,6 +416,7 @@ describe("#sdk SDK", function()
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Value")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World.SaveData")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World.Season")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.World.Weather")
                             assert.spy(SDK._Info).was_called_with("Added world post initializer")
@@ -597,6 +600,9 @@ describe("#sdk SDK", function()
                 World = {
                     path = "sdk/world",
                     submodules = {
+                        SaveData = {
+                            path = "sdk/world/savedata",
+                        },
                         Season = {
                             path = "sdk/world/season",
                         },
@@ -647,6 +653,7 @@ describe("#sdk SDK", function()
                         "Test",
                         "Thread",
                         World = {
+                            "SaveData",
                             "Season",
                             "Weather"
                         },
@@ -690,6 +697,7 @@ describe("#sdk SDK", function()
                         World = {
                             path = "sdk/world",
                             submodules = {
+                                SaveData = "sdk/world/savedata",
                                 Season = "sdk/world/season",
                                 Weather = "sdk/world/weather",
                             },

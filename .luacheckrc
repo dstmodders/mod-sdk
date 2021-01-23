@@ -55,6 +55,7 @@ files["**/*.lua"] = {
         "ClassRegistry",
         "KnownModIndex",
         "LoadSDK",
+        "RunInSandboxSafe",
         "SendRPCToServer",
         "SetTestModule",
         "TestArg",
