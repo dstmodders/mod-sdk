@@ -1,5 +1,5 @@
 ----
--- Different input functionality.
+-- Handles input functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

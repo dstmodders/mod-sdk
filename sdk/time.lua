@@ -1,5 +1,5 @@
 ----
--- Handles time scaling and pausing.
+-- Handles time functionality.
 --
 -- _**NB!** Requires_ `SDK.Remote` _to be loaded to work on dedicated servers with administrator
 -- rights._

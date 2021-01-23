@@ -1,5 +1,5 @@
 ----
--- Handles upvalue debugging.
+-- Handles debug upvalue functionality.
 --
 -- _**NB!** Should be used with caution and only as a last resort._
 --

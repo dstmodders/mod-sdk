@@ -1,5 +1,5 @@
 ----
--- Different remote world functionality.
+-- Handles remote world functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

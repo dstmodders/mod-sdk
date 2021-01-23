@@ -1,5 +1,5 @@
 ----
--- Handles storing any data for later access.
+-- Handles persistent data functionality.
 --
 -- **How it works?**
 --

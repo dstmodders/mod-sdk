@@ -1,5 +1,5 @@
 ----
--- Different player functionality.
+-- Handles player functionality.
 --
 -- Only available when `ThePlayer` global is available.
 --

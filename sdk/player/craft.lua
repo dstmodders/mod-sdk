@@ -1,5 +1,5 @@
 ----
--- Different player craft functionality.
+-- Handles player craft functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

@@ -1,5 +1,5 @@
 ----
--- Different table utilities.
+-- Includes different table utilities.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

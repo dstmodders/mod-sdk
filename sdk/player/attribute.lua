@@ -1,5 +1,5 @@
 ----
--- Handles getting or setting player attributes.
+-- Handles player attributes functionality.
 --
 -- _**NB!** Requires_ `SDK.Remote.Player` _to be loaded to work on dedicated servers with
 -- administrator rights._

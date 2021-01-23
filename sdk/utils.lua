@@ -1,5 +1,7 @@
 ----
--- Different utilities.
+-- Handles utilities.
+--
+-- On its own doesn't do much and only acts as an entry point to all other utilities.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

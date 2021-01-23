@@ -1,5 +1,5 @@
 ----
--- Different front-end functionality.
+-- Handles front-end functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

@@ -1,12 +1,15 @@
 ----
--- Different world functionality.
+-- Handles world functionality.
 --
--- Only available when `TheWorld` global is available.
+-- _**NB!** Only available when_ `TheWorld` _global is available._
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
 -- @module SDK.World
 -- @see SDK
+-- @see SDK.World.SaveData
+-- @see SDK.World.Season
+-- @see SDK.World.Weather
 --
 -- @author Victor Popkov
 -- @copyright 2020
@@ -51,11 +54,11 @@ function World.GetMeta(name)
     return meta
 end
 
---- Gets the number of Walrus Camps.
+--- Gets a number of Walrus Camps.
 --
--- Returns the number of Walrus Camps guessed earlier by the `GuessNrOfWalrusCamps`.
+-- Returns a number of Walrus Camps guessed earlier by the `_GuessNrOfWalrusCamps`.
 --
--- @see GetNrOfWalrusCamps
+-- @see _GuessNrOfWalrusCamps
 -- @treturn number
 function World.GetNrOfWalrusCamps()
     return World.nr_of_walrus_camps

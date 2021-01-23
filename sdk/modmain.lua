@@ -1,5 +1,5 @@
 ----
--- Different modmain functionality.
+-- Handles modmain functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

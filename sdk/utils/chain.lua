@@ -1,5 +1,5 @@
 ----
--- Different chain utilities.
+-- Includes different chain utilities.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

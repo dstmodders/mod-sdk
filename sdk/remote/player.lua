@@ -1,5 +1,5 @@
 ----
--- Different remote player functionality.
+-- Handles remote player functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

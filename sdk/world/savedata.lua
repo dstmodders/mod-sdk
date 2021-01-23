@@ -1,10 +1,10 @@
 ----
--- Handles world save data.
+-- Handles world save data functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
 -- @module SDK.World.SaveData
--- @see SDK
+-- @see SDK.World
 --
 -- @author Victor Popkov
 -- @copyright 2020

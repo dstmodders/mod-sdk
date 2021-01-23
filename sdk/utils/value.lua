@@ -1,5 +1,5 @@
 ----
--- Different value utilities.
+-- Includes different value utilities.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

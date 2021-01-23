@@ -1,9 +1,9 @@
 ----
--- Different test functionality.
+-- Handles test functionality.
 --
--- Shouldn't be loaded in production and most only be used for testing purposes. It requires Busted
--- unit testing framework to be loaded and when it's found it will automatically add all
--- corresponding functions globally using `SDK.Test.AddFunctions` when SDK is loaded.
+-- Shouldn't be loaded in production and most only be used for testing. It requires Busted unit
+-- testing framework to be loaded and when it's found it will automatically add all corresponding
+-- functions globally when SDK is loaded.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
@@ -161,7 +161,9 @@ end
 --    SDK.Test.DebugSpyAssert(name).was_called_with(match.is_not_nil(), unpack(args))
 --
 -- @usage SDK.Test.AssertDebugSpyWasCalled("DebugString", 1, "Loaded")
+--
 -- @usage SDK.Test.AssertDebugSpyWasCalled("DebugError", 1, { "Error:", "not loaded" })
+--
 -- @tparam string name Spy name
 -- @tparam number calls Number of calls
 -- @tparam string|table args A single argument as a string or multiple as a table
@@ -395,6 +397,7 @@ end
 -- @section test
 
 --- Tests if returns false.
+-- @tparam function fn
 function Test.TestReturnFalse(fn)
     local assert = require("busted").assert
     local it = require "busted".it
@@ -404,6 +407,7 @@ function Test.TestReturnFalse(fn)
 end
 
 --- Tests if returns true.
+-- @tparam function fn
 function Test.TestReturnTrue(fn)
     local assert = require("busted").assert
     local it = require "busted".it
@@ -413,6 +417,7 @@ function Test.TestReturnTrue(fn)
 end
 
 --- Tests if returns nil.
+-- @tparam function fn
 function Test.TestReturnNil(fn)
     local assert = require("busted").assert
     local it = require "busted".it

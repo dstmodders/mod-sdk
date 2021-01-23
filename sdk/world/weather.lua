@@ -1,5 +1,5 @@
 ----
--- Handles world weather.
+-- Handles world weather functionality.
 --
 -- _**NB!** Requires_ `SDK.Remote.World` _to be loaded to work on dedicated servers with
 -- administrator rights._
@@ -14,7 +14,7 @@
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
 -- @module SDK.World.Weather
--- @see SDK
+-- @see SDK.World
 --
 -- @author Victor Popkov
 -- @copyright 2020

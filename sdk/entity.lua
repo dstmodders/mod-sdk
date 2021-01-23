@@ -1,5 +1,5 @@
 ----
--- Different entity functionality.
+-- Handles entity functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

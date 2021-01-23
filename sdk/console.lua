@@ -1,5 +1,33 @@
 ----
--- Different console functionality.
+-- Handles console functionality.
+--
+-- Currently doesn't do much except having a helper which extends a `ConsoleScreen` to add new word
+-- prediction dictionaries (auto-complete) to the console input field:
+--
+--     SDK.Console.AddWordPredictionDictionaries({
+--         { delim = "SDK.", num_chars = 0, words = {
+--             "Config",
+--             "Console",
+--             "Constant",
+--             "Debug",
+--             "DebugUpvalue",
+--             "Dump",
+--             "Entity",
+--             "FrontEnd",
+--             "Input",
+--             "Method",
+--             "ModMain",
+--             "PersistentData",
+--             "Player",
+--             "Remote",
+--             "RPC",
+--             "Test",
+--             "Thread",
+--             "World",
+--         } },
+--     })
+--
+-- Now after entering "SDK." into the console input, you will get your auto-complete.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
