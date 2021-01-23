@@ -35,7 +35,11 @@ describe("#sdk SDK.World.Season", function()
         }
 
         _G.TheWorld = mock({
-            state = {},
+            state = {
+                autumnlength = 20,
+                remainingdaysinseason = 17,
+                season = "autumn",
+            },
             PushEvent = Empty,
         })
 
@@ -116,10 +120,6 @@ describe("#sdk SDK.World.Season", function()
 
     describe("general", function()
         describe("AdvanceSeason()", function()
-            local fn = function()
-                return Season.AdvanceSeason(20)
-            end
-
             before_each(function()
                 SDK.Remote.World.AdvanceSeason = spy.new(ReturnValueFn(true))
             end)
@@ -130,31 +130,57 @@ describe("#sdk SDK.World.Season", function()
                 valid = { 20 },
             }, "days")
 
-            describe("when is master simulation", function()
-                before_each(function()
-                    _G.TheWorld.ismastersim = true
+            describe("when days argument is passed", function()
+                local fn = function()
+                    return Season.AdvanceSeason(20)
+                end
+
+                describe("when is master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = true
+                    end)
+
+                    TestDebugString(fn, "Advance season:", "20 days")
+                    TestPushEventCalls(fn, 20, "ms_advanceseason")
+                    TestReturnTrue(fn)
+
                 end)
 
-                TestDebugString(fn, "Advance season:", "20 days")
-                TestPushEventCalls(fn, 20, "ms_advanceseason")
-                TestReturnTrue(fn)
+                describe("when is non-master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = false
+                    end)
 
+                    TestRemoteWorld("AdvanceSeason", "AdvanceSeason", 20)
+                end)
             end)
 
-            describe("when is non-master simulation", function()
-                before_each(function()
-                    _G.TheWorld.ismastersim = false
+            describe("when days argument is not passed", function()
+                local fn = function()
+                    return Season.AdvanceSeason()
+                end
+
+                describe("when is master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = true
+                    end)
+
+                    TestDebugString(fn, "Advance season:", "17 days")
+                    TestPushEventCalls(fn, 17, "ms_advanceseason")
+                    TestReturnTrue(fn)
                 end)
 
-                TestRemoteWorld("AdvanceSeason", "AdvanceSeason", 20)
+                describe("when is non-master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = false
+                    end)
+
+                    TestRemoteWorld("AdvanceSeason", "AdvanceSeason", 20)
+                end)
             end)
         end)
 
         describe("RetreatSeason()", function()
-            local fn = function()
-                return Season.RetreatSeason(20)
-            end
-
             before_each(function()
                 SDK.Remote.World.RetreatSeason = spy.new(ReturnValueFn(true))
             end)
@@ -165,22 +191,52 @@ describe("#sdk SDK.World.Season", function()
                 valid = { 20 },
             }, "days")
 
-            describe("when is master simulation", function()
-                before_each(function()
-                    _G.TheWorld.ismastersim = true
+            describe("when days argument is passed", function()
+                local fn = function()
+                    return Season.RetreatSeason(20)
+                end
+
+                describe("when is master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = true
+                    end)
+
+                    TestDebugString(fn, "Retreat season:", "20 days")
+                    TestPushEventCalls(fn, 20, "ms_retreatseason")
+                    TestReturnTrue(fn)
                 end)
 
-                TestDebugString(fn, "Retreat season:", "20 days")
-                TestPushEventCalls(fn, 20, "ms_retreatseason")
-                TestReturnTrue(fn)
+                describe("when is non-master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = false
+                    end)
+
+                    TestRemoteWorld("RetreatSeason", "RetreatSeason", 20)
+                end)
             end)
 
-            describe("when is non-master simulation", function()
-                before_each(function()
-                    _G.TheWorld.ismastersim = false
+            describe("when days argument is not passed", function()
+                local fn = function()
+                    return Season.RetreatSeason()
+                end
+
+                describe("when is master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = true
+                    end)
+
+                    TestDebugString(fn, "Retreat season:", "3 days")
+                    TestPushEventCalls(fn, 3, "ms_retreatseason")
+                    TestReturnTrue(fn)
                 end)
 
-                TestRemoteWorld("RetreatSeason", "RetreatSeason", 20)
+                describe("when is non-master simulation", function()
+                    before_each(function()
+                        _G.TheWorld.ismastersim = false
+                    end)
+
+                    TestRemoteWorld("RetreatSeason", "RetreatSeason", 0)
+                end)
             end)
         end)
     end)

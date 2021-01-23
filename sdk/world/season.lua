@@ -47,10 +47,11 @@ end
 
 --- Advances a season.
 -- @see SDK.Remote.World.AdvanceSeason
--- @tparam[opt] number days
+-- @tparam[opt] number days Number of days to advance (default: remaining days)
 -- @treturn boolean
 function Season.AdvanceSeason(days)
-    days = ArgUnsignedInteger("AdvanceSeason", days or 1, "days")
+    local remaining = World.GetState("remainingdaysinseason")
+    days = ArgUnsignedInteger("AdvanceSeason", days or remaining, "days")
 
     if not days then
         return false
@@ -69,10 +70,13 @@ end
 
 --- Retreats a season.
 -- @see SDK.Remote.World.RetreatSeason
--- @tparam[opt] number days
+-- @tparam[opt] number days Number of days to retreat (default: length - remaining days)
 -- @treturn boolean
 function Season.RetreatSeason(days)
-    days = ArgUnsignedInteger("RetreatSeason", days or 1, "days")
+    local remaining = World.GetState("remainingdaysinseason") or 0
+    local length = Season.GetSeasonLength(Season.GetSeason()) or 0
+    local retreat = length - remaining
+    days = ArgUnsignedInteger("RetreatSeason", days or retreat, "days")
 
     if not days then
         return false
