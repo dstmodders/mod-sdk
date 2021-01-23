@@ -246,19 +246,26 @@ describe("#sdk SDK.World.Season", function()
 
         describe("GetSeasonLength()", function()
             before_each(function()
-                _G.TheWorld.state = {
-                    autumnlength = 20,
-                    springlength = 20,
-                    summerlength = 15,
-                    winterlength = 15,
-                }
+                _G.TheWorld.state.autumnlength = 20
+                _G.TheWorld.state.springlength = 20
+                _G.TheWorld.state.summerlength = 15
+                _G.TheWorld.state.winterlength = 15
             end)
 
-            it("should return TheWorld.state[season]length", function()
-                assert.is_equal(_G.TheWorld.state.autumnlength, Season.GetSeasonLength("autumn"))
-                assert.is_equal(_G.TheWorld.state.springlength, Season.GetSeasonLength("spring"))
-                assert.is_equal(_G.TheWorld.state.summerlength, Season.GetSeasonLength("summer"))
-                assert.is_equal(_G.TheWorld.state.winterlength, Season.GetSeasonLength("winter"))
+            describe("when season argument is passed", function()
+                it("should return TheWorld.state[season]length", function()
+                    local state = _G.TheWorld.state
+                    assert.is_equal(state.autumnlength, Season.GetSeasonLength("autumn"))
+                    assert.is_equal(state.springlength, Season.GetSeasonLength("spring"))
+                    assert.is_equal(state.summerlength, Season.GetSeasonLength("summer"))
+                    assert.is_equal(state.winterlength, Season.GetSeasonLength("winter"))
+                end)
+            end)
+
+            describe("when season argument is not passed", function()
+                it("should return TheWorld.state[season]length", function()
+                    assert.is_equal(_G.TheWorld.state.autumnlength, Season.GetSeasonLength())
+                end)
             end)
         end)
     end)

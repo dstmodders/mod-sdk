@@ -74,7 +74,7 @@ end
 -- @treturn boolean
 function Season.RetreatSeason(days)
     local remaining = World.GetState("remainingdaysinseason") or 0
-    local length = Season.GetSeasonLength(Season.GetSeason()) or 0
+    local length = Season.GetSeasonLength() or 0
     local retreat = length - remaining
     days = ArgUnsignedInteger("RetreatSeason", days or retreat, "days")
 
@@ -103,10 +103,10 @@ function Season.GetSeason()
 end
 
 --- Gets a season length.
--- @tparam string season
+-- @tparam[opt] string season Season (default: current season)
 -- @treturn number
 function Season.GetSeasonLength(season)
-    season = ArgSeason("GetSeasonLength", season)
+    season = ArgSeason("GetSeasonLength", season or Season.GetSeason())
     if season then
         return World.GetState(season .. "length")
     end
