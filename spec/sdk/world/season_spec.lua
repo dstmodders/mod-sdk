@@ -242,6 +242,16 @@ describe("#sdk SDK.World.Season", function()
     end)
 
     describe("get", function()
+        describe("GetPassedDays()", function()
+            local fn = function()
+                return Season.GetPassedDays()
+            end
+
+            it("should return the number of passed days", function()
+                assert.is_equal(3, fn())
+            end)
+        end)
+
         TestGetState("GetRemainingDays", "remainingdaysinseason", 20)
         TestGetState("GetSeason", "season", "autumn")
 
