@@ -94,18 +94,18 @@ describe("#sdk SDK", function()
 
                 describe("and referencing an internal field", function()
                     before_each(function()
-                        Module.foo = "bar"
+                        Module._foo = "bar"
                     end)
 
                     it("should debug error string", function()
                         AssertDebugError(function()
-                            assert.is_not_nil(SDK.Module.foo)
-                        end, "Field SDK.Module.foo shouldn't be used directly")
+                            assert.is_not_nil(SDK.Module._foo)
+                        end, "Field SDK.Module._foo shouldn't be used directly")
                     end)
 
                     it("should return a function that returns nil", function()
-                        assert.is_function(SDK.Module.foo)
-                        assert.is_nil(SDK.Module.foo())
+                        assert.is_function(SDK.Module._foo)
+                        assert.is_nil(SDK.Module._foo())
                     end)
                 end)
 

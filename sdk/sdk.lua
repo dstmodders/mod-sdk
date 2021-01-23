@@ -1,5 +1,5 @@
 ----
--- Mod SDK.
+-- Mod SDK entry point.
 --
 -- This is an SDK entry point. On its own it doesn't do much and requires `SDK.Load` to be called
 -- inside your `modmain.lua` in order to initialize SDK and load all corresponding submodules.
@@ -944,8 +944,10 @@ function SDK._DoInitModule(parent, module, name, options)
                     return field
                 elseif type(field) == "table" and field.module then -- another module or submodule
                     return field
-                elseif field then
+                elseif field and string.match(k, "^_") then
                     SDK._DebugErrorNoDirectUse(module, field, k)
+                elseif field then
+                    return field
                 else
                     SDK._DebugErrorNoFunction(module, k)
                 end
