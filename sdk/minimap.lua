@@ -11,9 +11,18 @@
 -- @license MIT
 -- @release 0.1
 ----
-local MiniMap = {}
+local MiniMap = {
+    is_clearing = false,
+}
 
 local SDK
+
+--- Helpers
+-- @section helpers
+
+local function DebugString(...)
+    SDK._DebugString("[minimap]", ...)
+end
 
 --- General
 -- @section general
@@ -24,11 +33,29 @@ function MiniMap.GetZoom()
     return TheWorld.minimap.MiniMap:GetZoom()
 end
 
---- Gets is shown state.
+--- Gets a clearing state.
+-- @treturn boolean
+function MiniMap.IsClearing()
+    return MiniMap.is_clearing
+end
+
+--- Gets a shown state.
 -- @treturn boolean
 function MiniMap.IsShown()
     return TheWorld.minimap.MiniMap.shown
 end
+
+--- Toggles map clearing.
+-- @treturn boolean
+function MiniMap.ToggleClearing()
+    MiniMap.is_clearing = not MiniMap.is_clearing
+    TheWorld.minimap.MiniMap:ContinuouslyClearRevealedAreas(MiniMap.is_clearing)
+    DebugString("Clearing:", (MiniMap.is_clearing and "enabled" or "disabled"))
+    return MiniMap.is_clearing
+end
+
+--- Position
+-- @section position
 
 --- Translates map position to world position.
 -- @tparam number x X-axis map value
