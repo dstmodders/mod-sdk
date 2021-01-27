@@ -20,6 +20,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/frontend"] = "sdk/frontend",
     ["yoursubdirectory/sdk/sdk/input"] = "sdk/input",
     ["yoursubdirectory/sdk/sdk/method"] = "sdk/method",
+    ["yoursubdirectory/sdk/sdk/minimap"] = "sdk/minimap",
     ["yoursubdirectory/sdk/sdk/modmain"] = "sdk/modmain",
     ["yoursubdirectory/sdk/sdk/persistentdata"] = "sdk/persistentdata",
     ["yoursubdirectory/sdk/sdk/player"] = "sdk/player",

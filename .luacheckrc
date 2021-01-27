@@ -109,6 +109,8 @@ files["**/*.lua"] = {
         "newproxy",
         "PREFAB_SKINS_IDS",
         "PREFABFILES",
+        "RESOLUTION_X",
+        "RESOLUTION_Y",
         "ReturnValueFn",
         "ReturnValuesFn",
         "RPC",

@@ -54,6 +54,7 @@ local _MODULES = {
     FrontEnd = "sdk/frontend",
     Input = "sdk/input",
     Method = "sdk/method",
+    MiniMap = "sdk/minimap",
     ModMain = "sdk/modmain",
     PersistentData = "sdk/persistentdata",
     Player = {

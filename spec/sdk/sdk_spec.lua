@@ -299,7 +299,7 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             fn()
-                            assert.spy(SDK._Info).was_called(33)
+                            assert.spy(SDK._Info).was_called(34)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
@@ -311,6 +311,7 @@ describe("#sdk SDK", function()
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.FrontEnd")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Input")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Method")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.MiniMap")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.ModMain")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.PersistentData")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player")
@@ -355,6 +356,7 @@ describe("#sdk SDK", function()
                             "FrontEnd",
                             "Input",
                             "Method",
+                            "MiniMap",
                             "ModMain",
                             "PersistentData",
                             Player = {
@@ -557,6 +559,9 @@ describe("#sdk SDK", function()
                 Method = {
                     path = "sdk/method",
                 },
+                MiniMap = {
+                    path = "sdk/minimap",
+                },
                 ModMain = {
                     path = "sdk/modmain",
                 },
@@ -638,6 +643,7 @@ describe("#sdk SDK", function()
                         "FrontEnd",
                         "Input",
                         "Method",
+                        "MiniMap",
                         "ModMain",
                         "PersistentData",
                         Player = {
@@ -674,6 +680,7 @@ describe("#sdk SDK", function()
                         FrontEnd = "sdk/frontend",
                         Input = "sdk/input",
                         Method = "sdk/method",
+                        MiniMap = "sdk/minimap",
                         ModMain = "sdk/modmain",
                         PersistentData = "sdk/persistentdata",
                         Player = {
