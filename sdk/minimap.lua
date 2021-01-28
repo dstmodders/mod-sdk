@@ -13,6 +13,7 @@
 ----
 local MiniMap = {
     is_clearing = false,
+    is_fog_of_war = false,
 }
 
 local SDK
@@ -39,19 +40,34 @@ function MiniMap.IsClearing()
     return MiniMap.is_clearing
 end
 
+--- Gets a fog of war state.
+-- @treturn boolean
+function MiniMap.IsFogOfWar()
+    return MiniMap.is_fog_of_war
+end
+
 --- Gets a shown state.
 -- @treturn boolean
 function MiniMap.IsShown()
     return TheWorld.minimap.MiniMap.shown
 end
 
---- Toggles map clearing.
+--- Toggles a map clearing.
 -- @treturn boolean
 function MiniMap.ToggleClearing()
     MiniMap.is_clearing = not MiniMap.is_clearing
     TheWorld.minimap.MiniMap:ContinuouslyClearRevealedAreas(MiniMap.is_clearing)
     DebugString("Clearing:", (MiniMap.is_clearing and "enabled" or "disabled"))
     return MiniMap.is_clearing
+end
+
+--- Toggles a fog of war.
+-- @treturn boolean
+function MiniMap.ToggleFogOfWar()
+    MiniMap.is_fog_of_war = not MiniMap.is_fog_of_war
+    TheWorld.minimap.MiniMap:EnableFogOfWar(MiniMap.is_fog_of_war)
+    DebugString("Fog of war:", (MiniMap.is_fog_of_war and "enabled" or "disabled"))
+    return MiniMap.is_fog_of_war
 end
 
 --- Position
