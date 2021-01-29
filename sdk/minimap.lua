@@ -58,7 +58,7 @@ function MiniMap.ToggleClearing()
     MiniMap.is_clearing = not MiniMap.is_clearing
     TheWorld.minimap.MiniMap:ContinuouslyClearRevealedAreas(MiniMap.is_clearing)
     DebugString("Clearing:", (MiniMap.is_clearing and "enabled" or "disabled"))
-    return MiniMap.is_clearing
+    return true
 end
 
 --- Toggles a fog of war.
@@ -67,7 +67,7 @@ function MiniMap.ToggleFogOfWar()
     MiniMap.is_fog_of_war = not MiniMap.is_fog_of_war
     TheWorld.minimap.MiniMap:EnableFogOfWar(MiniMap.is_fog_of_war)
     DebugString("Fog of war:", (MiniMap.is_fog_of_war and "enabled" or "disabled"))
-    return MiniMap.is_fog_of_war
+    return true
 end
 
 --- Position

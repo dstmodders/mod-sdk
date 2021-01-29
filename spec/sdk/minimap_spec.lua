@@ -129,7 +129,7 @@ describe("#sdk SDK.MiniMap", function()
 
                 TestDebugString(fn, "Clearing:", "disabled")
                 TestSetModuleField(fn, "is_clearing", true, false)
-                TestReturnFalse(fn)
+                TestReturnTrue(fn)
             end)
 
             describe("when not enabled", function()
@@ -155,7 +155,7 @@ describe("#sdk SDK.MiniMap", function()
 
                 TestDebugString(fn, "Fog of war:", "disabled")
                 TestSetModuleField(fn, "is_fog_of_war", true, false)
-                TestReturnFalse(fn)
+                TestReturnTrue(fn)
             end)
 
             describe("when not enabled", function()
