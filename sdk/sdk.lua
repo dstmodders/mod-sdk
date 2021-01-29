@@ -73,6 +73,7 @@ local _MODULES = {
         }
     },
     RPC = "sdk/rpc",
+    TemporaryData = "sdk/temporarydata",
     Test = "sdk/test",
     Thread = "sdk/thread",
     Time = "sdk/time",

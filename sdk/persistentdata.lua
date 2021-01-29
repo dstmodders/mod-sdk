@@ -20,25 +20,25 @@
 --   during gameplay and only on a certain server. When the data has not been accessed or stored for
 --   a certain amount of time (by default, 30 days) it's removed during the next load.
 --
---    -- optional, the data is loaded automatically when SDK is loaded
---    SDK.PersistentData.Load()
+--     -- optional, the data is loaded automatically when SDK is loaded
+--     SDK.PersistentData.Load()
 --
---    -- general data (can be accessed in every server or outside of gameplay)
---    SDK.PersistentData.SetMode(SDK.PersistentData.DEFAULT)
---    SDK.PersistentData.Set("foo", "bar")
---    SDK.PersistentData.Get("foo") -- returns: "bar"
+--     -- general data (can be accessed in every server or outside of gameplay)
+--     SDK.PersistentData.SetMode(SDK.PersistentData.DEFAULT)
+--     SDK.PersistentData.Set("foo", "bar")
+--     SDK.PersistentData.Get("foo") -- returns: "bar"
 --
---    -- server data (can be accessed only on a certain server during gameplay)
---    SDK.PersistentData.SetMode(SDK.PersistentData.SERVER)
---    SDK.PersistentData.Set("foo", "bar")
---    SDK.PersistentData.Get("foo") -- returns: "bar"
+--     -- server data (can be accessed only on a certain server during gameplay)
+--     SDK.PersistentData.SetMode(SDK.PersistentData.SERVER)
+--     SDK.PersistentData.Set("foo", "bar")
+--     SDK.PersistentData.Get("foo") -- returns: "bar"
 --
---    -- same, but chained
---    print(SDK.PersistentData
---        .Load()
---        .SetMode(SDK.PersistentData.DEFAULT)
---        .Set("foo", "bar")
---        .Get("foo")) -- prints: "bar"
+--     -- same, but chained
+--     print(SDK.PersistentData
+--         .Load()
+--         .SetMode(SDK.PersistentData.DEFAULT)
+--         .Set("foo", "bar")
+--         .Get("foo")) -- prints: "bar"
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --

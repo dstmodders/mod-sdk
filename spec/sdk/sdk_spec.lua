@@ -299,7 +299,7 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             fn()
-                            assert.spy(SDK._Info).was_called(34)
+                            assert.spy(SDK._Info).was_called(35)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
@@ -322,6 +322,7 @@ describe("#sdk SDK", function()
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote.Player")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote.World")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.RPC")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.TemporaryData")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Test")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Thread")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Time")
@@ -370,6 +371,7 @@ describe("#sdk SDK", function()
                             },
                             "RPC",
                             "Test",
+                            "TemporaryData",
                             "Thread",
                             "Time",
                             World = {
@@ -596,6 +598,9 @@ describe("#sdk SDK", function()
                 RPC = {
                     path = "sdk/rpc",
                 },
+                TemporaryData = {
+                    path = "sdk/temporarydata",
+                },
                 Test = {
                     path = "sdk/test",
                 },
@@ -656,6 +661,7 @@ describe("#sdk SDK", function()
                             "World",
                         },
                         "RPC",
+                        "TemporaryData",
                         "Test",
                         "Thread",
                         World = {
@@ -699,6 +705,7 @@ describe("#sdk SDK", function()
                             },
                         },
                         RPC = "sdk/rpc",
+                        TemporaryData = "sdk/temporarydata",
                         Test = "sdk/test",
                         Thread = "sdk/thread",
                         World = {

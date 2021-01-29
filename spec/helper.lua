@@ -32,6 +32,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/remote/world"] = "sdk/remote/world",
     ["yoursubdirectory/sdk/sdk/rpc"] = "sdk/rpc",
     ["yoursubdirectory/sdk/sdk/sdk"] = "sdk/sdk",
+    ["yoursubdirectory/sdk/sdk/temporarydata"] = "sdk/temporarydata",
     ["yoursubdirectory/sdk/sdk/test"] = "sdk/test",
     ["yoursubdirectory/sdk/sdk/thread"] = "sdk/thread",
     ["yoursubdirectory/sdk/sdk/time"] = "sdk/time",
