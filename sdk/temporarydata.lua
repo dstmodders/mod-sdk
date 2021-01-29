@@ -22,6 +22,17 @@ local TemporaryData = {
 
 local SDK
 
+--- Helpers
+-- @section helpers
+
+local function DebugError(...)
+    SDK._DebugError("[temporary_data]", ...)
+end
+
+local function DebugString(...)
+    SDK._DebugString("[temporary_data]", ...)
+end
+
 --- General
 -- @section general
 
@@ -29,7 +40,10 @@ local SDK
 -- @tparam string name
 -- @treturn any
 function TemporaryData.Get(name)
-    return TemporaryData.data[name]
+    if TemporaryData.data[name] then
+        return TemporaryData.data[name]
+    end
+    DebugError("[get]", name)
 end
 
 --- Checks if a data field exists.
@@ -44,6 +58,7 @@ end
 -- @tparam any value
 -- @treturn SDK.TemporaryData
 function TemporaryData.Set(name, value)
+    DebugString("[set]", name .. ":", value)
     TemporaryData.data[name] = value
     return TemporaryData
 end
