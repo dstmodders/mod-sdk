@@ -1,5 +1,5 @@
 ----
--- Handles minimap functionality.
+-- Handles mini-map functionality.
 --
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
@@ -97,15 +97,16 @@ end
 
 --- Translates world position to screen position.
 -- @tparam number x X-axis world value
+-- @tparam number _ Y-axis world value
 -- @tparam number z Z-axis world value
 -- @treturn number X-axis screen value
 -- @treturn number Z-axis screen value
-function MiniMap.WorldPosToScreenPos(x, z)
+function MiniMap.WorldPosToScreenPos(x, _, z)
     local sw, sh = TheSim:GetScreenSize()
     local hx, hy = RESOLUTION_X / 2, RESOLUTION_Y / 2
     local mx, my = TheWorld.minimap.MiniMap:WorldPosToMapPos(x, z, 0)
-    local sx = ((mx * hx) + hx) / RESOLUTION_X * sw
-    local sy = ((my * hy) + hy) / RESOLUTION_Y * sh
+    local sx = (((mx * hx) + hx) / RESOLUTION_X) * sw
+    local sy = (((my * hy) + hy) / RESOLUTION_Y) * sh
     return sx, sy
 end
 
