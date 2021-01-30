@@ -36,6 +36,21 @@ function Input.IsControlMove(control)
         or control == CONTROL_MOVE_RIGHT
 end
 
+--- Adds a config key down handler.
+-- @tparam string config
+-- @tparam function fn
+-- @tparam[opt] boolean can_handle_key
+function Input.AddConfigKeyDownHandler(config, fn, can_handle_key)
+    local config_key = GetKeyFromConfig(config)
+    if fn and config_key then
+        TheInput:AddKeyDownHandler(config_key, can_handle_key ~= nil and function()
+            if SDK.FrontEnd.CanHandleKey() then
+                return fn()
+            end
+        end or fn)
+    end
+end
+
 --- Adds a config key handler.
 -- @tparam string config
 -- @tparam function fn
@@ -52,21 +67,6 @@ function Input.AddConfigKeyHandler(config, fn, can_handle_key)
                 end
             end
         end)
-    end
-end
-
---- Adds a config key down handler.
--- @tparam string config
--- @tparam function fn
--- @tparam[opt] boolean can_handle_key
-function Input.AddConfigKeyDownHandler(config, fn, can_handle_key)
-    local config_key = GetKeyFromConfig(config)
-    if fn and config_key then
-        TheInput:AddKeyDownHandler(config_key, can_handle_key ~= nil and function()
-            if SDK.FrontEnd.CanHandleKey() then
-                return fn()
-            end
-        end or fn)
     end
 end
 

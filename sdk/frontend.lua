@@ -19,22 +19,18 @@ local SDK
 -- @section general
 
 --- Checks if a key can be handled.
--- @see SDK.Player.CanHandleKey
+--
+-- An opposite of `HasInputFocus` except allowing key handling when a map screen is open.
+--
+-- @see SDK.Input.AddConfigKeyDownHandler
+-- @see SDK.Input.AddConfigKeyHandler
+-- @see SDK.Input.AddConfigKeyUpHandler
 -- @treturn boolean
 function FrontEnd.CanHandleKey()
-    if ThePlayer then
-        if SDK.Utils.Chain.Get(ThePlayer, "HUD", "HasInputFocus", true) then
-            return false
-        end
-
-        if ThePlayer.HUD and FrontEnd.GetActiveScreen() == ThePlayer.HUD.writeablescreen then
-            return false
-        end
+    if FrontEnd.IsScreenOpen("MapScreen") then
+        return true
     end
-
-    return not (FrontEnd.HasInputFocus()
-        or FrontEnd.IsScreenOpen("ChatInputScreen")
-        or FrontEnd.IsScreenOpen("ConsoleScreen"))
+    return not FrontEnd.HasInputFocus()
 end
 
 --- Gets an active screen
@@ -69,8 +65,16 @@ function FrontEnd.HasImageFocus(texture)
 end
 
 --- Checks if has an input focus.
+--
+-- When `ThePlayer` is available, it gets `ThePlayer.HUD:HasInputFocus()` value. In other cases it
+-- checks for which widget is focused and acts accordingly.
+--
 -- @treturn boolean
 function FrontEnd.HasInputFocus()
+    if ThePlayer then
+        return SDK.Utils.Chain.Get(ThePlayer, "HUD", "HasInputFocus", true)
+    end
+
     return FrontEnd.HasTextFocus()
         or FrontEnd.HasImageFocus("spinner")
         or FrontEnd.HasImageFocus("arrow")
