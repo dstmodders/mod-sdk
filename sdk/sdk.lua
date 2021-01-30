@@ -984,16 +984,29 @@ function SDK._GetComponent(module, fn_name, entity, name)
     end
 
     local _name = name:gsub("^%l", string.upper)
-    if entity then
-        SDK._DebugErrorFn(
-            module,
-            fn_name,
-            _name,
-            "component is not available",
-            entity.GetDisplayName and "(" .. entity:GetDisplayName() .. ")"
-        )
+    local error = "component is not available"
+    if entity.GetDisplayName then
+        SDK._DebugErrorFn(module, fn_name, _name, error, "(" .. entity:GetDisplayName() .. ")")
     else
-        SDK._DebugErrorFn(module, fn_name, _name, "component is not available")
+        SDK._DebugErrorFn(module, fn_name, _name, error)
+    end
+end
+
+--- Gets a player classified.
+-- @tparam table module
+-- @tparam string fn_name
+-- @tparam EntityScript player
+function SDK._GetPlayerClassified(module, fn_name, player)
+    local classified = player.player_classified
+    if classified then
+        return classified
+    end
+
+    local error = "Player classified is not available"
+    if player.GetDisplayName then
+        SDK._DebugErrorFn(module, fn_name, error, "(" .. player:GetDisplayName() .. ")")
+    else
+        SDK._DebugErrorFn(module, fn_name, error)
     end
 end
 

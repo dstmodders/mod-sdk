@@ -24,12 +24,20 @@ local SDK
 --- Helpers
 -- @section helpers
 
+local function ArgPlayer(fn_name, value)
+    return SDK._ArgPlayer(Player, fn_name, value)
+end
+
 local function DebugErrorFn(fn_name, ...)
     SDK._DebugErrorFn(Player, fn_name, ...)
 end
 
 local function DebugString(...)
     SDK._DebugString("[player]", ...)
+end
+
+local function GetPlayerClassified(...)
+    return SDK._GetPlayerClassified(Player, ...)
 end
 
 --- General
@@ -245,6 +253,36 @@ function Player.IsSinking(player)
         return player.AnimState:IsCurrentAnimation("sink")
             or player.AnimState:IsCurrentAnimation("plank_hop")
     end
+end
+
+--- Reveals the whole map.
+--
+-- Uses the player classified `MapExplorer` to reveal the map.
+--
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.Reveal(player)
+    local fn_name = "Reveal"
+    player = ArgPlayer(fn_name, player)
+
+    if not player then
+        return false
+    end
+
+    local classified = GetPlayerClassified(fn_name, player)
+    if not classified then
+        return false
+    end
+
+    DebugString("Revealing map...", "(" .. player:GetDisplayName() .. ")")
+    local width, height = TheWorld.Map:GetSize()
+    for x = -(width * 2), width * 2, 30 do
+        for y = -(height * 2), (height * 2), 30 do
+            classified.MapExplorer:RevealArea(x, 0, y)
+        end
+    end
+    DebugString("Map has been revealed", "(" .. player:GetDisplayName() .. ")")
+    return true
 end
 
 --- Walks to a certain point.
