@@ -86,6 +86,7 @@ local _MODULES = {
             Value = "sdk/utils/value",
         }
     },
+    Vision = "sdk/vision",
     World = {
         path = "sdk/world",
         submodules = {

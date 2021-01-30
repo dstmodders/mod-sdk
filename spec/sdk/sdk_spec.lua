@@ -299,7 +299,7 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             fn()
-                            assert.spy(SDK._Info).was_called(36)
+                            assert.spy(SDK._Info).was_called(37)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
@@ -327,6 +327,7 @@ describe("#sdk SDK", function()
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Test")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Thread")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Time")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Vision")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Chain")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Utils.Table")
@@ -376,6 +377,7 @@ describe("#sdk SDK", function()
                             "TemporaryData",
                             "Thread",
                             "Time",
+                            "Vision",
                             World = {
                                 "SaveData",
                                 "Season",
@@ -612,6 +614,9 @@ describe("#sdk SDK", function()
                 Thread = {
                     path = "sdk/thread",
                 },
+                Vision = {
+                    path = "sdk/vision",
+                },
                 World = {
                     path = "sdk/world",
                     submodules = {
@@ -670,6 +675,7 @@ describe("#sdk SDK", function()
                         "TemporaryData",
                         "Test",
                         "Thread",
+                        "Vision",
                         World = {
                             "SaveData",
                             "Season",
@@ -715,6 +721,7 @@ describe("#sdk SDK", function()
                         TemporaryData = "sdk/temporarydata",
                         Test = "sdk/test",
                         Thread = "sdk/thread",
+                        Vision = "sdk/vision",
                         World = {
                             path = "sdk/world",
                             submodules = {
