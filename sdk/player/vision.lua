@@ -4,7 +4,7 @@
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
 -- @module SDK.Player.Vision
--- @see SDK
+-- @see SDK.Player
 --
 -- @author Victor Popkov
 -- @copyright 2020

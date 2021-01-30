@@ -4,7 +4,6 @@
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
 -- @module SDK.Remote.World
--- @see SDK
 -- @see SDK.Remote
 --
 -- @author Victor Popkov

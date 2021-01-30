@@ -4,7 +4,6 @@
 -- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
 --
 -- @module SDK.Player.Inventory
--- @see SDK
 -- @see SDK.Player
 --
 -- @author Victor Popkov

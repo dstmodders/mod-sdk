@@ -10,6 +10,7 @@
 -- @see SDK.Player.Attribute
 -- @see SDK.Player.Craft
 -- @see SDK.Player.Inventory
+-- @see SDK.Player.Vision
 --
 -- @author Victor Popkov
 -- @copyright 2020
@@ -33,18 +34,6 @@ end
 
 --- General
 -- @section general
-
---- Checks if a key can be handled.
--- @see SDK.FrontEnd.CanHandleKey
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Player.CanHandleKey(player)
-    player = player ~= nil and player or ThePlayer
-    return InGamePlay()
-        and not Player.IsHUDChatInputScreenOpen(player)
-        and not Player.IsHUDConsoleScreenOpen(player)
-        and not Player.IsHUDWriteableScreenActive(player)
-end
 
 --- Gets a client table.
 --
