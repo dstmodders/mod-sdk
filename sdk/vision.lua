@@ -84,8 +84,8 @@ function Vision.ToggleUnfading(player)
         classified:RemoveEventCallback("playerfadedirty", OnPlayerFadeDirty)
     end
 
-    DebugString("Unfading:", (Vision.is_clearing and "enabled" or "disabled"))
-    return Vision.is_unfading
+    DebugString("Unfading:", (Vision.is_unfading and "enabled" or "disabled"))
+    return true
 end
 
 --- Lifecycle
