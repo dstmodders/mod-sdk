@@ -359,6 +359,7 @@ function Player._DoInit(sdk, submodules)
         Attribute = "sdk/player/attribute",
         Craft = "sdk/player/craft",
         Inventory = "sdk/player/inventory",
+        Vision = "sdk/player/vision",
     }
 
     SDK._SetModuleName(SDK, Player, "Player")

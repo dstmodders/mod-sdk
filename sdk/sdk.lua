@@ -63,6 +63,7 @@ local _MODULES = {
             Attribute = "sdk/player/attribute",
             Craft = "sdk/player/craft",
             Inventory = "sdk/player/inventory",
+            Vision = "sdk/player/vision",
         },
     },
     Remote = {

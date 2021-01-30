@@ -299,7 +299,7 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             fn()
-                            assert.spy(SDK._Info).was_called(35)
+                            assert.spy(SDK._Info).was_called(36)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
@@ -318,6 +318,7 @@ describe("#sdk SDK", function()
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Attribute")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Craft")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Inventory")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Vision")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote.Player")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote.World")
@@ -364,6 +365,7 @@ describe("#sdk SDK", function()
                                 "Attribute",
                                 "Craft",
                                 "Inventory",
+                                "Vision",
                             },
                             Remote = {
                                 "Player",
@@ -582,6 +584,9 @@ describe("#sdk SDK", function()
                         Inventory = {
                             path = "sdk/player/inventory",
                         },
+                        Vision = {
+                            path = "sdk/player/vision",
+                        },
                     },
                 },
                 Remote = {
@@ -655,6 +660,7 @@ describe("#sdk SDK", function()
                             "Attribute",
                             "Craft",
                             "Inventory",
+                            "Vision",
                         },
                         Remote = {
                             "Player",
@@ -695,6 +701,7 @@ describe("#sdk SDK", function()
                                 Attribute = "sdk/player/attribute",
                                 Craft = "sdk/player/craft",
                                 Inventory = "sdk/player/inventory",
+                                Vision = "sdk/player/vision",
                             },
                         },
                         Remote = {
@@ -732,6 +739,9 @@ describe("#sdk SDK", function()
                 Inventory = {
                     path = "sdk/player/inventory",
                 },
+                Vision = {
+                    path = "sdk/player/vision",
+                },
             }
 
             local function TestReturnSanitized(fn)
@@ -758,6 +768,7 @@ describe("#sdk SDK", function()
                         "Attribute",
                         "Craft",
                         "Inventory",
+                        "Vision",
                     })
                 end)
             end)
@@ -768,6 +779,7 @@ describe("#sdk SDK", function()
                         Attribute = "sdk/player/attribute",
                         Craft = "sdk/player/craft",
                         Inventory = "sdk/player/inventory",
+                        Vision = "sdk/player/vision",
                     })
                 end)
             end)
@@ -779,6 +791,9 @@ describe("#sdk SDK", function()
                         Craft = "sdk/player/craft",
                         Inventory = {
                             path = "sdk/player/inventory",
+                        },
+                        Vision = {
+                            path = "sdk/player/vision",
                         },
                     })
                 end)
