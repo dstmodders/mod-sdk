@@ -27,6 +27,7 @@ local preloads = {
     ["yoursubdirectory/sdk/sdk/player/attribute"] = "sdk/player/attribute",
     ["yoursubdirectory/sdk/sdk/player/craft"] = "sdk/player/craft",
     ["yoursubdirectory/sdk/sdk/player/inventory"] = "sdk/player/inventory",
+    ["yoursubdirectory/sdk/sdk/player/minimap"] = "sdk/player/minimap",
     ["yoursubdirectory/sdk/sdk/player/vision"] = "sdk/player/vision",
     ["yoursubdirectory/sdk/sdk/remote"] = "sdk/remote",
     ["yoursubdirectory/sdk/sdk/remote/player"] = "sdk/remote/player",

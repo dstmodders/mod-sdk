@@ -299,7 +299,7 @@ describe("#sdk SDK", function()
                         it("should print info", function()
                             assert.spy(SDK._Info).was_not_called()
                             fn()
-                            assert.spy(SDK._Info).was_called(37)
+                            assert.spy(SDK._Info).was_called(38)
                             assert.spy(SDK._Info).was_called_with("Loading SDK:", SDK.path_full)
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Config")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Console")
@@ -318,6 +318,7 @@ describe("#sdk SDK", function()
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Attribute")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Craft")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Inventory")
+                            assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.MiniMap")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Player.Vision")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote")
                             assert.spy(SDK._Info).was_called_with("Loaded", "SDK.Remote.Player")
@@ -366,6 +367,7 @@ describe("#sdk SDK", function()
                                 "Attribute",
                                 "Craft",
                                 "Inventory",
+                                "MiniMap",
                                 "Vision",
                             },
                             Remote = {
@@ -586,6 +588,9 @@ describe("#sdk SDK", function()
                         Inventory = {
                             path = "sdk/player/inventory",
                         },
+                        MiniMap = {
+                            path = "sdk/player/minimap",
+                        },
                         Vision = {
                             path = "sdk/player/vision",
                         },
@@ -665,6 +670,7 @@ describe("#sdk SDK", function()
                             "Attribute",
                             "Craft",
                             "Inventory",
+                            "MiniMap",
                             "Vision",
                         },
                         Remote = {
@@ -707,6 +713,7 @@ describe("#sdk SDK", function()
                                 Attribute = "sdk/player/attribute",
                                 Craft = "sdk/player/craft",
                                 Inventory = "sdk/player/inventory",
+                                MiniMap = "sdk/player/minimap",
                                 Vision = "sdk/player/vision",
                             },
                         },
@@ -746,6 +753,9 @@ describe("#sdk SDK", function()
                 Inventory = {
                     path = "sdk/player/inventory",
                 },
+                MiniMap = {
+                    path = "sdk/player/minimap",
+                },
                 Vision = {
                     path = "sdk/player/vision",
                 },
@@ -775,6 +785,7 @@ describe("#sdk SDK", function()
                         "Attribute",
                         "Craft",
                         "Inventory",
+                        "MiniMap",
                         "Vision",
                     })
                 end)
@@ -786,6 +797,7 @@ describe("#sdk SDK", function()
                         Attribute = "sdk/player/attribute",
                         Craft = "sdk/player/craft",
                         Inventory = "sdk/player/inventory",
+                        MiniMap = "sdk/player/minimap",
                         Vision = "sdk/player/vision",
                     })
                 end)
@@ -798,6 +810,9 @@ describe("#sdk SDK", function()
                         Craft = "sdk/player/craft",
                         Inventory = {
                             path = "sdk/player/inventory",
+                        },
+                        MiniMap = {
+                            path = "sdk/player/minimap",
                         },
                         Vision = {
                             path = "sdk/player/vision",

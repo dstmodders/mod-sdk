@@ -63,6 +63,7 @@ local _MODULES = {
             Attribute = "sdk/player/attribute",
             Craft = "sdk/player/craft",
             Inventory = "sdk/player/inventory",
+            MiniMap = "sdk/player/minimap",
             Vision = "sdk/player/vision",
         },
     },
