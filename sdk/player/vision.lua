@@ -52,7 +52,13 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Vision.GetCCTable(player)
-    local component = SDK.GetPlayerVision(player)
+    player = ArgPlayer("GetCCTable", player)
+
+    if not player then
+        return false
+    end
+
+    local component = Vision.GetPlayerVision(player)
     if component then
         return SDK.Utils.Chain.Get(component, "GetCCTable", true)
     end
@@ -62,7 +68,13 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Vision.GetCCTableOverride(player)
-    local component = SDK.GetPlayerVision(player)
+    player = ArgPlayer("GetCCTableOverride", player)
+
+    if not player then
+        return false
+    end
+
+    local component = Vision.GetPlayerVision(player)
     if component then
         return component.overridecctable
     end
@@ -73,7 +85,13 @@ end
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn table
 function Vision.SetCCTableOverride(cct, player)
-    local component = SDK.GetPlayerVision(player)
+    player = ArgPlayer("SetCCTableOverride", player)
+
+    if not player then
+        return false
+    end
+
+    local component = Vision.GetPlayerVision(player)
     if component then
         component.overridecctable = cct
         player:PushEvent("ccoverrides", cct)
