@@ -105,6 +105,7 @@ files["**/*.lua"] = {
         "InGamePlay",
         "IsRecipeValid",
         "KillThreadsWithID",
+        "kleifileexists",
         "MODS_ROOT",
         "newproxy",
         "PREFAB_SKINS_IDS",

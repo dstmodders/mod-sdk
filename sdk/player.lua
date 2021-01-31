@@ -77,6 +77,18 @@ function Player.GetHUD(player)
     return player and player.HUD
 end
 
+--- Gets a speech.
+-- @treturn table
+function Player.GetSpeech(player)
+    player = player ~= nil and player or ThePlayer
+    if player and player.prefab then
+        local filename = "speech_" .. player.prefab
+        if kleifileexists("scripts/" .. filename .. ".lua") then
+            return require(filename)
+        end
+    end
+end
+
 --- Checks if a player is an admin.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
