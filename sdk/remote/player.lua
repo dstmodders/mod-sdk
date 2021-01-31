@@ -402,6 +402,32 @@ function Player.ToggleFreeCrafting(player)
     return true
 end
 
+--- MiniMap
+-- @section minimap
+
+--- Reveals a whole map.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.RevealMiniMap(player)
+    player = ArgPlayer("Reveal", player)
+
+    if not player then
+        return false
+    end
+
+    DebugString("Reveal minimap:", player:GetDisplayName())
+    Remote.Send('player = %s width, height = TheWorld.Map:GetSize() '
+        .. 'for x = -(width * 2), width * 2, 30 do '
+            .. 'for y = -(height * 2), (height * 2), 30 do '
+                .. 'player.player_classified.MapExplorer:RevealArea(x, 0, y) '
+            .. 'end '
+        .. 'end', {
+        player,
+    }, true)
+
+    return true
+end
+
 --- Lifecycle
 -- @section lifecycle
 
