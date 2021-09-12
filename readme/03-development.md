@@ -31,12 +31,7 @@ $ git clone https://github.com/victorpopkov/dst-mod-sdk
 $ cd ./dst-mod-sdk/
 $ export DST="${HOME}/.steam/steam/steamapps/common/Don't Starve Together"
 $ docker pull viktorpopkov/dst-mod
-$ docker run --rm -itu dst-mod \
-    -v "${DST}:/opt/dont_starve/" \
-    -v "$(pwd):/opt/$(basename $(pwd))" \
-    -w "/opt/$(basename $(pwd))" \
-    viktorpopkov/dst-mod \
-    /bin/bash
+$ docker run --rm -itu dst-mod -v "${DST}:/opt/dont_starve/" -v "$(pwd):/opt/$(basename $(pwd))" -w "/opt/$(basename $(pwd))" viktorpopkov/dst-mod /bin/bash
 ```
 
 ### PowerShell (Windows)
@@ -46,12 +41,7 @@ PS C:\> git clone https://github.com/victorpopkov/dst-mod-sdk
 PS C:\> cd .\dst-mod-sdk\
 PS C:\> $Env:DST = "C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together"
 PS C:\> docker pull viktorpopkov/dst-mod
-PS C:\> $basename = (Get-Item "${PWD}").Basename; docker run --rm -itu dst-mod `
-    -v "$($Env:DST):/opt/dont_starve/" `
-    -v "${PWD}:/opt/${basename}" `
-    -w "/opt/${basename}" `
-    viktorpopkov/dst-mod `
-    /bin/bash
+PS C:\> $basename = (Get-Item "${PWD}").Basename; docker run --rm -itu dst-mod -v "$($Env:DST):/opt/dont_starve/" -v "${PWD}:/opt/${basename}" -w "/opt/${basename}" viktorpopkov/dst-mod /bin/bash
 ```
 
 ## Environment
