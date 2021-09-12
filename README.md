@@ -1,8 +1,8 @@
 # dst-mod-sdk
 
-[![GitHub Workflow CI Status][]](https://github.com/victorpopkov/dst-mod-sdk/actions?query=workflow%3ACI)
-[![GitHub Workflow Documentation Status][]](https://github.com/victorpopkov/dst-mod-sdk/actions?query=workflow%3ADocumentation)
-[![Codecov][]](https://codecov.io/gh/victorpopkov/dst-mod-sdk)
+[![CI](https://img.shields.io/github/workflow/status/victorpopkov/dst-mod-sdk/CI?label=ci)](https://github.com/victorpopkov/dst-mod-sdk/actions/workflows/ci.yml)
+[![Deploy](https://img.shields.io/github/workflow/status/victorpopkov/dst-mod-sdk/Deploy?label=deploy)](https://github.com/victorpopkov/dst-mod-sdk/actions/workflows/deploy.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/victorpopkov/dst-mod-sdk.svg)](https://codecov.io/gh/victorpopkov/dst-mod-sdk)
 
 ## Overview
 
@@ -115,14 +115,11 @@ on the following [Trello][] board: https://trello.com/b/aWiJ6azY
 Released under the [MIT License](https://opensource.org/licenses/MIT).
 
 [auto join]: https://github.com/victorpopkov/dst-mod-auto-join
-[codecov]: https://img.shields.io/codecov/c/github/victorpopkov/dst-mod-sdk.svg
 [dev tools]: https://github.com/victorpopkov/dst-mod-dev-tools
 [development]: readme/03-development.md
 [documentation]: http://github.victorpopkov.com/dst-mod-sdk/
 [don't starve together]: https://www.klei.com/games/dont-starve-together
 [features]: readme/02-features.md
-[github workflow ci status]: https://img.shields.io/github/workflow/status/victorpopkov/dst-mod-sdk/CI?label=CI
-[github workflow documentation status]: https://img.shields.io/github/workflow/status/victorpopkov/dst-mod-sdk/Documentation?label=Documentation
 [keep following]: https://github.com/victorpopkov/dst-mod-keep-following
 [ldoc]: https://stevedonovan.github.io/ldoc/
 [trello]: https://trello.com/
