@@ -26,11 +26,17 @@ To learn more, consider checking out the corresponding [Docker Hub][] image:
 
 ### Shell/Bash (Linux)
 
-```shell script
+```shell
 $ git clone https://github.com/victorpopkov/dst-mod-sdk
 $ cd ./dst-mod-sdk/
+$ export DST="${HOME}/.steam/steam/steamapps/common/Don't Starve Together"
 $ docker pull viktorpopkov/dst-mod
-$ docker run --rm -u 'dst-mod' -itv "$(pwd):/mod/" viktorpopkov/dst-mod
+$ docker run --rm -itu dst-mod \
+    -v "${DST}:/opt/dont_starve/" \
+    -v "$(pwd):/opt/$(basename $(pwd))" \
+    -w "/opt/$(basename $(pwd))" \
+    viktorpopkov/dst-mod \
+    /bin/bash
 ```
 
 ### PowerShell (Windows)
@@ -38,8 +44,14 @@ $ docker run --rm -u 'dst-mod' -itv "$(pwd):/mod/" viktorpopkov/dst-mod
 ```powershell
 PS C:\> git clone https://github.com/victorpopkov/dst-mod-sdk
 PS C:\> cd .\dst-mod-sdk\
+PS C:\> $Env:DST = "C:\Program Files (x86)\Steam\steamapps\common\Don't Starve Together"
 PS C:\> docker pull viktorpopkov/dst-mod
-PS C:\> docker run --rm -u 'dst-mod' -itv "${PWD}:/mod/" viktorpopkov/dst-mod
+PS C:\> $basename = (Get-Item "${PWD}").Basename; docker run --rm -itu dst-mod `
+    -v "$($Env:DST):/opt/dont_starve/" `
+    -v "${PWD}:/opt/${basename}" `
+    -w "/opt/${basename}" `
+    viktorpopkov/dst-mod `
+    /bin/bash
 ```
 
 ## Environment
@@ -58,9 +70,9 @@ throughout the project as well.
 
 ##### [Lua][]
 
-```shell script
+```shell
 $ sudo apt install build-essential libreadline-dev
-$ curl -R -O http://www.lua.org/ftp/lua-5.1.5.tar.gz
+$ curl -R -O https://www.lua.org/ftp/lua-5.1.5.tar.gz
 $ tar zxf lua-5.1.5.tar.gz
 $ cd lua-5.1.5/
 $ make linux test
@@ -69,7 +81,7 @@ $ sudo make install
 
 ##### [LuaRocks][]
 
-```shell script
+```shell
 $ wget https://luarocks.org/releases/luarocks-3.3.1.tar.gz
 $ tar zxpf luarocks-3.3.1.tar.gz
 $ cd luarocks-3.3.1/
@@ -103,7 +115,7 @@ throughout the development.
 
 ##### [Busted][], [LDoc][], [Luacheck][] and [LuaCov][]
 
-```shell script
+```shell
 $ sudo luarocks install busted
 $ sudo luarocks install ldoc
 $ sudo luarocks install luacheck
@@ -113,20 +125,9 @@ $ sudo luarocks install luacov-reporter-lcov
 $ sudo luarocks install cluacov
 ```
 
-##### [ds-mod-tools][]
-
-```shell script
-$ sudo apt install premake4
-$ git clone https://github.com/kleientertainment/ds_mod_tools
-$ cd ds_mod_tools/src/
-$ ./premake.sh
-$ cd ../build/proj/
-$ make
-```
-
 ##### [LCOV][]
 
-```shell script
+```shell
 $ git clone https://github.com/linux-test-project/lcov.git
 $ cd lcov/
 $ sudo make install
@@ -134,29 +135,19 @@ $ sudo make install
 
 ##### [Prettier][]
 
-```shell script
+```shell
 $ npm install -g prettier @prettier/plugin-xml
 # or
 $ yarn global add prettier @prettier/plugin-xml
 ```
 
+##### [ds-mod-tools][]
+
+See: https://github.com/victorpopkov/ds-mod-tools#compilation-instructions
+
 ##### [ktools][]
 
-```shell script
-$ sudo apt install pkg-config imagemagick=8:6.9.10.23+dfsg-2.1
-$ git clone https://github.com/victorpopkov/ktools.git
-$ cd ktools/
-$ cmake \
-    -DImageMagick_Magick++_LIBRARY="$(pkg-config --variable=libdir Magick++)/lib$(pkg-config --variable=libname Magick++).so" \
-    -DImageMagick_MagickCore_INCLUDE_DIR="$(pkg-config --cflags-only-I MagickCore | tail -c+3)" \
-    -DImageMagick_MagickCore_LIBRARY="$(pkg-config --variable=libdir MagickCore)/lib$(pkg-config --variable=libname MagickCore).so" \
-    -DImageMagick_MagickWand_INCLUDE_DIR="$(pkg-config --cflags-only-I MagickWand | tail -c+3)" \
-    -DImageMagick_MagickWand_LIBRARY="$(pkg-config --variable=libdir MagickWand)/lib$(pkg-config --variable=libname MagickWand).so" \
-    .
-$ ./configure
-$ make
-$ make install
-```
+See: https://github.com/victorpopkov/ktools#linux
 
 ## Code Style
 
@@ -318,7 +309,7 @@ consideration._
 This project uses [Makefile][] so the most common tasks have been wrapped inside
 the corresponding rules:
 
-```shell script
+```shell
 $ make help
 ```
 
