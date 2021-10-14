@@ -12,7 +12,6 @@ SDK for making [Don't Starve Together][] mods.
 - [Quick Start](#quick-start)
 - [Examples](#examples)
 - [Documentation](#documentation)
-- [Roadmap](#roadmap)
 
 ## Why?
 
@@ -103,12 +102,6 @@ http://github.victorpopkov.com/dst-mod-sdk/
 
 - [Usage][]
 - [Features][]
-- [Development][]
-
-## Roadmap
-
-You can always find and track the current state of the upcoming features/fixes
-on the following [Trello][] board: https://trello.com/b/aWiJ6azY
 
 ## License
 
@@ -116,7 +109,6 @@ Released under the [MIT License](https://opensource.org/licenses/MIT).
 
 [auto join]: https://github.com/victorpopkov/dst-mod-auto-join
 [dev tools]: https://github.com/victorpopkov/dst-mod-dev-tools
-[development]: readme/03-development.md
 [documentation]: http://github.victorpopkov.com/dst-mod-sdk/
 [don't starve together]: https://www.klei.com/games/dont-starve-together
 [features]: readme/02-features.md
