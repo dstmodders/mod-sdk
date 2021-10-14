@@ -7,7 +7,7 @@ To use this SDK, you need to first add it in your mod directory.
 A recommended way is to add a Git submodule into your repository:
 
 ```shell script
-git submodule add https://github.com/victorpopkov/dst-mod-sdk \
+git submodule add https://github.com/dstmodders/dst-mod-sdk \
   scripts/<your subdirectory>/sdk --name sdk
 ```
 
@@ -89,4 +89,4 @@ Check out their_ `sdk` _branches first._
 [auto join]: https://github.com/victorpopkov/dst-mod-auto-join
 [dev tools]: https://github.com/victorpopkov/dst-mod-dev-tools
 [keep following]: https://github.com/victorpopkov/dst-mod-keep-following
-[releases]: https://github.com/victorpopkov/dst-mod-sdk/releases
+[releases]: https://github.com/dstmodders/dst-mod-sdk/releases

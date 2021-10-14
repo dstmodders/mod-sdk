@@ -12,7 +12,7 @@
 -- Inspired by [UpvalueHacker](https://github.com/rezecib/Rezecib-s-Rebalance/blob/master/scripts/tools/upvaluehacker.lua)
 -- created by Rafael Lizarralde ([@rezecib](https://github.com/rezecib)).
 --
--- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
+-- **Source Code:** [https://github.com/dstmodders/dst-mod-sdk](https://github.com/dstmodders/dst-mod-sdk)
 --
 -- @module SDK.DebugUpvalue
 -- @see SDK

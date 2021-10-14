@@ -11,7 +11,7 @@
 --    SDK.Debug.Disable()
 --    SDK.Debug.String("Hello", "World!") -- prints nothing
 --
--- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
+-- **Source Code:** [https://github.com/dstmodders/dst-mod-sdk](https://github.com/dstmodders/dst-mod-sdk)
 --
 -- @module SDK.Debug
 -- @see SDK

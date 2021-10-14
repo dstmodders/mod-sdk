@@ -3,7 +3,7 @@
 --
 -- _**NB!** Only available when_ `TheWorld` _global is available._
 --
--- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
+-- **Source Code:** [https://github.com/dstmodders/dst-mod-sdk](https://github.com/dstmodders/dst-mod-sdk)
 --
 -- @module SDK.World
 -- @see SDK

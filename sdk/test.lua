@@ -5,7 +5,7 @@
 -- testing framework to be loaded and when it's found it will automatically add all corresponding
 -- functions globally when SDK is loaded.
 --
--- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
+-- **Source Code:** [https://github.com/dstmodders/dst-mod-sdk](https://github.com/dstmodders/dst-mod-sdk)
 --
 -- @module SDK.Test
 -- @see SDK

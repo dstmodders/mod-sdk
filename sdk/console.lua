@@ -29,7 +29,7 @@
 --
 -- Now after entering "SDK." into the console input, you will get your auto-complete.
 --
--- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
+-- **Source Code:** [https://github.com/dstmodders/dst-mod-sdk](https://github.com/dstmodders/dst-mod-sdk)
 --
 -- @module SDK.Console
 -- @see SDK

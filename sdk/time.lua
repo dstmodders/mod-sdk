@@ -11,7 +11,7 @@
 -- time scale locally. On non-master instances (dedicated servers) it calls
 -- `SDK.Remote.SetTimeScale` function for sending a request to change the time scale.
 --
--- **Source Code:** [https://github.com/victorpopkov/dst-mod-sdk](https://github.com/victorpopkov/dst-mod-sdk)
+-- **Source Code:** [https://github.com/dstmodders/dst-mod-sdk](https://github.com/dstmodders/dst-mod-sdk)
 --
 -- @module SDK.Time
 -- @see SDK
