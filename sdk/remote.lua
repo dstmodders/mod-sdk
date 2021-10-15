@@ -8,7 +8,7 @@
 -- @see SDK.Remote.Player
 -- @see SDK.Remote.World
 --
--- @author Victor Popkov
+-- @author [Depressed DST Modders](https://github.com/dstmodders)
 -- @copyright 2020
 -- @license MIT
 -- @release 0.1
