@@ -43,8 +43,8 @@ jobs:
       - name: Build an image
         uses: docker/build-push-action@v2
         with:
-          context: ./doc/
-          file: ./doc/Dockerfile
+          context: ./docs/
+          file: ./docs/Dockerfile
           platforms: linux/amd64,linux/arm/v7
           pull: true
           push: ${{ !env.ACT && github.ref == 'refs/heads/main' }}
@@ -69,7 +69,7 @@ jobs:
           DOCKER_TLS_KEY: ${{ secrets.DOCKER_TLS_KEY }}
       - name: Deploy Docker Stack
         if: ${{ !env.ACT }}
-        working-directory: ./doc/
+        working-directory: ./docs/
         run: |
           docker stack rm "${DOCKER_STACK_NAME}"
           docker stack deploy \
@@ -93,7 +93,7 @@ jobs:
           NGINX_CONF: /etc/nginx/nginx.conf
           # traefik
           TRAEFIK_HOST: docs.dstmodders.com
-          TRAEFIK_NAME: dstmodders-dst-mod-sdk-doc
+          TRAEFIK_NAME: dstmodders-dst-mod-sdk-docs
           TRAEFIK_PATH_PREFIX: /dst-mod-sdk/
       - name: Prepare success Slack notification
         if: success()
