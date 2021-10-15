@@ -19,7 +19,7 @@ jobs:
           echo "DOCKER_IMAGE_TAG=latest" >> $GITHUB_ENV
           echo "GITHUB_JOB_NAME=docs" >> $GITHUB_ENV
       - name: Generate documentation
-        uses: docker://viktorpopkov/dst-mod:alpine
+        uses: docker://dstmodders/dst-mod:alpine
         with:
           args: make ldoc
       - name: Set up QEMU
@@ -84,7 +84,7 @@ jobs:
           DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
           DOCKER_TLS_VERIFY: 1
           # docker stack
-          DOCKER_STACK_NAME: github_dst_mod_sdk
+          DOCKER_STACK_NAME: dstmodders_dst_mod_sdk
           DOCKER_STACK_NODE_HOSTNAME: ${{ secrets.DOCKER_STACK_NODE_HOSTNAME }}
           # loki
           LOKI_PIPELINE_STAGE_FILE: /etc/loki/pipelines/nginx.yml
@@ -92,8 +92,8 @@ jobs:
           # nginx
           NGINX_CONF: /etc/nginx/nginx.conf
           # traefik
-          TRAEFIK_HOSTNAME: github.victorpopkov.com
-          TRAEFIK_NAME: github-dst-mod-sdk-doc
+          TRAEFIK_HOST: docs.dstmodders.com
+          TRAEFIK_NAME: dstmodders-dst-mod-sdk-doc
           TRAEFIK_PATH_PREFIX: /dst-mod-sdk/
       - name: Prepare success Slack notification
         if: success()
