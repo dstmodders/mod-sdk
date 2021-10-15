@@ -98,7 +98,7 @@ examples.
 
 The [LDoc][] documentation generator has been used for generating documentation,
 and the most recent version can be found here:
-http://github.victorpopkov.com/dst-mod-sdk/
+https://docs.dstmodders.com/sdk/
 
 - [Usage][]
 - [Features][]
@@ -107,12 +107,12 @@ http://github.victorpopkov.com/dst-mod-sdk/
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).
 
-[auto join]: https://github.com/victorpopkov/dst-mod-auto-join
-[dev tools]: https://github.com/victorpopkov/dst-mod-dev-tools
-[documentation]: http://github.victorpopkov.com/dst-mod-sdk/
+[auto join]: https://github.com/dstmodders/dst-mod-auto-join
+[dev tools]: https://github.com/dstmodders/dst-mod-dev-tools
+[documentation]: https://docs.dstmodders.com/sdk/
 [don't starve together]: https://www.klei.com/games/dont-starve-together
 [features]: readme/02-features.md
-[keep following]: https://github.com/victorpopkov/dst-mod-keep-following
+[keep following]: https://github.com/dstmodders/dst-mod-keep-following
 [ldoc]: https://stevedonovan.github.io/ldoc/
 [trello]: https://trello.com/
 [usage]: readme/01-usage.md
