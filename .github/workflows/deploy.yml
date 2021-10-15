@@ -94,7 +94,7 @@ jobs:
           # traefik
           TRAEFIK_HOST: docs.dstmodders.com
           TRAEFIK_NAME: dstmodders-dst-mod-sdk-docs
-          TRAEFIK_PATH_PREFIX: /dst-mod-sdk/
+          TRAEFIK_PATH_PREFIX: /sdk/
       - name: Prepare success Slack notification
         if: success()
         run: echo "SLACK_CUSTOM_PAYLOAD=${SLACK_CUSTOM_PAYLOAD}" >> $GITHUB_ENV
