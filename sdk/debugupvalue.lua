@@ -1,9 +1,7 @@
 ----
--- Handles debug upvalue functionality.
+-- Allows accessing some in-game local variables using `debug` module.
 --
 -- _**NB!** Should be used with caution and only as a last resort._
---
--- Allows accessing some in-game local variables using `debug` module.
 --
 --    local fn = TheWorld.net.components.weather.GetDebugString
 --    local _moisturefloor = SDK.DebugUpvalue.GetUpvalue(fn, "_moisturefloor")

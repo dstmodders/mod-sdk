@@ -1,5 +1,5 @@
 ----
--- Handles debug functionality.
+-- Helps with mod debugging.
 --
 -- As it's a common practice to put different messages throughout your code to see what exactly your
 -- function is doing through the console. This enables more transparency over the business logic and

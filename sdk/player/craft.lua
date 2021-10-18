@@ -1,5 +1,9 @@
 ----
--- Handles player craft functionality.
+-- Handles player crafting.
+--
+--     if not SDK.Player.Craft.HasFreeCrafting(ThePlayer) then
+--         SDK.Player.Craft.ToggleFreeCrafting(ThePlayer)
+--     end
 --
 -- **Source Code:** [https://github.com/dstmodders/dst-mod-sdk](https://github.com/dstmodders/dst-mod-sdk)
 --

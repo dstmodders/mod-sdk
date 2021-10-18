@@ -1,7 +1,12 @@
 ----
--- Handles player functionality.
+-- Handles player functionality and consists of 5 submodules.
 --
--- Only available when `ThePlayer` global is available.
+-- _**NB!** Only available when_ `ThePlayer` _global is available._
+--
+-- _**NB!** Requires_ `SDK.Remote.Player` _to be loaded to work on dedicated servers with
+-- administrator rights. On master instances, it tries to set things locally by calling the
+-- corresponding component function. On non-master instances (dedicated servers) it calls the
+-- corresponding_ `SDK.Remote.Player` _function for sending a request to change it._
 --
 -- **Source Code:** [https://github.com/dstmodders/dst-mod-sdk](https://github.com/dstmodders/dst-mod-sdk)
 --
