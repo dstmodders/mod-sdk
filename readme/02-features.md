@@ -4,26 +4,16 @@ _**NB!** Not all features are covered yet._
 
 The whole SDK comprises modules and submodules with different functionality:
 
-- [Debug Upvalue](#debug-upvalue)
-- [Debug](#debug)
-- [Persistent Data](#persistent-data)
-- [Player](#player)
+- [SDK.Debug](#sdkdebug)
+- [SDK.DebugUpvalue](#sdkdebugupvalue)
+- [SDK.Entity](#sdkentity)
+- [SDK.MiniMap](#sdkminimap)
+- [SDK.PersistentData](#sdkpersistentdata)
+- [SDK.Player](#sdkplayer)
+- [SDK.Remote](#sdkremote)
+- [SDK.World](#sdkworld)
 
-## Debug Upvalue
-
-_**NB!** Should be used with caution and only as a last resort._
-
-Allows accessing some in-game local variables using debug module.
-
-```lua
-local fn = TheWorld.net.components.weather.GetDebugString
-local _moisturefloor = SDK.DebugUpvalue.GetUpvalue(fn, "_moisturefloor")
-print(_moisturefloor:value()) -- prints a moisture floor value
-```
-
-Inspired by [UpvalueHacker][] created by Rafael Lizarralde ([@rezecib][]).
-
-## Debug
+## SDK.Debug
 
 Module `SDK.Debug` helps with mod debugging.
 
@@ -65,7 +55,26 @@ GetComponent("foobar")
 -- prints: [sdk] [your-mod] [error] Component foobar is not available
 ```
 
-## Persistent Data
+## SDK.DebugUpvalue
+
+_**NB!** Should be used with caution and only as a last resort._
+
+Module `SDK.DebugUpvalue` allows accessing some in-game local variables using
+the debug module.
+
+```lua
+local fn = TheWorld.net.components.weather.GetDebugString
+local _moisturefloor = SDK.DebugUpvalue.GetUpvalue(fn, "_moisturefloor")
+print(_moisturefloor:value()) -- prints a moisture floor value
+```
+
+Inspired by [UpvalueHacker][] created by Rafael Lizarralde ([@rezecib][]).
+
+## SDK.MiniMap
+
+Not documented yet...
+
+## SDK.PersistentData
 
 Module `SDK.PersistentData` handles storing any data for later access.
 
@@ -96,23 +105,28 @@ SDK.PersistentData.Set("foo", "bar")
 SDK.PersistentData.Get("foo") -- returns: "bar"
 ```
 
-## Player
+## SDK.Player
 
-Module `SDK.Player` handles player-related behaviour and has 3 submodules:
-
-- [Attribute](#attribute)
-
-### Attribute
+_**NB!** Only available when_ `ThePlayer` _global is available._
 
 _**NB!** Requires_ `SDK.Remote.Player` _to be loaded to work on dedicated
-servers with administrator rights._
+servers with administrator rights. On master instances, it tries to set things
+locally by calling the corresponding component function. On non-master instances
+(dedicated servers) it calls the corresponding_ `SDK.Remote.Player` _function
+for sending a request to change it._
 
-Module `SDK.Player.Attribute` handles getting or setting player attributes.
+Module `SDK.Player` handles player functionality and consists of 5 submodules:
 
-On master instances, it tries to set an attribute locally by calling the
-corresponding component function. On non-master instances (dedicated servers) it
-calls the corresponding `SDK.Remote.Player` function for sending a request to
-change that attribute.
+- [SDK.Player.Attribute](#sdkplayerattribute)
+- [SDK.Player.Craft](#sdkplayercraft)
+- [SDK.Player.Inventory](#sdkplayerinventory)
+- [SDK.Player.MiniMap](#sdkplayerminimap)
+- [SDK.Player.Vision](#sdkplayervision)
+
+### SDK.Player.Attribute
+
+Module `SDK.Player.Attribute` handles getting or setting different player
+attributes.
 
 ```lua
 if SDK.Player.Attribute.GetTemperature(ThePlayer) <= 0 then
@@ -132,8 +146,51 @@ local function SetFullAttributes(player)
     SDK.Player.Attribute.SetTemperature(36, player)
 end
 
+print(SDK.Player.Attribute.GetHealthPercent(ThePlayer)) -- prints: 50
 SetFullAttributes(ThePlayer)
+print(SDK.Player.Attribute.GetHealthPercent(ThePlayer)) -- prints: 100
 ```
+
+### SDK.Player.Craft
+
+Module `SDK.Player.Craft` handles player crafting.
+
+```lua
+if not SDK.Player.Craft.HasFreeCrafting(ThePlayer) then
+    SDK.Player.Craft.ToggleFreeCrafting(ThePlayer)
+end
+```
+
+### SDK.Player.Inventory
+
+Not documented yet...
+
+### SDK.Player.MiniMap
+
+Not documented yet...
+
+### SDK.Player.Vision
+
+Not documented yet...
+
+## SDK.Player
+
+Not documented yet...
+
+## SDK.Remote
+
+Module `SDK.Remote` is responsible for sending different requests to the server.
+
+It consists of 2 submodules:
+
+- [SDK.Remote.Player](#sdkremoteplayer)
+- [SDK.Remote.World](#sdkremoteworld)
+
+Not documented yet...
+
+## SDK.World
+
+Not documented yet...
 
 [@rezecib]: https://github.com/rezecib
 [upvaluehacker]: https://github.com/rezecib/Rezecib-s-Rebalance/blob/master/scripts/tools/upvaluehacker.lua

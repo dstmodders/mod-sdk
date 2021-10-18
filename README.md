@@ -74,10 +74,13 @@ _**NB!** Not all features are covered yet._
 
 The whole SDK comprises modules and submodules with different functionality:
 
-- [Debug Upvalue](readme/02-features.md#debug-upvalue)
 - [Debug](readme/02-features.md#debug)
+- [Debug Upvalue](readme/02-features.md#debug-upvalue)
+- [MiniMap](readme/02-features.md#minimap)
 - [Persistent Data](readme/02-features.md#persistent-data)
 - [Player](readme/02-features.md#player)
+- [Remote](readme/02-features.md#remote)
+- [World](readme/02-features.md#world)
 
 ## Examples
 

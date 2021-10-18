@@ -59,7 +59,11 @@ SDK.Load(env, "<your subdirectory>/sdk", {
     "RPC",
     "Test",
     "Thread",
-    "World",
+    World = {
+        "SaveData",
+        "Season",
+        "Weather",
+    },
 })
 ```
 
