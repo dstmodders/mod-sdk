@@ -1,0 +1,59 @@
+name: SDK bug report
+description: If you're sure it's an SDK bug and it's reproducible, submit an issue so we can investigate
+body:
+  - type: checkboxes
+    attributes:
+      description: Please verify that you've followed these steps
+      options:
+        - label: I understand that if I ignore these instructions, my **issue may be closed without review**.
+          required: true
+        - label: I have made sure that there are **no similar opened issues**.
+          required: true
+        - label: I have made sure that the **SDK version matches the latest release**.
+          required: false
+        - label: I have reproduced this issue when **other mods have been disabled**.
+          required: false
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      value: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1. Go to...
+        2. Click on...
+        3. Scroll down to...
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behaviour
+      value: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Console output
+      value: |
+        <details><summary>Click to expand</summary>
+
+        ```txt
+        If applicable, replace this line with the console output.
+        ```
+        </details>
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Screenshot
+      value: |
+        <details><summary>Click to expand</summary>
+
+        If applicable, replace this line with an embedded screenshot to help explain your problem.
+        </details>
+    validations:
+      required: false
