@@ -56,7 +56,7 @@ function FrontEnd.HasTextWidgetFocus()
     return widget and widget.name == "Text" or false
 end
 
---- Checks if has an input focus.
+--- Checks if has a UI input focus.
 --
 -- When `ThePlayer` is available, it gets `ThePlayer.HUD:HasInputFocus()` value. In other cases it
 -- checks for which widget is focused and acts accordingly.

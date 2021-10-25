@@ -52,33 +52,11 @@ local function PrepareOptions(fn_name, key, options)
         options.ignore_screens = {}
     end
 
-    if options.ignore_console_screen ~= nil
-        and type(options.ignore_console_screen) ~= "boolean"
-    then
-        DebugErrorOptions(fn_name, key, "ignore_console_screen must be a boolean")
-        return false
-    end
-
-    if options.ignore_map_screen ~= nil
-        and type(options.ignore_map_screen) ~= "boolean"
-    then
-        DebugErrorOptions(fn_name, key, "ignore_map_screen must be a boolean")
-        return false
-    end
-
     if options.ignore_has_input_focus ~= nil
         and type(options.ignore_has_input_focus) ~= "boolean"
     then
         DebugErrorOptions(fn_name, key, "ignore_has_input_focus must be a boolean")
         return false
-    end
-
-    if options.ignore_console_screen == true then
-        table.insert(options.ignore_screens, "ConsoleScreen")
-    end
-
-    if options.ignore_map_screen == true then
-        table.insert(options.ignore_screens, "MapScreen")
     end
 
     return options
@@ -98,6 +76,13 @@ function Input.IsControlMove(control)
 end
 
 --- Adds a config key handler.
+-- @usage SDK.Input.AddConfigKeyHandler("key_test", function()
+--     print("Hello World!")
+-- end, {
+--     ignore_has_input_focus = true, -- ignores SDK.FrontEnd.HasInputFocus()
+--     ignore_screens = { "ConsoleScreen", "MapScreen" },
+-- })
+-- @see SDK.FrontEnd.HasInputFocus
 -- @tparam string config
 -- @tparam function fn
 -- @tparam[opt] table options
@@ -125,6 +110,13 @@ function Input.AddConfigKeyHandler(config, fn, options)
 end
 
 --- Adds a config key down handler.
+-- @usage SDK.Input.AddConfigKeyDownHandler("key_test", function()
+--     print("Hello World!")
+-- end, {
+--     ignore_has_input_focus = true, -- ignores SDK.FrontEnd.HasInputFocus()
+--     ignore_screens = { "ConsoleScreen", "MapScreen" },
+-- })
+-- @see SDK.FrontEnd.HasInputFocus
 -- @tparam string config
 -- @tparam function fn
 -- @tparam[opt] table options
@@ -150,6 +142,13 @@ function Input.AddConfigKeyDownHandler(config, fn, options)
 end
 
 --- Adds a config key up handler.
+-- @usage SDK.Input.AddConfigKeyUpHandler("key_test", function()
+--     print("Hello World!")
+-- end, {
+--     ignore_has_input_focus = true, -- ignores SDK.FrontEnd.HasInputFocus()
+--     ignore_screens = { "ConsoleScreen", "MapScreen" },
+-- })
+-- @see SDK.FrontEnd.HasInputFocus
 -- @tparam string config
 -- @tparam function fn
 -- @tparam[opt] table options
