@@ -18,21 +18,6 @@ local SDK
 --- General
 -- @section general
 
---- Checks if a key can be handled.
---
--- An opposite of `HasInputFocus` except allowing key handling when a map screen is open.
---
--- @see SDK.Input.AddConfigKeyDownHandler
--- @see SDK.Input.AddConfigKeyHandler
--- @see SDK.Input.AddConfigKeyUpHandler
--- @treturn boolean
-function FrontEnd.CanHandleKey()
-    if FrontEnd.IsScreenOpen("MapScreen") then
-        return true
-    end
-    return not FrontEnd.HasInputFocus()
-end
-
 --- Gets an active screen
 -- @treturn boolean
 function FrontEnd.GetActiveScreen()
@@ -52,16 +37,23 @@ end
 --
 -- @tparam[opt] string texture Texture name (can be only a part of the name)
 -- @treturn boolean
-function FrontEnd.HasImageFocus(texture)
+function FrontEnd.HasImageWidgetFocus(texture)
     local widget = FrontEnd.GetFocusWidget()
     if texture ~= nil
         and widget
         and widget.name == "Image"
         and type(widget.texture) == "string"
     then
-        return widget.texture:find(texture)
+        return widget.texture:find(texture) and true or false
     end
-    return widget and widget.name == "Image"
+    return widget and widget.name == "Image" or false
+end
+
+--- Checks if a text widget is focused.
+-- @treturn boolean
+function FrontEnd.HasTextWidgetFocus()
+    local widget = FrontEnd.GetFocusWidget()
+    return widget and widget.name == "Text" or false
 end
 
 --- Checks if has an input focus.
@@ -69,23 +61,18 @@ end
 -- When `ThePlayer` is available, it gets `ThePlayer.HUD:HasInputFocus()` value. In other cases it
 -- checks for which widget is focused and acts accordingly.
 --
+-- @see SDK.Input.AddConfigKeyDownHandler
+-- @see SDK.Input.AddConfigKeyHandler
+-- @see SDK.Input.AddConfigKeyUpHandler
 -- @treturn boolean
 function FrontEnd.HasInputFocus()
     if ThePlayer then
         return SDK.Utils.Chain.Get(ThePlayer, "HUD", "HasInputFocus", true)
     end
-
-    return FrontEnd.HasTextFocus()
-        or FrontEnd.HasImageFocus("spinner")
-        or FrontEnd.HasImageFocus("arrow")
-        or FrontEnd.HasImageFocus("scrollbar")
-end
-
---- Checks if a text widget is focused.
--- @treturn boolean
-function FrontEnd.HasTextFocus()
-    local widget = FrontEnd.GetFocusWidget()
-    return widget and widget.name == "Text"
+    return FrontEnd.HasTextWidgetFocus()
+        or FrontEnd.HasImageWidgetFocus("spinner")
+        or FrontEnd.HasImageWidgetFocus("arrow")
+        or FrontEnd.HasImageWidgetFocus("scrollbar")
 end
 
 --- Checks if a certain screen is open.
