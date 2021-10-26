@@ -18,10 +18,17 @@ local SDK
 --- General
 -- @section general
 
---- Gets an active screen
+--- Gets an active screen.
 -- @treturn boolean
 function FrontEnd.GetActiveScreen()
     return SDK.Utils.Chain.Get(TheFrontEnd, "GetActiveScreen", true)
+end
+
+--- Gets an active screen name.
+-- @treturn string
+function FrontEnd.GetActiveScreenName()
+    local screen = FrontEnd.GetActiveScreen()
+    return screen and screen.name or nil
 end
 
 --- Gets a focused widget.
