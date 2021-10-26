@@ -40,6 +40,10 @@ local function GetKeyFromConfig(config)
 end
 
 local function PrepareOptions(fn_name, key, options)
+    if options == nil then
+        options = {}
+    end
+
     if type(options) ~= "table" then
         DebugErrorOptions(fn_name, key, "must be a table")
         return false
@@ -52,14 +56,36 @@ local function PrepareOptions(fn_name, key, options)
         options.ignore_screens = {}
     end
 
-    if options.ignore_has_input_focus ~= nil
-        and type(options.ignore_has_input_focus) ~= "boolean"
-    then
-        DebugErrorOptions(fn_name, key, "ignore_has_input_focus must be a boolean")
+    local ignore = options.ignore_has_input_focus
+    if ignore ~= nil and (type(ignore) ~= "boolean" and type(ignore) ~= "table") then
+        DebugErrorOptions(fn_name, key, "ignore_has_input_focus must be a boolean or a table")
         return false
     end
 
     return options
+end
+
+local function HandleKey(options, fn)
+    if type(options) == "table" and SDK.FrontEnd.HasInputFocus() then
+        if options.ignore_has_input_focus == nil or options.ignore_has_input_focus == false then
+            return
+        elseif type(options.ignore_has_input_focus) == "table" and not SDK.Utils.Table.HasValue(
+            options.ignore_has_input_focus,
+            SDK.FrontEnd.GetActiveScreenName()
+        ) then
+            return
+        end
+    end
+
+    if type(options) == "table" and type(options.ignore_screens) == "table" then
+        for _, screen in pairs(options.ignore_screens) do
+            if SDK.FrontEnd.IsScreenOpen(screen) then
+                return
+            end
+        end
+    end
+
+    return fn()
 end
 
 --- General
@@ -79,7 +105,8 @@ end
 -- @usage SDK.Input.AddConfigKeyHandler("key_test", function()
 --     print("Hello World!")
 -- end, {
---     ignore_has_input_focus = true, -- ignores SDK.FrontEnd.HasInputFocus()
+--     ignore_has_input_focus = { "OptionsScreen" }, -- ignores SDK.FrontEnd.HasInputFocus() in OptionsScreen
+--     -- ignore_has_input_focus = true, -- ignores SDK.FrontEnd.HasInputFocus() everywhere
 --     ignore_screens = { "ConsoleScreen", "MapScreen" },
 -- })
 -- @see SDK.FrontEnd.HasInputFocus
@@ -93,17 +120,9 @@ function Input.AddConfigKeyHandler(config, fn, options)
         options = PrepareOptions(fn_name, config, options)
         TheInput:AddKeyHandler(function(key, down)
             if key == config_key then
-                if options.ignore_has_input_focus ~= true and SDK.FrontEnd.HasInputFocus() then
-                    return
-                end
-
-                for _, screen in pairs(options.ignore_screens) do
-                    if SDK.FrontEnd.IsScreenOpen(screen) then
-                        return
-                    end
-                end
-
-                fn(down)
+                return HandleKey(options, function()
+                    fn(down)
+                end)
             end
         end)
     end
@@ -113,7 +132,8 @@ end
 -- @usage SDK.Input.AddConfigKeyDownHandler("key_test", function()
 --     print("Hello World!")
 -- end, {
---     ignore_has_input_focus = true, -- ignores SDK.FrontEnd.HasInputFocus()
+--     ignore_has_input_focus = { "OptionsScreen" }, -- ignores SDK.FrontEnd.HasInputFocus() in OptionsScreen
+--     -- ignore_has_input_focus = true, -- ignores SDK.FrontEnd.HasInputFocus() everywhere
 --     ignore_screens = { "ConsoleScreen", "MapScreen" },
 -- })
 -- @see SDK.FrontEnd.HasInputFocus
@@ -126,17 +146,7 @@ function Input.AddConfigKeyDownHandler(config, fn, options)
         local fn_name = "AddConfigKeyDownHandler"
         options = PrepareOptions(fn_name, config, options)
         TheInput:AddKeyDownHandler(config_key, function()
-            if options.ignore_has_input_focus ~= true and SDK.FrontEnd.HasInputFocus() then
-                return
-            end
-
-            for _, screen in pairs(options.ignore_screens) do
-                if SDK.FrontEnd.IsScreenOpen(screen) then
-                    return
-                end
-            end
-
-            return fn()
+            return HandleKey(options, fn)
         end)
     end
 end
@@ -145,7 +155,8 @@ end
 -- @usage SDK.Input.AddConfigKeyUpHandler("key_test", function()
 --     print("Hello World!")
 -- end, {
---     ignore_has_input_focus = true, -- ignores SDK.FrontEnd.HasInputFocus()
+--     ignore_has_input_focus = { "OptionsScreen" }, -- ignores SDK.FrontEnd.HasInputFocus() in OptionsScreen
+--     -- ignore_has_input_focus = true, -- ignores SDK.FrontEnd.HasInputFocus() everywhere
 --     ignore_screens = { "ConsoleScreen", "MapScreen" },
 -- })
 -- @see SDK.FrontEnd.HasInputFocus
@@ -158,17 +169,7 @@ function Input.AddConfigKeyUpHandler(config, fn, options)
         local fn_name = "AddConfigKeyUpHandler"
         options = PrepareOptions(fn_name, config, options)
         TheInput:AddKeyUpHandler(config_key, function()
-            if options.ignore_has_input_focus ~= true and SDK.FrontEnd.HasInputFocus() then
-                return
-            end
-
-            for _, screen in pairs(options.ignore_screens) do
-                if SDK.FrontEnd.IsScreenOpen(screen) then
-                    return
-                end
-            end
-
-            return fn()
+            return HandleKey(options, fn)
         end)
     end
 end
@@ -182,6 +183,11 @@ end
 function Input._DoInit(sdk)
     SDK = sdk
     return SDK._DoInitModule(SDK, Input, "Input")
+end
+
+if _G.MOD_SDK_TEST then
+    Input._HandleKey = HandleKey
+    Input._PrepareOptions = PrepareOptions
 end
 
 return Input
