@@ -3,6 +3,7 @@ description: If you're sure it's an SDK bug and it's reproducible, submit an iss
 body:
   - type: checkboxes
     attributes:
+      label: Verify
       description: Please verify that you've followed these steps
       options:
         - label: I understand that if I ignore these instructions, my **issue may be closed without review**.
