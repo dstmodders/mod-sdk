@@ -6,7 +6,6 @@ check_defined = $(strip $(foreach 1,$1, $(call __check_defined,$1,$(strip $(valu
 
 help:
 	@printf "Please use 'make <target>' where '<target>' is one of:\n\n"
-	@echo "   citest                to run Busted tests for CI"
 	@echo "   dev                   to run ldoc + lint + testclean + test"
 	@echo "   ldoc                  to generate an LDoc documentation"
 	@echo "   lint                  to run code linting"
@@ -17,16 +16,6 @@ help:
 	@echo "   testclean             to clean up after tests"
 	@echo "   testcoverage          to print the tests coverage report"
 	@echo "   testlist              to list all existing tests"
-
-citest:
-	@busted .; \
-		luacov-console .; \
-		cp luacov.report.out luacov.report.out.bak \
-			&& luacov -r lcov > /dev/null 2>&1 \
-			&& cp luacov.report.out lcov.info \
-			&& cp luacov.report.out.bak luacov.report.out \
-			&& rm luacov.report.out.bak; \
-		awk '/^Summary$$/{if (a) print a;if (b) print b}{a=b;b=$$0;} /^Summary$$/,f' luacov.report.out
 
 dev: ldoc lint testclean test
 
