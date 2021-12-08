@@ -1,8 +1,8 @@
-# dst-mod-sdk
+# mod-sdk
 
-[![CI](https://img.shields.io/github/workflow/status/dstmodders/dst-mod-sdk/CI?label=ci)](https://github.com/dstmodders/dst-mod-sdk/actions/workflows/ci.yml)
-[![Deploy](https://img.shields.io/github/workflow/status/dstmodders/dst-mod-sdk/Deploy?label=deploy)](https://github.com/dstmodders/dst-mod-sdk/actions/workflows/deploy.yml)
-[![Codecov](https://img.shields.io/codecov/c/github/dstmodders/dst-mod-sdk.svg)](https://codecov.io/gh/dstmodders/dst-mod-sdk)
+[![CI](https://img.shields.io/github/workflow/status/dstmodders/mod-sdk/CI?label=ci)](https://github.com/dstmodders/mod-sdk/actions/workflows/ci.yml)
+[![Deploy](https://img.shields.io/github/workflow/status/dstmodders/mod-sdk/Deploy?label=deploy)](https://github.com/dstmodders/mod-sdk/actions/workflows/deploy.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/dstmodders/mod-sdk.svg)](https://codecov.io/gh/dstmodders/mod-sdk)
 
 ## Overview
 
@@ -48,7 +48,7 @@ verge and has decided to try it out, then it could be done in 3 steps:
 **Step 1/3**. Clone it into your unique mod subdirectory:
 
 ```shell script
-git submodule add https://github.com/dstmodders/dst-mod-sdk \
+git submodule add https://github.com/dstmodders/mod-sdk \
   scripts/<your subdirectory>/sdk --name sdk
 ```
 
@@ -110,12 +110,12 @@ https://docs.dstmodders.com/sdk/
 
 Released under the [MIT License](https://opensource.org/licenses/MIT).
 
-[auto join]: https://github.com/dstmodders/dst-mod-auto-join
-[dev tools]: https://github.com/dstmodders/dst-mod-dev-tools
+[auto join]: https://github.com/dstmodders/mod-auto-join
+[dev tools]: https://github.com/dstmodders/mod-dev-tools
 [documentation]: https://docs.dstmodders.com/sdk/
 [don't starve together]: https://www.klei.com/games/dont-starve-together
 [features]: readme/02-features.md
-[keep following]: https://github.com/dstmodders/dst-mod-keep-following
+[keep following]: https://github.com/dstmodders/mod-keep-following
 [ldoc]: https://stevedonovan.github.io/ldoc/
 [trello]: https://trello.com/
 [usage]: readme/01-usage.md
