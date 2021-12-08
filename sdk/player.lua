@@ -297,6 +297,32 @@ function Player.IsSinking(player)
     end
 end
 
+--- Checks if a player is jumping through wormhole.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.IsWormholeJumping(player)
+    player = player ~= nil and player or ThePlayer
+    if
+        player
+        and player.entity
+        and SDK.Utils.Chain.Get(player, "entity", "IsValid", true)
+        and SDK.Utils.Chain.Get(player, "entity", "IsVisible", true)
+        and (player.sg or player.AnimState)
+    then
+        if player.sg and player.sg.currentstate and player.sg.currentstate.name == "jumpin" then
+            return true
+        end
+
+        if player.AnimState and not player.AnimState.IsCurrentAnimation then
+            return nil
+        end
+
+        return player.AnimState:IsCurrentAnimation("dissipate")
+            or player.AnimState:IsCurrentAnimation("heavy_jump")
+            or player.AnimState:IsCurrentAnimation("jump")
+    end
+end
+
 --- Light Watcher
 -- @section light-watcher
 
