@@ -72,7 +72,7 @@ local _MODULES = {
         submodules = {
             Player = "sdk/remote/player",
             World = "sdk/remote/world",
-        }
+        },
     },
     RPC = "sdk/rpc",
     TemporaryData = "sdk/temporarydata",
@@ -85,7 +85,7 @@ local _MODULES = {
             Chain = "sdk/utils/chain",
             Table = "sdk/utils/table",
             Value = "sdk/utils/value",
-        }
+        },
     },
     Vision = "sdk/vision",
     World = {
@@ -344,9 +344,8 @@ function SDK.LoadModule(name, path, submodules)
         SDK.loaded[name] = path
         module = require(SDK.loaded[name])
     elseif _MODULES[name] then
-        SDK.loaded[name] = SDK.path .. (type(_MODULES[name]) == "string"
-            and _MODULES[name]
-            or _MODULES[name].path)
+        SDK.loaded[name] = SDK.path
+            .. (type(_MODULES[name]) == "string" and _MODULES[name] or _MODULES[name].path)
         module = require(SDK.loaded[name])
     end
 
@@ -566,9 +565,9 @@ function SDK.SanitizeModules(modules)
             }
         else
             t[k] = {
-                path = type(v) ~= "string" and v.path or (type(_MODULES[k]) ~= "string"
-                    and _MODULES[k].path
-                    or _MODULES[k]) or v,
+                path = type(v) ~= "string" and v.path
+                    or (type(_MODULES[k]) ~= "string" and _MODULES[k].path or _MODULES[k])
+                    or v,
             }
 
             t[k].submodules = SDK.SanitizeSubmodules(k, v.submodules)
@@ -609,9 +608,9 @@ function SDK.SanitizeSubmodules(module, submodules)
             }
         else
             t[k] = {
-                path = type(v) ~= "string" and v.path or (type(modules[k]) ~= "string"
-                    and modules[k].path
-                    or modules[k]) or v
+                path = type(v) ~= "string" and v.path
+                    or (type(modules[k]) ~= "string" and modules[k].path or modules[k])
+                    or v,
             }
         end
     end
@@ -819,7 +818,7 @@ function SDK._DebugErrorInvalidArg(module, fn_name, arg_name, explanation)
     SDK._DebugErrorFn(
         module,
         fn_name,
-        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
+        string.format("Invalid argument%s is passed", arg_name and " (" .. arg_name .. ")" or ""),
         explanation and "(" .. explanation .. ")"
     )
 end
@@ -843,14 +842,16 @@ end
 -- @tparam string name Field/Function name
 -- @tparam string global Global name
 function SDK._DebugErrorNoCallWithoutGlobal(module, field, name, global)
-    SDK._DebugError(string.format(
-        type(field) == "function"
-            and "Function %s.%s() shouldn't be called when %s global is not available"
-            or "Field %s.%s shouldn't be called when %s global is not available",
-        tostring(module),
-        name,
-        global
-    ))
+    SDK._DebugError(
+        string.format(
+            type(field) == "function"
+                    and "Function %s.%s() shouldn't be called when %s global is not available"
+                or "Field %s.%s shouldn't be called when %s global is not available",
+            tostring(module),
+            name,
+            global
+        )
+    )
 end
 
 --- Debugs a calling directly error string.
@@ -858,13 +859,15 @@ end
 -- @tparam any field Field/Function
 -- @tparam string name Field/Function name
 function SDK._DebugErrorNoDirectUse(module, field, name)
-    SDK._DebugError(string.format(
-        type(field) == "function"
-            and "Function %s.%s() shouldn't be used directly"
-            or "Field %s.%s shouldn't be used directly",
-        tostring(module),
-        name
-    ))
+    SDK._DebugError(
+        string.format(
+            type(field) == "function"
+                    and "Function %s.%s() shouldn't be used directly"
+                or "Field %s.%s shouldn't be used directly",
+            tostring(module),
+            name
+        )
+    )
 end
 
 --- Debugs a missing function error string.
@@ -1043,8 +1046,7 @@ function SDK._Info(...) -- luacheck: only
         return
     end
 
-    local msg = (SDK.env and SDK.env.modname)
-        and string.format("[sdk] [%s]", SDK.env.modname)
+    local msg = (SDK.env and SDK.env.modname) and string.format("[sdk] [%s]", SDK.env.modname)
         or "[sdk]"
 
     for i = 1, arg.n do
@@ -1072,7 +1074,7 @@ function SDK._SetModuleName(parent, module, name)
     end
 
     setmetatable(module, {
-        __tostring = fn
+        __tostring = fn,
     })
 end
 

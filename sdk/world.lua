@@ -99,8 +99,8 @@ end
 -- @treturn boolean
 function World.IsPointPassable(pt)
     return SDK.Utils.Chain.Validate(TheWorld, "Map", "IsPassableAtPoint")
-        and SDK.Utils.Chain.Validate(pt, "Get")
-        and TheWorld.Map:IsPassableAtPoint(pt:Get())
+            and SDK.Utils.Chain.Validate(pt, "Get")
+            and TheWorld.Map:IsPassableAtPoint(pt:Get())
         or false
 end
 
@@ -183,7 +183,8 @@ function World._GuessNrOfWalrusCamps()
     DebugString("Guessing the number of Walrus Camps...")
     World.nr_of_walrus_camps = 0
     for _, id in pairs(ids) do
-        if string.match(id, "WalrusHut_Grassy")
+        if
+            string.match(id, "WalrusHut_Grassy")
             or string.match(id, "WalrusHut_Plains")
             or string.match(id, "WalrusHut_Rocky")
         then
@@ -195,7 +196,7 @@ function World._GuessNrOfWalrusCamps()
         "Found",
         tostring(World.nr_of_walrus_camps),
         (World.nr_of_walrus_camps == 0 or World.nr_of_walrus_camps ~= 1)
-            and "Walrus Camps"
+                and "Walrus Camps"
             or "Walrus Camp"
     )
     return true
@@ -213,10 +214,11 @@ function World._DoInit(sdk, submodules)
     Chain = SDK.Utils.Chain
     Value = SDK.Utils.Value
 
-    submodules = submodules ~= nil and submodules or {
-        Season = "sdk/world/season",
-        Weather = "sdk/world/weather",
-    }
+    submodules = submodules ~= nil and submodules
+        or {
+            Season = "sdk/world/season",
+            Weather = "sdk/world/weather",
+        }
 
     SDK._SetModuleName(SDK, World, "World")
     SDK.LoadSubmodules(World, submodules)

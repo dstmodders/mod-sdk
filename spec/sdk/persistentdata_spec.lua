@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.PersistentData", function()
     -- setup
@@ -12,7 +12,7 @@ describe("#sdk SDK.PersistentData", function()
     local PersistentData
 
     setup(function()
-        match = require "luassert.match"
+        match = require("luassert.match")
     end)
 
     teardown(function()
@@ -51,12 +51,12 @@ describe("#sdk SDK.PersistentData", function()
         })
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("PersistentData")
-        PersistentData = require "yoursubdirectory/sdk/sdk/persistentdata"
+        PersistentData = require("yoursubdirectory/sdk/sdk/persistentdata")
 
         -- spies
         if SDK.IsLoaded("Debug") then
@@ -416,7 +416,10 @@ describe("#sdk SDK.PersistentData", function()
             it("should debug string", function()
                 AssertDebugString(function()
                     PersistentData.Load()
-                end, "[load]", string.format("Loading %s...", PersistentData.GetSaveName()))
+                end, "[load]", string.format(
+                    "Loading %s...",
+                    PersistentData.GetSaveName()
+                ))
             end)
 
             it("should call TheSim:GetPersistentString()", function()
@@ -488,7 +491,10 @@ describe("#sdk SDK.PersistentData", function()
                 it("should debug string", function()
                     AssertDebugStringCalls(function()
                         PersistentData.OnLoad(str)
-                    end, 2, "[load]", "Success", string.format("(length: %d)", string.len(str)))
+                    end, 2, "[load]", "Success", string.format(
+                        "(length: %d)",
+                        string.len(str)
+                    ))
                 end)
 
                 it("should call TrackedAssert()", function()
@@ -798,15 +804,14 @@ describe("#sdk SDK.PersistentData", function()
 
             describe("when in gameplay", function()
                 it("should call TheWorld.net.components.shardstate:GetMasterSessionId()", function()
-                    assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId)
-                          .was_not_called()
+                    assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId).was_not_called() -- luacheck: only
                     fn()
-                    assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId)
-                          .was_called(1)
-                    assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId)
-                          .was_called_with(match.is_ref(
-                        _G.TheWorld.net.components.shardstate
-                    ))
+                    assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId).was_called(
+                        1
+                    )
+                    assert.spy(_G.TheWorld.net.components.shardstate.GetMasterSessionId).was_called_with( -- luacheck: only
+                        match.is_ref(_G.TheWorld.net.components.shardstate)
+                    )
                 end)
 
                 it("should return the master session id", function()
@@ -816,16 +821,9 @@ describe("#sdk SDK.PersistentData", function()
 
             describe("when some chain fields are missing", function()
                 it("should return nil", function()
-                    AssertChainNil(
-                        function()
-                            assert.is_nil(fn())
-                        end,
-                        _G.TheWorld,
-                        "net",
-                        "components",
-                        "shardstate",
-                        "GetMasterSessionId"
-                    )
+                    AssertChainNil(function()
+                        assert.is_nil(fn())
+                    end, _G.TheWorld, "net", "components", "shardstate", "GetMasterSessionId")
                 end)
             end)
         end)

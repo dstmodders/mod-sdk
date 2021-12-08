@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK", function()
     -- before_each initialization
@@ -10,7 +10,7 @@ describe("#sdk SDK", function()
 
     before_each(function()
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Debug")
 
@@ -123,10 +123,13 @@ describe("#sdk SDK", function()
                 end)
 
                 it("should debug error string", function()
-                    AssertDebugError(function()
-                        SDK.Module.Foo()
-                    end, "Function SDK.Module.Foo() shouldn't be called when TheWorld global is "
-                        .. "not available")
+                    AssertDebugError(
+                        function()
+                            SDK.Module.Foo()
+                        end,
+                        "Function SDK.Module.Foo() shouldn't be called when TheWorld global is "
+                            .. "not available"
+                    )
                 end)
 
                 it("should return a function that returns nil", function()
@@ -383,7 +386,7 @@ describe("#sdk SDK", function()
                             World = {
                                 "SaveData",
                                 "Season",
-                                "Weather"
+                                "Weather",
                             },
                         }
 
@@ -685,7 +688,7 @@ describe("#sdk SDK", function()
                         World = {
                             "SaveData",
                             "Season",
-                            "Weather"
+                            "Weather",
                         },
                     })
                 end)
@@ -884,9 +887,7 @@ describe("#sdk SDK", function()
                     assert.spy(_G.print).was_not_called()
                     SDK._Info("one", "two", "three")
                     assert.spy(_G.print).was_called(1)
-                    assert.spy(_G.print).was_called_with(
-                        "[sdk] [dst-mod-sdk] one two three"
-                    )
+                    assert.spy(_G.print).was_called_with("[sdk] [dst-mod-sdk] one two three")
                 end)
             end)
 

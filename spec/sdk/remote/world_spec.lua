@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Remote.World", function()
     -- before_each initialization
@@ -49,7 +49,7 @@ describe("#sdk SDK.Remote.World", function()
         }
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Utils")
@@ -176,20 +176,15 @@ describe("#sdk SDK.Remote.World", function()
             TestArgUnsignedInteger(fn_name, {
                 empty = {},
                 invalid = { -10 },
-                valid = { 10 }
+                valid = { 10 },
             }, "days")
 
             TestRemoteInvalid(fn_name, nil, -10)
 
-            TestRemoteValid(
-                fn_name,
-                { "Advance season:", "10 days" },
-                {
-                    calls = 10,
-                    data = 'TheWorld:PushEvent("ms_advanceseason")',
-                },
-                10
-            )
+            TestRemoteValid(fn_name, { "Advance season:", "10 days" }, {
+                calls = 10,
+                data = 'TheWorld:PushEvent("ms_advanceseason")',
+            }, 10)
         end)
 
         describe("RetreatSeason()", function()
@@ -198,20 +193,15 @@ describe("#sdk SDK.Remote.World", function()
             TestArgUnsignedInteger(fn_name, {
                 empty = {},
                 invalid = { -10 },
-                valid = { 10 }
+                valid = { 10 },
             }, "days")
 
             TestRemoteInvalid(fn_name, nil, -10)
 
-            TestRemoteValid(
-                fn_name,
-                { "Retreat season:", "10 days" },
-                {
-                    calls = 10,
-                    data = 'TheWorld:PushEvent("ms_retreatseason")',
-                },
-                10
-            )
+            TestRemoteValid(fn_name, { "Retreat season:", "10 days" }, {
+                calls = 10,
+                data = 'TheWorld:PushEvent("ms_retreatseason")',
+            }, 10)
         end)
 
         describe("SetSeason()", function()
@@ -355,7 +345,7 @@ describe("#sdk SDK.Remote.World", function()
                         .. "num = 20, "
                         .. "rad = 20, "
                         .. "duration = 2.50 "
-                        .. '})'
+                        .. "})"
                 )
 
                 TestRemoteValid(
@@ -366,7 +356,7 @@ describe("#sdk SDK.Remote.World", function()
                         .. "num = 20, "
                         .. "rad = 20, "
                         .. "duration = 2.50 "
-                        .. '})',
+                        .. "})",
                     20,
                     20,
                     2.5,
@@ -482,7 +472,8 @@ describe("#sdk SDK.Remote.World", function()
                     'TheWorld:PushEvent("ms_setsnowlevel", 0)'
                 )
 
-                TestRemoteValid(fn_name,
+                TestRemoteValid(
+                    fn_name,
                     { "Snow level:", "0.50" },
                     'TheWorld:PushEvent("ms_setsnowlevel", 0.50)',
                     0.5

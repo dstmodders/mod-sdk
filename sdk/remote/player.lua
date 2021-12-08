@@ -77,7 +77,8 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
     local setter = type(options) == "table" and options.setter or "SetPercent"
     local validation_fn = type(options) == "table" and options.validation_fn
 
-    if (pre_validation_fn and not pre_validation_fn())
+    if
+        (pre_validation_fn and not pre_validation_fn())
         or (validation_fn and not validation_fn())
         or (not validation_fn and not IsValidSetAttributePercent(percent, player, fn_name))
         or (post_validation_fn and not post_validation_fn())
@@ -87,8 +88,7 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
 
     DebugString(debug .. ":", Value.ToPercentString(percent), "(" .. player:GetDisplayName() .. ")")
 
-    local value = (type(options) == "table" and options.value_fn)
-        and options.value_fn(percent)
+    local value = (type(options) == "table" and options.value_fn) and options.value_fn(percent)
         or percent / 100
 
     return Player.CallFnComponent(component, setter, { math.min(value, 1) }, player)
@@ -116,7 +116,7 @@ function Player.GoNext(prefab)
     end
 
     DebugString("Go next:", prefab)
-    Remote.Send('c_gonext(%s)', { prefab }, true)
+    Remote.Send("c_gonext(%s)", { prefab }, true)
     return true
 end
 
@@ -265,7 +265,7 @@ function Player.CallFn(name, args, player)
             return false
         end
 
-        Remote.Send('%s:%s(%s)', {
+        Remote.Send("%s:%s(%s)", {
             Remote.Serialize(player),
             name,
             type(args) == "table" and table.concat(serialized, ", ") or serialized,
@@ -274,7 +274,7 @@ function Player.CallFn(name, args, player)
         return true
     end
 
-    Remote.Send('%s:%s()', { Remote.Serialize(player), name })
+    Remote.Send("%s:%s()", { Remote.Serialize(player), name })
     return true
 end
 
@@ -305,7 +305,7 @@ function Player.CallFnComponent(component, name, args, player)
             return false
         end
 
-        Remote.Send('%s.components.%s:%s(%s)', {
+        Remote.Send("%s.components.%s:%s(%s)", {
             Remote.Serialize(player),
             component,
             name,
@@ -314,7 +314,7 @@ function Player.CallFnComponent(component, name, args, player)
         return true
     end
 
-    Remote.Send('%s.components.%s:%s()', { Remote.Serialize(player), component, name })
+    Remote.Send("%s.components.%s:%s()", { Remote.Serialize(player), component, name })
     return true
 end
 
@@ -336,12 +336,12 @@ function Player.LockRecipe(recipe, player)
 
     DebugString("Lock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
     Remote.Send(
-        'player = %s '
-            .. 'for k, v in pairs(player.components.builder.recipes) do '
-                .. 'if v == "%s" then '
-                    .. 'table.remove(player.components.builder.recipes, k) '
-                .. 'end '
-            .. 'end '
+        "player = %s "
+            .. "for k, v in pairs(player.components.builder.recipes) do "
+            .. 'if v == "%s" then '
+            .. "table.remove(player.components.builder.recipes, k) "
+            .. "end "
+            .. "end "
             .. 'player.replica.builder:RemoveRecipe("%s")',
         {
             Remote.Serialize(player),
@@ -368,8 +368,8 @@ function Player.UnlockRecipe(recipe, player)
 
     DebugString("Unlock recipe:", recipe, "(" .. player:GetDisplayName() .. ")")
     Remote.Send(
-        'player = %s '
-            .. 'player.components.builder:AddRecipe(%s) '
+        "player = %s "
+            .. "player.components.builder:AddRecipe(%s) "
             .. 'player:PushEvent("unlockrecipe", %s)',
         {
             player,
@@ -416,14 +416,18 @@ function Player.RevealMiniMap(player)
     end
 
     DebugString("Reveal minimap:", player:GetDisplayName())
-    Remote.Send('player = %s width, height = TheWorld.Map:GetSize() '
-        .. 'for x = -(width * 2), width * 2, 30 do '
-            .. 'for y = -(height * 2), (height * 2), 30 do '
-                .. 'player.player_classified.MapExplorer:RevealArea(x, 0, y) '
-            .. 'end '
-        .. 'end', {
-        player,
-    }, true)
+    Remote.Send(
+        "player = %s width, height = TheWorld.Map:GetSize() "
+            .. "for x = -(width * 2), width * 2, 30 do "
+            .. "for y = -(height * 2), (height * 2), 30 do "
+            .. "player.player_classified.MapExplorer:RevealArea(x, 0, y) "
+            .. "end "
+            .. "end",
+        {
+            player,
+        },
+        true
+    )
 
     return true
 end

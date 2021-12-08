@@ -37,11 +37,12 @@ end
 function Utils._DoInit(sdk, submodules)
     SDK = sdk
 
-    submodules = submodules ~= nil and submodules or {
-        Chain = "sdk/utils/chain",
-        Table = "sdk/utils/table",
-        Value = "sdk/utils/value",
-    }
+    submodules = submodules ~= nil and submodules
+        or {
+            Chain = "sdk/utils/chain",
+            Table = "sdk/utils/table",
+            Value = "sdk/utils/value",
+        }
 
     SDK._SetModuleName(SDK, Utils, "Utils")
     SDK.LoadSubmodules(Utils, submodules)

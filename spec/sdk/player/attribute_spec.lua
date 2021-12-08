@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Player.Attribute", function()
     -- setup
@@ -74,7 +74,7 @@ describe("#sdk SDK.Player.Attribute", function()
             replica = {
                 health = {
                     GetPercent = ReturnValueFn(1),
-                    GetPenaltyPercent = ReturnValueFn(.4),
+                    GetPenaltyPercent = ReturnValueFn(0.4),
                 },
                 hunger = {
                     GetPercent = ReturnValueFn(1),
@@ -95,7 +95,7 @@ describe("#sdk SDK.Player.Attribute", function()
 
     setup(function()
         -- match
-        match = require "luassert.match"
+        match = require("luassert.match")
 
         -- globals
         _G.TUNING = {
@@ -129,13 +129,13 @@ describe("#sdk SDK.Player.Attribute", function()
         _G.TheWorld = {}
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Remote")
         SDK.LoadModule("Player")
-        Attribute = require "yoursubdirectory/sdk/sdk/player/attribute"
+        Attribute = require("yoursubdirectory/sdk/sdk/player/attribute")
 
         SetTestModule(Attribute)
 
@@ -183,18 +183,15 @@ describe("#sdk SDK.Player.Attribute", function()
 
                 TestDebugString(fn, unpack(debug))
 
-                it(
-                    "should call [player].components." .. name .. ":" .. setter .. "()",
-                    function()
-                        assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
-                        fn()
-                        assert.spy(_G.ThePlayer.components[name][setter]).was_called(1)
-                        assert.spy(_G.ThePlayer.components[name][setter]).was_called_with(
-                            match.is_ref(_G.ThePlayer.components[name]),
-                            value
-                        )
-                    end
-                )
+                it("should call [player].components." .. name .. ":" .. setter .. "()", function()
+                    assert.spy(_G.ThePlayer.components[name][setter]).was_not_called()
+                    fn()
+                    assert.spy(_G.ThePlayer.components[name][setter]).was_called(1)
+                    assert.spy(_G.ThePlayer.components[name][setter]).was_called_with(
+                        match.is_ref(_G.ThePlayer.components[name]),
+                        value
+                    )
+                end)
 
                 TestReturnTrue(fn)
             end)
@@ -252,9 +249,7 @@ describe("#sdk SDK.Player.Attribute", function()
                     assert.spy(_G.ThePlayer[fn_name]).was_not_called()
                     fn()
                     assert.spy(_G.ThePlayer[fn_name]).was_called(1)
-                    assert.spy(_G.ThePlayer[fn_name]).was_called_with(
-                        match.is_ref(_G.ThePlayer)
-                    )
+                    assert.spy(_G.ThePlayer[fn_name]).was_called_with(match.is_ref(_G.ThePlayer))
                 end)
 
                 describe("when some chain fields are missing", function()
@@ -277,12 +272,12 @@ describe("#sdk SDK.Player.Attribute", function()
                 describe("when [player].replica.health is available", function()
                     it("should call the [player].replica.health:GetPercent()", function()
                         EachPlayer(function(player)
-                            assert.spy(player.replica[component][component_fn_name])
-                                .was_not_called()
+                            assert.spy(player.replica[component][component_fn_name]).was_not_called() -- luacheck: only
                             Attribute[name](player)
                             assert.spy(player.replica[component][component_fn_name]).was_called(1)
-                            assert.spy(player.replica[component][component_fn_name])
-                                .was_called_with(match.is_ref(player.replica[component]))
+                            assert.spy(player.replica[component][component_fn_name]).was_called_with( -- luacheck: only
+                                match.is_ref(player.replica[component])
+                            )
                         end)
                     end)
 

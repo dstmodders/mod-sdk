@@ -104,16 +104,19 @@ local function SetAttributeComponentPercent(fn_name, options, percent, player)
     local pre_validation_fn = type(options) == "table" and options.pre_validation_fn
     local validation_fn = type(options) == "table" and options.validation_fn
 
-    local debug_args = type(options) == "table" and options.debug_args or {
-        component:gsub("^%l", string.upper) .. ":",
-        Value.ToPercentString(percent),
-    }
+    local debug_args = type(options) == "table" and options.debug_args
+        or {
+            component:gsub("^%l", string.upper) .. ":",
+            Value.ToPercentString(percent),
+        }
 
-    local setter_fn = type(options) == "table" and options.setter_fn or function(_component, value)
-        _component:SetPercent(math.min(value / 100, 1))
-    end
+    local setter_fn = type(options) == "table" and options.setter_fn
+        or function(_component, value)
+            _component:SetPercent(math.min(value / 100, 1))
+        end
 
-    if (pre_validation_fn and not pre_validation_fn(percent, player))
+    if
+        (pre_validation_fn and not pre_validation_fn(percent, player))
         or (validation_fn and not validation_fn(percent, player))
         or (not validation_fn and not IsValidSetAttributePercent(percent, player, fn_name))
         or (post_validation_fn and not post_validation_fn(percent, player))

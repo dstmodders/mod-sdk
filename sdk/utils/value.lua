@@ -117,9 +117,10 @@ end
 -- @treturn boolean
 function Value.IsPrefab(value)
     return type(value) == "string"
-        and PREFABFILES
-        and TableHasValue(PREFABFILES, value)
-        and true or false
+            and PREFABFILES
+            and TableHasValue(PREFABFILES, value)
+            and true
+        or false
 end
 
 --- Checks if a value is a recipe.
@@ -206,11 +207,13 @@ end
 -- @todo Consider making a complete pluralization solution
 function Value.ToDaysString(value)
     value = tonumber(value)
-    return Value.IsNumber(value) and string.format(
-        "%s day%s",
-        tostring(value),
-        (value >= -1 and value <= 1 and value ~= 0) and "" or "s"
-    ) or nil
+    return Value.IsNumber(value)
+            and string.format(
+                "%s day%s",
+                tostring(value),
+                (value >= -1 and value <= 1 and value ~= 0) and "" or "s"
+            )
+        or nil
 end
 
 --- Converts a number into a float string.

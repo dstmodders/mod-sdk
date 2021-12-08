@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Utils.Value", function()
     -- before_each initialization
@@ -31,7 +31,7 @@ describe("#sdk SDK.Utils.Value", function()
     end)
 
     before_each(function()
-        Value = require "sdk/utils/value"
+        Value = require("sdk/utils/value")
     end)
 
     local function TestChecker(name, valid, invalid)
@@ -105,8 +105,14 @@ describe("#sdk SDK.Utils.Value", function()
                 HasTag = function(_, tag)
                     return tag == "player"
                 end,
-            }
-        }, { "string", 0, false, true, {} })
+            },
+        }, {
+            "string",
+            0,
+            false,
+            true,
+            {},
+        })
 
         TestChecker("IsPoint", {
             Vector3(1, 0, 3),

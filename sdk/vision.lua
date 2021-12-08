@@ -47,7 +47,6 @@ end
 --- General
 -- @section general
 
-
 --- Gets an unfading state.
 -- @treturn boolean
 function Vision.IsUnfading()

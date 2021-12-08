@@ -46,7 +46,7 @@ end
 -- @treturn table
 function Test.shallowcopy(src, dest)
     local copy
-    if type(src) == 'table' then
+    if type(src) == "table" then
         copy = dest or {}
         for k, v in pairs(src) do
             copy[k] = v
@@ -137,17 +137,18 @@ function Test.AssertClassSetter(class, field, fn_name, is_return_self, test_data
     local value = class[field]
 
     fn(class, test_data)
-    assert.is_equal(test_data, class[field], string.format(
-        "Class setter %s() doesn't set value: %s",
-        tostring(fn_name),
-        tostring(field)
-    ))
+    assert.is_equal(
+        test_data,
+        class[field],
+        string.format("Class setter %s() doesn't set value: %s", tostring(fn_name), tostring(field))
+    )
 
     if is_return_self then
-        assert.is_equal(class, fn(class, test_data), string.format(
-            "Class setter %s() doesn't return self",
-            tostring(fn_name)
-        ))
+        assert.is_equal(
+            class,
+            fn(class, test_data),
+            string.format("Class setter %s() doesn't return self", tostring(fn_name))
+        )
     end
 
     class[field] = value
@@ -168,7 +169,7 @@ end
 -- @tparam number calls Number of calls
 -- @tparam string|table args A single argument as a string or multiple as a table
 function Test.AssertDebugSpyWasCalled(name, calls, args)
-    local match = require "luassert.match"
+    local match = require("luassert.match")
     calls = calls ~= nil and calls or 0
     args = args ~= nil and args or {}
     args = type(args) == "string" and { args } or args
@@ -233,17 +234,22 @@ function Test.AssertModuleSetter(module, field, fn_name, is_return_self, test_da
     local value = module[field]
 
     fn(test_data)
-    assert.is_equal(test_data, module[field], string.format(
-        "Module setter %s() doesn't set value: %s",
-        tostring(fn_name),
-        tostring(field)
-    ))
+    assert.is_equal(
+        test_data,
+        module[field],
+        string.format(
+            "Module setter %s() doesn't set value: %s",
+            tostring(fn_name),
+            tostring(field)
+        )
+    )
 
     if is_return_self then
-        assert.is_equal(module, fn(test_data), string.format(
-            "Module setter %s() doesn't return self",
-            tostring(fn_name)
-        ))
+        assert.is_equal(
+            module,
+            fn(test_data),
+            string.format("Module setter %s() doesn't return self", tostring(fn_name))
+        )
     end
 
     module[field] = value
@@ -287,7 +293,7 @@ end
 -- @tparam string name Spy name
 -- @treturn table
 function Test.DebugSpyAssert(name)
-    local assert = require "luassert.assert"
+    local assert = require("luassert.assert")
     return assert.spy(Test.DebugSpy(name))
 end
 
@@ -310,7 +316,7 @@ end
 
 --- Initializes debug spies.
 function Test.DebugSpyInit()
-    local spy = require "luassert.spy"
+    local spy = require("luassert.spy")
     local functions = {
         "Error",
         "Init",
@@ -351,8 +357,7 @@ end
 
 --- Returns nothing.
 -- @treturn nil
-function Test.Empty()
-end
+function Test.Empty() end
 
 --- Returns a function which returns a value.
 -- @tparam any value Value to return
@@ -400,7 +405,7 @@ end
 -- @tparam function fn
 function Test.TestReturnFalse(fn)
     local assert = require("busted").assert
-    local it = require "busted".it
+    local it = require("busted").it
     it("should return false", function()
         assert.is_false(fn())
     end)
@@ -410,7 +415,7 @@ end
 -- @tparam function fn
 function Test.TestReturnTrue(fn)
     local assert = require("busted").assert
-    local it = require "busted".it
+    local it = require("busted").it
     it("should return true", function()
         assert.is_true(fn())
     end)
@@ -420,7 +425,7 @@ end
 -- @tparam function fn
 function Test.TestReturnNil(fn)
     local assert = require("busted").assert
-    local it = require "busted".it
+    local it = require("busted").it
     it("should return nil", function()
         assert.is_nil(fn())
     end)

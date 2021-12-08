@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Remote.Player", function()
     -- setup
@@ -10,7 +10,7 @@ describe("#sdk SDK.Remote.Player", function()
 
     setup(function()
         -- match
-        match = require "luassert.match"
+        match = require("luassert.match")
 
         -- globals
         _G.AllRecipes = {
@@ -73,7 +73,7 @@ describe("#sdk SDK.Remote.Player", function()
         })
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Utils")
@@ -103,8 +103,7 @@ describe("#sdk SDK.Remote.Player", function()
 
     local function TestSendRemoteExecuteCalls(fn, calls, ...)
         local args = { ... }
-        it((calls > 0 and "should" or "shouldn't")
-            .. " call TheNet:SendRemoteExecute()", function()
+        it((calls > 0 and "should" or "shouldn't") .. " call TheNet:SendRemoteExecute()", function()
             assert.spy(_G.TheNet.SendRemoteExecute).was_not_called()
             fn()
             assert.spy(_G.TheNet.SendRemoteExecute).was_called(calls)
@@ -322,8 +321,11 @@ describe("#sdk SDK.Remote.Player", function()
 
                     describe("when valid arguments are passed", function()
                         TestDebugString(fn, "Wereness:", "25.00%", "(Player)")
-                        TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar")'
-                            .. ".components.wereness:SetPercent(0.25)")
+                        TestSendRemoteExecute(
+                            fn,
+                            'LookupPlayerInstByUserID("KU_foobar")'
+                                .. ".components.wereness:SetPercent(0.25)"
+                        )
                         TestReturnTrue(fn)
                     end)
 
@@ -357,7 +359,7 @@ describe("#sdk SDK.Remote.Player", function()
         local args_invalid, args_valid
 
         setup(function()
-            args_invalid =  { _G.TheSim }
+            args_invalid = { _G.TheSim }
             args_valid = {
                 "foo",
                 "bar",
@@ -390,7 +392,9 @@ describe("#sdk SDK.Remote.Player", function()
                     return Player.CallFn("Foo", args_valid)
                 end
 
-                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar"):Foo('
+                TestSendRemoteExecute(
+                    fn,
+                    'LookupPlayerInstByUserID("KU_foobar"):Foo('
                         .. '"foo", '
                         .. '"bar", '
                         .. "0, "
@@ -398,7 +402,8 @@ describe("#sdk SDK.Remote.Player", function()
                         .. "true, "
                         .. "false, "
                         .. 'LookupPlayerInstByUserID("KU_foobar")'
-                    .. ")")
+                        .. ")"
+                )
                 TestReturnTrue(fn)
             end)
 
@@ -437,8 +442,10 @@ describe("#sdk SDK.Remote.Player", function()
                     return Player.CallFnComponent("foo", "Bar", "foo")
                 end
 
-                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar")'
-                    .. '.components.foo:Bar("foo")')
+                TestSendRemoteExecute(
+                    fn,
+                    'LookupPlayerInstByUserID("KU_foobar")' .. '.components.foo:Bar("foo")'
+                )
                 TestReturnTrue(fn)
             end)
 
@@ -447,8 +454,10 @@ describe("#sdk SDK.Remote.Player", function()
                     return Player.CallFnComponent("foo", "Bar", args_valid)
                 end
 
-                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar")'
-                    .. ".components.foo:Bar("
+                TestSendRemoteExecute(
+                    fn,
+                    'LookupPlayerInstByUserID("KU_foobar")'
+                        .. ".components.foo:Bar("
                         .. '"foo", '
                         .. '"bar", '
                         .. "0, "
@@ -456,7 +465,8 @@ describe("#sdk SDK.Remote.Player", function()
                         .. "true, "
                         .. "false, "
                         .. 'LookupPlayerInstByUserID("KU_foobar")'
-                    .. ")")
+                        .. ")"
+                )
                 TestReturnTrue(fn)
             end)
 
@@ -465,8 +475,10 @@ describe("#sdk SDK.Remote.Player", function()
                     return Player.CallFnComponent("foo", "Bar")
                 end
 
-                TestSendRemoteExecute(fn, 'LookupPlayerInstByUserID("KU_foobar")'
-                    .. ".components.foo:Bar()")
+                TestSendRemoteExecute(
+                    fn,
+                    'LookupPlayerInstByUserID("KU_foobar")' .. ".components.foo:Bar()"
+                )
                 TestReturnTrue(fn)
             end)
 
@@ -511,9 +523,9 @@ describe("#sdk SDK.Remote.Player", function()
                 { "Lock recipe:", "foo", "(Player)" },
                 'player = LookupPlayerInstByUserID("KU_foobar") '
                     .. "for k, v in pairs(player.components.builder.recipes) do "
-                        .. 'if v == "foo" then '
-                            .. "table.remove(player.components.builder.recipes, k) "
-                        .. "end "
+                    .. 'if v == "foo" then '
+                    .. "table.remove(player.components.builder.recipes, k) "
+                    .. "end "
                     .. "end "
                     .. 'player.replica.builder:RemoveRecipe("foo")',
                 "foo",
@@ -555,7 +567,8 @@ describe("#sdk SDK.Remote.Player", function()
         describe("ToggleFreeCrafting()", function()
             TestRemoteInvalid("ToggleFreeCrafting", nil, "foo")
             TestRemoteValid(
-                "ToggleFreeCrafting", {
+                "ToggleFreeCrafting",
+                {
                     "Toggle free crafting:",
                     "Player",
                 },

@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Time", function()
     -- setup
@@ -9,7 +9,7 @@ describe("#sdk SDK.Time", function()
     local Time
 
     setup(function()
-        match = require "luassert.match"
+        match = require("luassert.match")
     end)
 
     teardown(function()
@@ -36,12 +36,12 @@ describe("#sdk SDK.Time", function()
         }
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Time")
-        Time = require "yoursubdirectory/sdk/sdk/time"
+        Time = require("yoursubdirectory/sdk/sdk/time")
 
         SetTestModule(Time)
 

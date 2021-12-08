@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Remote", function()
     -- setup
@@ -10,7 +10,7 @@ describe("#sdk SDK.Remote", function()
 
     setup(function()
         -- match
-        match = require "luassert.match"
+        match = require("luassert.match")
 
         -- globals
         _G.ThePlayer = mock({
@@ -43,12 +43,12 @@ describe("#sdk SDK.Remote", function()
         })
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Remote")
-        Remote = require "yoursubdirectory/sdk/sdk/remote"
+        Remote = require("yoursubdirectory/sdk/sdk/remote")
 
         SetTestModule(Remote)
 
@@ -103,33 +103,39 @@ describe("#sdk SDK.Remote", function()
             describe("when different data types are passed", function()
                 it("should call TheSim:SendRemoteExecute()", function()
                     AssertSendWasCalled(function()
-                        Remote.Send('%d, %0.2f, "%s"', { 1, .12345, "test" })
+                        Remote.Send('%d, %0.2f, "%s"', { 1, 0.12345, "test" })
                     end, '1, 0.12, "test"')
                 end)
             end)
 
             describe("when serialized data is passed without is_serialized", function()
                 it("should call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasCalled(function()
-                        Remote.Send(
-                            "%s.components.temperature:SetTemperature(%s)",
-                            SDK.Remote.Serialize({ _G.ThePlayer, 36 })
-                        )
-                    end, 'LookupPlayerInstByUserID("KU_foobar")'
-                        .. '.components.temperature:SetTemperature(36)')
+                    AssertSendWasCalled(
+                        function()
+                            Remote.Send(
+                                "%s.components.temperature:SetTemperature(%s)",
+                                SDK.Remote.Serialize({ _G.ThePlayer, 36 })
+                            )
+                        end,
+                        'LookupPlayerInstByUserID("KU_foobar")'
+                            .. ".components.temperature:SetTemperature(36)"
+                    )
                 end)
             end)
 
             describe("when serialized data is passed with is_serialized", function()
                 it("should call TheSim:SendRemoteExecute()", function()
-                    AssertSendWasCalled(function()
-                        Remote.Send(
-                            "%s.components.temperature:SetTemperature(%s)",
-                            { _G.ThePlayer, 36 },
-                            true
-                        )
-                    end, 'LookupPlayerInstByUserID("KU_foobar")'
-                        .. '.components.temperature:SetTemperature(36)')
+                    AssertSendWasCalled(
+                        function()
+                            Remote.Send(
+                                "%s.components.temperature:SetTemperature(%s)",
+                                { _G.ThePlayer, 36 },
+                                true
+                            )
+                        end,
+                        'LookupPlayerInstByUserID("KU_foobar")'
+                            .. ".components.temperature:SetTemperature(36)"
+                    )
                 end)
             end)
 
@@ -226,8 +232,8 @@ describe("#sdk SDK.Remote", function()
             }, "time_scale")
 
             TestRemoteInvalid(fn_name, nil, "foo")
-            TestRemoteValid(fn_name, { "Time scale:", "1.00" }, 'TheSim:SetTimeScale(1)', 1)
-            TestRemoteValid(fn_name, { "Time scale:", "0.50" }, 'TheSim:SetTimeScale(0.50)', 0.5)
+            TestRemoteValid(fn_name, { "Time scale:", "1.00" }, "TheSim:SetTimeScale(1)", 1)
+            TestRemoteValid(fn_name, { "Time scale:", "0.50" }, "TheSim:SetTimeScale(0.50)", 0.5)
         end)
     end)
 end)

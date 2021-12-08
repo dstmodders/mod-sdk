@@ -21,9 +21,13 @@ local SDK
 local function PrintDumpValues(table, title, name, prepend)
     prepend = prepend ~= nil and prepend .. " " or ""
 
-    print(prepend .. (name
-        and string.format('Dumping "%s" %s...', name, title)
-        or string.format('Dumping %s...', title)))
+    print(
+        prepend
+            .. (
+                name and string.format('Dumping "%s" %s...', name, title)
+                or string.format("Dumping %s...", title)
+            )
+    )
 
     if #table > 0 then
         for _, v in pairs(table) do
@@ -36,12 +40,8 @@ end
 
 local function SortByTypeAndValue(a, b)
     local a_type, b_type = type(a), type(b)
-    return a_type < b_type or (
-        a_type ~= "table"
-            and b_type ~= "table"
-            and a_type == b_type
-            and a < b
-    )
+    return a_type < b_type
+        or (a_type ~= "table" and b_type ~= "table" and a_type == b_type and a < b)
 end
 
 --- General

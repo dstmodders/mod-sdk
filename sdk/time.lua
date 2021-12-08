@@ -76,7 +76,8 @@ function Time.Pause()
     TheSim:SetTimeScale(0)
     SetPause(true, "console")
 
-    if InGamePlay()
+    if
+        InGamePlay()
         and TheWorld
         and not TheWorld.ismastersim
         and SDK.IsLoaded("Remote")
@@ -104,7 +105,8 @@ function Time.Resume()
     TheSim:SetTimeScale(time_scale)
     SetPause(false, "console")
 
-    if InGamePlay()
+    if
+        InGamePlay()
         and TheWorld
         and not TheWorld.ismastersim
         and SDK.IsLoaded("Remote")
@@ -171,7 +173,8 @@ function Time.SetTimeScale(time_scale)
     DebugString("Time scale:", Value.ToFloatString(time_scale))
     TheSim:SetTimeScale(time_scale)
 
-    if InGamePlay()
+    if
+        InGamePlay()
         and TheWorld
         and not TheWorld.ismastersim
         and SDK.IsLoaded("Remote")

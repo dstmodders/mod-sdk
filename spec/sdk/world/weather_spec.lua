@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.World.Weather", function()
     -- setup
@@ -9,7 +9,7 @@ describe("#sdk SDK.World.Weather", function()
     local Weather
 
     setup(function()
-        match = require "luassert.match"
+        match = require("luassert.match")
     end)
 
     teardown(function()
@@ -56,13 +56,13 @@ describe("#sdk SDK.World.Weather", function()
         })
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Remote")
         SDK.LoadModule("World")
-        Weather = require "yoursubdirectory/sdk/sdk/world/weather"
+        Weather = require("yoursubdirectory/sdk/sdk/world/weather")
 
         SetTestModule(Weather)
 

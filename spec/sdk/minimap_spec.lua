@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.MiniMap", function()
     -- setup
@@ -9,7 +9,7 @@ describe("#sdk SDK.MiniMap", function()
     local MiniMap
 
     setup(function()
-        match = require "luassert.match"
+        match = require("luassert.match")
     end)
 
     teardown(function()
@@ -28,7 +28,7 @@ describe("#sdk SDK.MiniMap", function()
         _G.RESOLUTION_Y = 720
 
         _G.TheSim = mock({
-            GetScreenSize = ReturnValuesFn(2560, 1440)
+            GetScreenSize = ReturnValuesFn(2560, 1440),
         })
 
         _G.TheWorld = mock({
@@ -39,16 +39,16 @@ describe("#sdk SDK.MiniMap", function()
                     EnableFogOfWar = Empty,
                     GetZoom = ReturnValueFn(2),
                     WorldPosToMapPos = ReturnValuesFn(-193.48, 346.21, -200),
-                }
+                },
             },
         })
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("MiniMap")
-        MiniMap = require "yoursubdirectory/sdk/sdk/minimap"
+        MiniMap = require("yoursubdirectory/sdk/sdk/minimap")
     end)
 
     local function TestDebugString(fn, ...)

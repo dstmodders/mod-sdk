@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Player.Craft", function()
     -- setup
@@ -9,7 +9,7 @@ describe("#sdk SDK.Player.Craft", function()
     local Craft
 
     setup(function()
-        match = require "luassert.match"
+        match = require("luassert.match")
     end)
 
     teardown(function()
@@ -78,13 +78,13 @@ describe("#sdk SDK.Player.Craft", function()
         _G.TheWorld = {}
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Remote")
         SDK.LoadModule("Player")
-        Craft = require "yoursubdirectory/sdk/sdk/player/craft"
+        Craft = require("yoursubdirectory/sdk/sdk/player/craft")
 
         SetTestModule(Craft)
 
@@ -129,7 +129,7 @@ describe("#sdk SDK.Player.Craft", function()
                 return Craft.HasFreeCrafting()
             end
 
-            Craft = require "yoursubdirectory/sdk/sdk/player/craft"
+            Craft = require("yoursubdirectory/sdk/sdk/player/craft")
 
             TestArgPlayer("HasFreeCrafting", {
                 empty = {},
@@ -140,15 +140,14 @@ describe("#sdk SDK.Player.Craft", function()
             describe("when a valid player is passed", function()
                 local function TestIsFreeBuildModeWasCalled()
                     it("should call [player].player_classified.isfreebuildmode:value()", function()
-                        assert.spy(_G.ThePlayer.player_classified.isfreebuildmode.value)
-                            .was_not_called()
+                        assert.spy(_G.ThePlayer.player_classified.isfreebuildmode.value).was_not_called() -- luacheck: only
                         fn()
-                        assert.spy(_G.ThePlayer.player_classified.isfreebuildmode.value)
-                            .was_called(1)
-                        assert.spy(_G.ThePlayer.player_classified.isfreebuildmode.value)
-                            .was_called_with(
-                                match.is_ref(_G.ThePlayer.player_classified.isfreebuildmode)
-                            )
+                        assert.spy(_G.ThePlayer.player_classified.isfreebuildmode.value).was_called(
+                            1
+                        )
+                        assert.spy(_G.ThePlayer.player_classified.isfreebuildmode.value).was_called_with( -- luacheck: only
+                            match.is_ref(_G.ThePlayer.player_classified.isfreebuildmode)
+                        )
                     end)
                 end
 
@@ -225,14 +224,12 @@ describe("#sdk SDK.Player.Craft", function()
                         TestDebugString(fn, "Toggle free crafting:", "Player")
 
                         it("should call [player].components.builder:GiveAllRecipes()", function()
-                            assert.spy(_G.ThePlayer.components.builder.GiveAllRecipes)
-                                .was_not_called()
+                            assert.spy(_G.ThePlayer.components.builder.GiveAllRecipes).was_not_called() -- luacheck: only
                             fn()
                             assert.spy(_G.ThePlayer.components.builder.GiveAllRecipes).was_called(1)
-                            assert.spy(_G.ThePlayer.components.builder.GiveAllRecipes)
-                                .was_called_with(
-                                    match.is_ref(_G.ThePlayer.components.builder)
-                                )
+                            assert.spy(_G.ThePlayer.components.builder.GiveAllRecipes).was_called_with( -- luacheck: only
+                                match.is_ref(_G.ThePlayer.components.builder)
+                            )
                         end)
 
                         it("should call [player]:PushEvent()", function()
@@ -414,11 +411,9 @@ describe("#sdk SDK.Player.Craft", function()
                                 it(
                                     "shouldn't call [player].replica.builder:RemoveRecipe()",
                                     function()
-                                        assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
-                                              .was_not_called()
+                                        assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe).was_not_called() -- luacheck: only
                                         fn()
-                                        assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
-                                              .was_not_called()
+                                        assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe).was_not_called() -- luacheck: only
                                     end
                                 )
 
@@ -440,16 +435,15 @@ describe("#sdk SDK.Player.Craft", function()
                                 end)
 
                                 it("should call [player].replica.builder:RemoveRecipe()", function()
-                                    assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
-                                        .was_not_called()
+                                    assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe).was_not_called() -- luacheck: only
                                     fn()
-                                    assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
-                                        .was_called(1)
-                                    assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe)
-                                        .was_called_with(
-                                            match.is_ref(_G.ThePlayer.replica.builder),
-                                            "foo"
-                                        )
+                                    assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe).was_called( -- luacheck: only
+                                        1
+                                    )
+                                    assert.spy(_G.ThePlayer.replica.builder.RemoveRecipe).was_called_with( -- luacheck: only
+                                        match.is_ref(_G.ThePlayer.replica.builder),
+                                        "foo"
+                                    )
                                 end)
 
                                 TestReturnTrue(fn)
@@ -605,21 +599,27 @@ describe("#sdk SDK.Player.Craft", function()
                 assert.is_equal(2, TableCount(Craft.FilterRecipesBy(ReturnValueFn(true))))
                 assert.is_same({}, Craft.FilterRecipesBy(ReturnValueFn(false)))
 
-                assert.is_same({
-                    foo = {
-                        builder_tag = "builder_tag",
+                assert.is_same(
+                    {
+                        foo = {
+                            builder_tag = "builder_tag",
+                        },
                     },
-                }, Craft.FilterRecipesBy(function(name)
-                    return name == "foo"
-                end))
+                    Craft.FilterRecipesBy(function(name)
+                        return name == "foo"
+                    end)
+                )
 
-                assert.is_same({
-                    bar = {
-                        placer = "placer",
+                assert.is_same(
+                    {
+                        bar = {
+                            placer = "placer",
+                        },
                     },
-                }, Craft.FilterRecipesBy(function(name)
-                    return name == "bar"
-                end))
+                    Craft.FilterRecipesBy(function(name)
+                        return name == "bar"
+                    end)
+                )
             end)
         end)
 
@@ -711,12 +711,16 @@ describe("#sdk SDK.Player.Craft", function()
                     foo = {
                         builder_tag = "builder_tag",
                     },
-                }, Craft.FilterRecipesWith("builder_tag"))
+                }, Craft.FilterRecipesWith(
+                    "builder_tag"
+                ))
                 assert.is_same({
                     bar = {
                         placer = "placer",
                     },
-                }, Craft.FilterRecipesWith("placer"))
+                }, Craft.FilterRecipesWith(
+                    "placer"
+                ))
                 assert.is_same({}, Craft.FilterRecipesWith("foo"))
             end)
         end)
@@ -733,12 +737,16 @@ describe("#sdk SDK.Player.Craft", function()
                     bar = {
                         placer = "placer",
                     },
-                }, Craft.FilterRecipesWithout("builder_tag"))
+                }, Craft.FilterRecipesWithout(
+                    "builder_tag"
+                ))
                 assert.is_same({
                     foo = {
                         builder_tag = "builder_tag",
                     },
-                }, Craft.FilterRecipesWithout("placer"))
+                }, Craft.FilterRecipesWithout(
+                    "placer"
+                ))
                 assert.is_equal(2, TableCount(Craft.FilterRecipesWithout("foo")))
             end)
         end)
@@ -883,10 +891,7 @@ describe("#sdk SDK.Player.Craft", function()
                             assert.spy(Craft.LockRecipe).was_not_called()
                             fn()
                             assert.spy(Craft.LockRecipe).was_called(1)
-                            assert.spy(Craft.LockRecipe).was_called_with(
-                                "foo",
-                                _G.ThePlayer
-                            )
+                            assert.spy(Craft.LockRecipe).was_called_with("foo", _G.ThePlayer)
                         end
                     )
 
@@ -1010,10 +1015,7 @@ describe("#sdk SDK.Player.Craft", function()
                             assert.spy(Craft.UnlockRecipe).was_not_called()
                             fn()
                             assert.spy(Craft.UnlockRecipe).was_called(1)
-                            assert.spy(Craft.UnlockRecipe).was_called_with(
-                                "foo",
-                                _G.ThePlayer
-                            )
+                            assert.spy(Craft.UnlockRecipe).was_called_with("foo", _G.ThePlayer)
                         end)
 
                         TestReturnTrue(fn)

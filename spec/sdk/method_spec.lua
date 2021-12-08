@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Method", function()
     -- setup
@@ -17,8 +17,7 @@ describe("#sdk SDK.Method", function()
 
     before_each(function()
         -- destination
-        Dest = Class(function()
-        end)
+        Dest = Class(function() end)
 
         dest = Dest()
 
@@ -44,11 +43,11 @@ describe("#sdk SDK.Method", function()
         src = Src()
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Method")
-        Method = require "yoursubdirectory/sdk/sdk/method"
+        Method = require("yoursubdirectory/sdk/sdk/method")
     end)
 
     after_each(function()
@@ -369,7 +368,7 @@ describe("#sdk SDK.Method", function()
                     assert.is_nil(src:ToggleBool())
                 end)
 
-                TestReturnSelf("AddToggler","bool", "ToggleBool", nil, src)
+                TestReturnSelf("AddToggler", "bool", "ToggleBool", nil, src)
             end)
 
             describe("when is_return_self is passed", function()
