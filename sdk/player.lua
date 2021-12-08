@@ -164,6 +164,54 @@ function Player.IsHUDWriteableScreenActive(player)
     return false
 end
 
+--- Checks if a player is an owner.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.IsOwner(player)
+    player = player ~= nil and player or ThePlayer
+    return player and ThePlayer and (player.userid == ThePlayer.userid)
+end
+
+--- Checks if a player is a real user.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.IsReal(player)
+    player = player ~= nil and player or ThePlayer
+    return player and player.userid and string.len(player.userid) > 0 and true or false
+end
+
+--- Walks to a certain point.
+-- @tparam Vector3 pt Destination point
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.WalkToPoint(pt, player)
+    player = player ~= nil and player or ThePlayer
+    local playercontroller = SDK.Utils.Chain.Get(player, "components", "playercontroller")
+    if playercontroller and playercontroller.locomotor then
+        playercontroller:DoAction(BufferedAction(player, nil, ACTIONS.WALKTO, nil, pt))
+        return true
+    end
+    return false
+end
+
+--- State
+-- @section state
+
+--- Checks if a player is hiding.
+-- @tparam[opt] EntityScript player Player instance (owner by default)
+-- @treturn boolean
+function Player.IsHiding(player)
+    player = player ~= nil and player or ThePlayer
+
+    if player and player.sg and player.sg.HasStateTag then
+        return player.sg:HasStateTag("hiding")
+    end
+
+    if player and player.HasTag then
+        return player:HasTag("hiding")
+    end
+end
+
 --- Checks if a player is in idle.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -218,22 +266,6 @@ function Player.IsOverWater(player)
     end
 end
 
---- Checks if a player is an owner.
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Player.IsOwner(player)
-    player = player ~= nil and player or ThePlayer
-    return player and ThePlayer and (player.userid == ThePlayer.userid)
-end
-
---- Checks if a player is a real user.
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Player.IsReal(player)
-    player = player ~= nil and player or ThePlayer
-    return player and player.userid and string.len(player.userid) > 0 and true or false
-end
-
 --- Checks if a player is running.
 -- @tparam[opt] EntityScript player Player instance (owner by default)
 -- @treturn boolean
@@ -263,20 +295,6 @@ function Player.IsSinking(player)
         return player.AnimState:IsCurrentAnimation("sink")
             or player.AnimState:IsCurrentAnimation("plank_hop")
     end
-end
-
---- Walks to a certain point.
--- @tparam Vector3 pt Destination point
--- @tparam[opt] EntityScript player Player instance (owner by default)
--- @treturn boolean
-function Player.WalkToPoint(pt, player)
-    player = player ~= nil and player or ThePlayer
-    local playercontroller = SDK.Utils.Chain.Get(player, "components", "playercontroller")
-    if playercontroller and playercontroller.locomotor then
-        playercontroller:DoAction(BufferedAction(player, nil, ACTIONS.WALKTO, nil, pt))
-        return true
-    end
-    return false
 end
 
 --- Light Watcher
