@@ -1,4 +1,3 @@
-local Empty = Class(function()
-end)
+local Empty = Class(function() end)
 
 return Empty

@@ -58,7 +58,8 @@ function Player.GetClientTable(player, is_host_ignored)
     end
 
     local clients = SDK.Utils.Chain.Get(TheNet, "GetClientTable", true) or {}
-    if is_host_ignored
+    if
+        is_host_ignored
         and type(clients) == "table"
         and not SDK.Utils.Chain.Get(TheNet, "GetServerIsClientHosted", true)
     then
@@ -194,14 +195,13 @@ end
 -- @treturn boolean
 function Player.IsOnPlatform(player)
     player = player ~= nil and player or ThePlayer
-    if SDK.Utils.Chain.Validate(TheWorld, "Map", "GetPlatformAtPoint")
+    if
+        SDK.Utils.Chain.Validate(TheWorld, "Map", "GetPlatformAtPoint")
         and SDK.Utils.Chain.Validate(player, "GetPosition")
     then
-        return TheWorld.Map:GetPlatformAtPoint(SDK.Utils.Chain.Get(
-            player:GetPosition(),
-            "Get",
-            true
-        )) and true or false
+        return TheWorld.Map:GetPlatformAtPoint(
+            SDK.Utils.Chain.Get(player:GetPosition(), "Get", true)
+        ) and true or false
     end
 end
 
@@ -362,12 +362,13 @@ end
 function Player._DoInit(sdk, submodules)
     SDK = sdk
 
-    submodules = submodules ~= nil and submodules or {
-        Attribute = "sdk/player/attribute",
-        Craft = "sdk/player/craft",
-        Inventory = "sdk/player/inventory",
-        Vision = "sdk/player/vision",
-    }
+    submodules = submodules ~= nil and submodules
+        or {
+            Attribute = "sdk/player/attribute",
+            Craft = "sdk/player/craft",
+            Inventory = "sdk/player/inventory",
+            Vision = "sdk/player/vision",
+        }
 
     SDK._SetModuleName(SDK, Player, "Player")
     SDK.LoadSubmodules(Player, submodules)

@@ -1,11 +1,11 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Utils.Table", function()
     -- before_each initialization
     local Table
 
     before_each(function()
-        Table = require "sdk/utils/table"
+        Table = require("sdk/utils/table")
     end)
 
     describe("Compare()", function()
@@ -130,10 +130,7 @@ describe("#sdk SDK.Utils.Table", function()
         it("should return two combined simple tables", function()
             local a = { a = "a", b = "b", c = "c" }
             local b = { d = "d", e = "e", a = "f" }
-            assert.is_same(
-                { a = "f", b = "b", c = "c", d = "d", e = "e" },
-                Table.Merge(a, b)
-            )
+            assert.is_same({ a = "f", b = "b", c = "c", d = "d", e = "e" }, Table.Merge(a, b))
         end)
 
         it("should return two combined simple ipaired tables", function()

@@ -7,9 +7,11 @@ function Vector3:IsVector3() -- luacheck: only
 end
 
 function Vector3:Cross(rhs)
-    return Vector3(self.y * rhs.z - self.z * rhs.y,
+    return Vector3(
+        self.y * rhs.z - self.z * rhs.y,
         self.z * rhs.x - self.x * rhs.z,
-        self.x * rhs.y - self.y * rhs.x)
+        self.x * rhs.y - self.y * rhs.x
+    )
 end
 
 function Vector3:Dist(other)

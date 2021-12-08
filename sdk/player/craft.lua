@@ -243,9 +243,11 @@ end
 -- @treturn table
 function Craft.FilterRecipesWith(field, recipes)
     recipes = ArgRecipes("FilterRecipesWith", recipes)
-    return recipes and Craft.FilterRecipesBy(function(_, data)
-        return data[field]
-    end, recipes) or {}
+    return recipes
+            and Craft.FilterRecipesBy(function(_, data)
+                return data[field]
+            end, recipes)
+        or {}
 end
 
 --- Gets all recipes that exclude a certain field.
@@ -254,9 +256,11 @@ end
 -- @treturn table
 function Craft.FilterRecipesWithout(field, recipes)
     recipes = ArgRecipes("FilterRecipesWithout", recipes)
-    return recipes and Craft.FilterRecipesBy(function(_, data)
-        return not data[field]
-    end, recipes) or {}
+    return recipes
+            and Craft.FilterRecipesBy(function(_, data)
+                return not data[field]
+            end, recipes)
+        or {}
 end
 
 --- Gets learned recipes.

@@ -46,7 +46,8 @@ end
 -- @treturn boolean
 function FrontEnd.HasImageWidgetFocus(texture)
     local widget = FrontEnd.GetFocusWidget()
-    if texture ~= nil
+    if
+        texture ~= nil
         and widget
         and widget.name == "Image"
         and type(widget.texture) == "string"

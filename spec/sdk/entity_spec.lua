@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Entity", function()
     -- setup
@@ -37,11 +37,15 @@ describe("#sdk SDK.Entity", function()
         })
 
         -- test data
-        test_debug_string = [[117500 - wendy age 7.43]] .. "\n" ..
-            [[GUID:117500 Name:  Tags: _sheltered trader _health inspectable freezable player idle _builder]] .. "\n" .. -- luacheck: only
-            [[Prefab: wendy]] .. "\n" ..
-            [[AnimState: bank: wilson build: wendy_rose anim: idle_loop anim/player_idles.zip:idle_loop Frame: 47.00/66 Facing: 3]] .. "\n" .. -- luacheck: only
-            [[Transform: Pos=(-59.07,0.00,179.48) Scale=(1.00,1.00,1.00) Heading=-45.00]]
+        test_debug_string = [[117500 - wendy age 7.43]]
+            .. "\n"
+            .. [[GUID:117500 Name:  Tags: _sheltered trader _health inspectable freezable player idle _builder]] -- luacheck: only
+            .. "\n"
+            .. [[Prefab: wendy]]
+            .. "\n"
+            .. [[AnimState: bank: wilson build: wendy_rose anim: idle_loop anim/player_idles.zip:idle_loop Frame: 47.00/66 Facing: 3]] -- luacheck: only
+            .. "\n"
+            .. [[Transform: Pos=(-59.07,0.00,179.48) Scale=(1.00,1.00,1.00) Heading=-45.00]]
     end)
 
     teardown(function()
@@ -53,11 +57,11 @@ describe("#sdk SDK.Entity", function()
     end)
 
     before_each(function()
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Entity")
-        Entity = require "yoursubdirectory/sdk/sdk/entity"
+        Entity = require("yoursubdirectory/sdk/sdk/entity")
     end)
 
     after_each(function()
@@ -130,7 +134,7 @@ describe("#sdk SDK.Entity", function()
                 }
             end)
 
-            describe('when a sleepingbag component is available', function()
+            describe("when a sleepingbag component is available", function()
                 before_each(function()
                     entity.components.sleepingbag.sleeper = _G.AllPlayers[2]
                 end)
@@ -146,7 +150,7 @@ describe("#sdk SDK.Entity", function()
                 end)
             end)
 
-            describe('when a sleepingbag component is not available', function()
+            describe("when a sleepingbag component is not available", function()
                 before_each(function()
                     entity.components.sleepingbag = nil
                 end)

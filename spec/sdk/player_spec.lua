@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Player", function()
     -- setup
@@ -25,10 +25,11 @@ describe("#sdk SDK.Player", function()
     end
 
     local function MockTheNet(client_table)
-        client_table = client_table ~= nil and client_table or {
-            { userid = "KU_admin", admin = true },
-            { userid = "KU_one", admin = false },
-        }
+        client_table = client_table ~= nil and client_table
+            or {
+                { userid = "KU_admin", admin = true },
+                { userid = "KU_one", admin = false },
+            }
 
         return require("busted").mock({
             GetClientTable = ReturnValueFn(client_table),
@@ -133,7 +134,7 @@ describe("#sdk SDK.Player", function()
     end
 
     setup(function()
-        match = require "luassert.match"
+        match = require("luassert.match")
     end)
 
     teardown(function()
@@ -157,7 +158,9 @@ describe("#sdk SDK.Player", function()
             "godmode",
             "idle",
             "werehuman",
-        }, { "wereness" })
+        }, {
+            "wereness",
+        })
 
         player_dead = MockPlayerInst(2, "PlayerDead", "KU_one", { "dead", "idle" })
         player_hopping = MockPlayerInst(3, "PlayerHopping", "KU_two", { "hopping" })
@@ -202,45 +205,45 @@ describe("#sdk SDK.Player", function()
         _G.TheNet = MockTheNet({
             {
                 userid = inst.userid,
-                admin = true
+                admin = true,
             },
             {
                 userid = "KU_one",
-                admin = false
+                admin = false,
             },
             {
                 userid = "KU_two",
-                admin = false
+                admin = false,
             },
             {
                 userid = "KU_three",
-                admin = false
+                admin = false,
             },
             {
                 userid = "KU_four",
-                admin = false
+                admin = false,
             },
             {
                 userid = "KU_five",
-                admin = false
+                admin = false,
             },
             {
                 userid = "KU_host",
                 admin = true,
                 performance = 1,
-            }
+            },
         })
 
         _G.TheWorld = {}
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Player")
         SDK.LoadModule("Remote")
-        Player = require "yoursubdirectory/sdk/sdk/player"
+        Player = require("yoursubdirectory/sdk/sdk/player")
 
         -- spies
         if SDK.IsLoaded("Debug") then
@@ -400,7 +403,9 @@ describe("#sdk SDK.Player", function()
                         Player.IsAdmin(player)
                         assert.spy(_G.TheNet.GetClientTable).was_called(1)
                         assert.spy(_G.TheNet.GetClientTable).was_called_with(_G.TheNet)
-                    end, { inst }, function()
+                    end, {
+                        inst,
+                    }, function()
                         _G.TheNet.GetClientTable:clear()
                     end)
                 end)
@@ -408,7 +413,9 @@ describe("#sdk SDK.Player", function()
                 it("should return false", function()
                     EachPlayer(function(player)
                         assert.is_false(Player.IsAdmin(player))
-                    end, { inst })
+                    end, {
+                        inst,
+                    })
                 end)
             end)
 
@@ -453,13 +460,17 @@ describe("#sdk SDK.Player", function()
                             match.is_ref(player),
                             "playerghost"
                         )
-                    end, { player_dead })
+                    end, {
+                        player_dead,
+                    })
                 end)
 
                 it("should return false", function()
                     EachPlayer(function(player)
                         assert.is_false(Player.IsGhost(player))
-                    end, { player_dead })
+                    end, {
+                        player_dead,
+                    })
                 end)
             end)
 
@@ -688,13 +699,22 @@ describe("#sdk SDK.Player", function()
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
                             Player.IsIdle(player)
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
-                        end, { player_hopping, player_running, player_sinking, player_over_water })
+                        end, {
+                            player_hopping,
+                            player_running,
+                            player_sinking,
+                            player_over_water,
+                        })
                     end)
 
                     it("should return false", function()
                         EachPlayer(function(player)
                             assert.is_false(Player.IsIdle(player))
-                        end, { inst, player_dead, player_over_water })
+                        end, {
+                            inst,
+                            player_dead,
+                            player_over_water,
+                        })
                     end)
                 end)
 
@@ -702,7 +722,11 @@ describe("#sdk SDK.Player", function()
                     before_each(function()
                         EachPlayer(function(player)
                             player.sg = nil
-                        end, { inst, player_dead, player_over_water })
+                        end, {
+                            inst,
+                            player_dead,
+                            player_over_water,
+                        })
                     end)
 
                     it("should call [player].AnimState.IsCurrentAnimation()", function()
@@ -714,13 +738,21 @@ describe("#sdk SDK.Player", function()
                                 match.is_ref(player.AnimState),
                                 "idle_loop"
                             )
-                        end, { inst, player_dead, player_over_water })
+                        end, {
+                            inst,
+                            player_dead,
+                            player_over_water,
+                        })
                     end)
 
                     it("should return false", function()
                         EachPlayer(function(player)
                             assert.is_false(Player.IsIdle(player))
-                        end, { inst, player_dead, player_over_water })
+                        end, {
+                            inst,
+                            player_dead,
+                            player_over_water,
+                        })
                     end)
                 end)
             end)
@@ -885,7 +917,9 @@ describe("#sdk SDK.Player", function()
                         assert.spy(player.Transform.GetWorldPosition).was_called_with(
                             match.is_ref(player.Transform)
                         )
-                    end, { player_over_water })
+                    end, {
+                        player_over_water,
+                    })
                 end)
 
                 it("should call TheWorld.Map:IsVisualGroundAtPoint()", function()
@@ -909,13 +943,17 @@ describe("#sdk SDK.Player", function()
                         assert.spy(player.GetCurrentPlatform).was_not_called()
                         Player.IsOverWater(player)
                         assert.spy(player.GetCurrentPlatform).was_not_called()
-                    end, { player_over_water })
+                    end, {
+                        player_over_water,
+                    })
                 end)
 
                 it("should return false", function()
                     EachPlayer(function(player)
                         assert.is_false(Player.IsOverWater(player))
-                    end, { player_over_water })
+                    end, {
+                        player_over_water,
+                    })
                 end)
             end)
 
@@ -942,7 +980,9 @@ describe("#sdk SDK.Player", function()
                 it("should return true", function()
                     EachPlayer(function(player)
                         assert.is_false(Player.IsOwner(player))
-                    end, { inst })
+                    end, {
+                        inst,
+                    })
                 end)
             end)
         end)
@@ -1059,7 +1099,9 @@ describe("#sdk SDK.Player", function()
                                 match.is_ref(player.sg),
                                 "run"
                             )
-                        end, { player_running }, function(player)
+                        end, {
+                            player_running,
+                        }, function(player)
                             player.sg.HasStateTag:clear()
                         end)
                     end)
@@ -1069,7 +1111,9 @@ describe("#sdk SDK.Player", function()
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
                             Player.IsRunning(player)
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
-                        end, { player_running }, function(player)
+                        end, {
+                            player_running,
+                        }, function(player)
                             player.AnimState.IsCurrentAnimation:clear()
                         end)
                     end)
@@ -1077,7 +1121,9 @@ describe("#sdk SDK.Player", function()
                     it("should return false", function()
                         EachPlayer(function(player)
                             assert.is_false(Player.IsRunning(player))
-                        end, { player_running })
+                        end, {
+                            player_running,
+                        })
                     end)
                 end)
 
@@ -1091,7 +1137,9 @@ describe("#sdk SDK.Player", function()
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
                             Player.IsRunning(player)
                             assert.spy(player.AnimState.IsCurrentAnimation).was_not_called()
-                        end, { player_running }, function(player)
+                        end, {
+                            player_running,
+                        }, function(player)
                             player.AnimState.IsCurrentAnimation:clear()
                         end)
                     end)
@@ -1099,7 +1147,9 @@ describe("#sdk SDK.Player", function()
                     it("should return false", function()
                         EachPlayer(function(player)
                             assert.is_false(Player.IsRunning(player))
-                        end, { player_running })
+                        end, {
+                            player_running,
+                        })
                     end)
                 end)
             end)
@@ -1148,13 +1198,17 @@ describe("#sdk SDK.Player", function()
                             match.is_ref(player.AnimState),
                             "plank_hop"
                         )
-                    end, { player_sinking })
+                    end, {
+                        player_sinking,
+                    })
                 end)
 
                 it("should return false", function()
                     EachPlayer(function(player)
                         assert.is_false(Player.IsSinking(player))
-                    end, { player_sinking })
+                    end, {
+                        player_sinking,
+                    })
                 end)
             end)
 
@@ -1238,24 +1292,26 @@ describe("#sdk SDK.Player", function()
         describe("SetMovementPrediction()", function()
             before_each(function()
                 _G.TheSim = {
-                    SetSetting = spy.new(Empty)
+                    SetSetting = spy.new(Empty),
                 }
             end)
 
             local function TestSetSettingCalls(fn, calls, ...)
                 local args = { ... }
-                it((calls > 0 and "should" or "shouldn't")
-                    .. " call TheSim:SetSetting()", function()
-                    assert.spy(_G.TheSim.SetSetting).was_not_called()
-                    fn()
-                    assert.spy(_G.TheSim.SetSetting).was_called(calls)
-                    if calls > 0 and #args > 0 then
-                        assert.spy(_G.TheSim.SetSetting).was_called_with(
-                            match.is_ref(_G.TheSim),
-                            unpack(args)
-                        )
+                it(
+                    (calls > 0 and "should" or "shouldn't") .. " call TheSim:SetSetting()",
+                    function()
+                        assert.spy(_G.TheSim.SetSetting).was_not_called()
+                        fn()
+                        assert.spy(_G.TheSim.SetSetting).was_called(calls)
+                        if calls > 0 and #args > 0 then
+                            assert.spy(_G.TheSim.SetSetting).was_called_with(
+                                match.is_ref(_G.TheSim),
+                                unpack(args)
+                            )
+                        end
                     end
-                end)
+                )
             end
 
             local function TestSetSetting(fn, ...)

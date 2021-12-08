@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.World", function()
     -- setup
@@ -9,7 +9,7 @@ describe("#sdk SDK.World", function()
     local World
 
     setup(function()
-        match = require "luassert.match"
+        match = require("luassert.match")
     end)
 
     teardown(function()
@@ -46,17 +46,17 @@ describe("#sdk SDK.World", function()
             },
             HasTag = function(_, tag)
                 return tag == "forest"
-            end
+            end,
         })
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Remote")
         SDK.LoadModule("World")
-        World = require "yoursubdirectory/sdk/sdk/world"
+        World = require("yoursubdirectory/sdk/sdk/world")
 
         -- spies
         if SDK.IsLoaded("Debug") then

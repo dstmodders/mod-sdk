@@ -213,7 +213,7 @@ function Remote.SetTimeScale(time_scale)
     end
 
     DebugString("Time scale:", Value.ToFloatString(time_scale))
-    Remote.Send('TheSim:SetTimeScale(%s)', { time_scale }, true)
+    Remote.Send("TheSim:SetTimeScale(%s)", { time_scale }, true)
     return true
 end
 
@@ -229,10 +229,11 @@ function Remote._DoInit(sdk, submodules)
     Table = SDK.Utils.Table
     Value = SDK.Utils.Value
 
-    submodules = submodules ~= nil and submodules or {
-        Player = "sdk/remote/player",
-        World = "sdk/remote/world",
-    }
+    submodules = submodules ~= nil and submodules
+        or {
+            Player = "sdk/remote/player",
+            World = "sdk/remote/world",
+        }
 
     SDK._SetModuleName(SDK, Remote, "Remote")
     SDK.LoadSubmodules(Remote, submodules)

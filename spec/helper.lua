@@ -6,8 +6,8 @@ _G.MOD_SDK_TEST = true
 
 package.path = "./sdk/?.lua;" .. package.path
 
-require "spec/class"
-require "spec/vector3"
+require("spec/class")
+require("spec/vector3")
 
 local preloads = {
     ["yoursubdirectory/sdk/sdk/config"] = "sdk/config",
@@ -64,13 +64,17 @@ end
 --
 
 function LoadSDK()
-    return require("sdk/sdk").UnloadAllModules().SetIsSilent(true).Load({
-        modname = "dst-mod-sdk",
-        AddPrefabPostInit = function() end
-    }, "", {
-        "Dump",
-        "Test",
-    })
+    return require("sdk/sdk").UnloadAllModules().SetIsSilent(true).Load(
+        {
+            modname = "dst-mod-sdk",
+            AddPrefabPostInit = function() end,
+        },
+        "",
+        {
+            "Dump",
+            "Test",
+        }
+    )
 end
 
 local SDK = LoadSDK()
@@ -86,7 +90,7 @@ end
 function AssertDebugErrorCalls(fn, calls, ...)
     local args = { ... }
     if SDK.IsLoaded("Debug") then
-        local assert = require "luassert.assert"
+        local assert = require("luassert.assert")
         assert.spy(SDK.Debug.Error).was_not_called()
         fn()
         assert.spy(SDK.Debug.Error).was_called(calls)
@@ -105,7 +109,7 @@ function AssertDebugErrorInvalidArgCalls(fn, calls, module, fn_name, arg_name, e
         fn,
         calls,
         string.format("%s.%s():", tostring(module), fn_name),
-        string.format("Invalid argument%s is passed", arg_name and ' (' .. arg_name .. ")" or ""),
+        string.format("Invalid argument%s is passed", arg_name and " (" .. arg_name .. ")" or ""),
         explanation and "(" .. explanation .. ")"
     )
 end
@@ -117,7 +121,7 @@ end
 function AssertDebugStringCalls(fn, calls, ...)
     local args = { ... }
     if SDK.IsLoaded("Debug") then
-        local assert = require "luassert.assert"
+        local assert = require("luassert.assert")
         assert.spy(SDK.Debug.String).was_not_called()
         fn()
         assert.spy(SDK.Debug.String).was_called(calls)
@@ -140,8 +144,8 @@ end
 function TestArg(fn_name, name, explanation, args)
     name = name ~= nil and name or "argument"
 
-    local describe = require "busted".describe
-    local it = require "busted".it
+    local describe = require("busted").describe
+    local it = require("busted").it
 
     if args.empty then
         local _args = args.empty.args or args.empty
@@ -240,7 +244,7 @@ function TestDebugError(fn, ...)
 end
 
 function TestDebugErrorCalls(fn, calls, ...)
-    local it = require "busted".it
+    local it = require("busted").it
     local args = { ... }
     it("should debug error string", function()
         AssertDebugErrorCalls(fn, calls, unpack(args))
@@ -252,7 +256,7 @@ function TestDebugString(fn, ...)
 end
 
 function TestDebugStringCalls(fn, calls, ...)
-    local it = require "busted".it
+    local it = require("busted").it
     local args = { ... }
     it("should debug string", function()
         AssertDebugStringCalls(fn, calls, unpack(args))
@@ -261,8 +265,8 @@ end
 
 function TestRemoteInvalid(name, error, ...)
     local assert = require("busted").assert
-    local describe = require "busted".describe
-    local it = require "busted".it
+    local describe = require("busted").describe
+    local it = require("busted").it
 
     local args = { ... }
     local description = "when no arguments are passed"
@@ -300,9 +304,9 @@ end
 
 function TestRemoteValid(name, options, ...)
     local assert = require("busted").assert
-    local describe = require "busted".describe
-    local it = require "busted".it
-    local match = require "luassert.match"
+    local describe = require("busted").describe
+    local it = require("busted").it
+    local match = require("luassert.match")
 
     local args = { ... }
     local description = "when no arguments are passed"

@@ -175,11 +175,7 @@ function Debug.ModConfigs()
             if v.name == "" then
                 Debug.String("[config]", "[section]", v.label)
             else
-                Debug.String(
-                    "[config]",
-                    v.label .. ":",
-                    v.saved == nil and v.default or v.saved
-                )
+                Debug.String("[config]", v.label .. ":", v.saved == nil and v.default or v.saved)
             end
         end
     end

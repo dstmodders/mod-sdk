@@ -1,12 +1,11 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Input", function()
     -- before_each initialization
     local SDK
     local Input
 
-    setup(function()
-    end)
+    setup(function() end)
 
     teardown(function()
         -- sdk
@@ -15,13 +14,13 @@ describe("#sdk SDK.Input", function()
 
     before_each(function()
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("FrontEnd")
         SDK.LoadModule("Input")
-        Input = require "yoursubdirectory/sdk/sdk/input"
+        Input = require("yoursubdirectory/sdk/sdk/input")
 
         SetTestModule(Input)
 

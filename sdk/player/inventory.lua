@@ -38,9 +38,11 @@ function Inventory.EquipActiveItem(is_using_the_net)
         return false
     end
 
-    local _SendRPCToServer = is_using_the_net and function(...)
-        return TheNet:SendRPCToServer(...)
-    end or SendRPCToServer
+    local _SendRPCToServer = is_using_the_net
+            and function(...)
+                return TheNet:SendRPCToServer(...)
+            end
+        or SendRPCToServer
 
     if item:HasTag("_equippable") then
         if SDK.Utils.Chain.Get(item, "replica", "equippable", "EquipSlot", true) then
@@ -53,7 +55,7 @@ function Inventory.EquipActiveItem(is_using_the_net)
     SDK.Debug.Error(
         "SDK.Inventory.EquipActiveItem():",
         "not equippable",
-        "(" ..  SDK.Constant.GetStringName(item.prefab) .. ")"
+        "(" .. SDK.Constant.GetStringName(item.prefab) .. ")"
     )
 
     return false
@@ -242,14 +244,11 @@ function Inventory.GetEquippedBackpackContainer(player)
     end
 
     local container = SDK.World.IsMasterSim()
-        and SDK.Utils.Chain.Get(backpack, "components", "container")
+            and SDK.Utils.Chain.Get(backpack, "components", "container")
         or SDK.Utils.Chain.Get(backpack, "replica", "container", "classified")
 
     if not container then
-        SDK.Debug.Error(
-            "SDK.Inventory.GetEquippedBackpackContainer():",
-            "container not available"
-        )
+        SDK.Debug.Error("SDK.Inventory.GetEquippedBackpackContainer():", "container not available")
     end
 end
 

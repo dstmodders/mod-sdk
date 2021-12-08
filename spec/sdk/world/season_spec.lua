@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.World.Season", function()
     -- setup
@@ -9,7 +9,7 @@ describe("#sdk SDK.World.Season", function()
     local Season
 
     setup(function()
-        match = require "luassert.match"
+        match = require("luassert.match")
     end)
 
     teardown(function()
@@ -44,13 +44,13 @@ describe("#sdk SDK.World.Season", function()
         })
 
         -- initialization
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Debug")
         SDK.LoadModule("Remote")
         SDK.LoadModule("World")
-        Season = require "yoursubdirectory/sdk/sdk/world/season"
+        Season = require("yoursubdirectory/sdk/sdk/world/season")
 
         SetTestModule(Season)
 
@@ -143,7 +143,6 @@ describe("#sdk SDK.World.Season", function()
                     TestDebugString(fn, "Advance season:", "20 days")
                     TestPushEventCalls(fn, 20, "ms_advanceseason")
                     TestReturnTrue(fn)
-
                 end)
 
                 describe("when is non-master simulation", function()
@@ -355,10 +354,14 @@ describe("#sdk SDK.World.Season", function()
 
                 TestDebugString(fn, "Season length:", "autumn", "(20 days)")
 
-                TestPushEvent(fn, "ms_setseasonlength", match.is_same({
-                    season = "autumn",
-                    length = 20
-                }))
+                TestPushEvent(
+                    fn,
+                    "ms_setseasonlength",
+                    match.is_same({
+                        season = "autumn",
+                        length = 20,
+                    })
+                )
 
                 TestReturnTrue(fn)
             end)

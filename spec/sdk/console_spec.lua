@@ -1,4 +1,4 @@
-require "busted.runner"()
+require("busted.runner")()
 
 describe("#sdk SDK.Console", function()
     -- before_each initialization
@@ -6,11 +6,11 @@ describe("#sdk SDK.Console", function()
     local Console -- luacheck: only
 
     setup(function()
-        SDK = require "yoursubdirectory/sdk/sdk/sdk"
+        SDK = require("yoursubdirectory/sdk/sdk/sdk")
         SDK.SetPath("yoursubdirectory/sdk")
         SDK.LoadModule("Utils")
         SDK.LoadModule("Console")
-        Console = require "yoursubdirectory/sdk/sdk/console"
+        Console = require("yoursubdirectory/sdk/sdk/console")
     end)
 
     teardown(function()

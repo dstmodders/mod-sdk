@@ -69,10 +69,13 @@ local function HandleKey(options, fn)
     if type(options) == "table" and SDK.FrontEnd.HasInputFocus() then
         if options.ignore_has_input_focus == nil or options.ignore_has_input_focus == false then
             return
-        elseif type(options.ignore_has_input_focus) == "table" and not SDK.Utils.Table.HasValue(
-            options.ignore_has_input_focus,
-            SDK.FrontEnd.GetActiveScreenName()
-        ) then
+        elseif
+            type(options.ignore_has_input_focus) == "table"
+            and not SDK.Utils.Table.HasValue(
+                options.ignore_has_input_focus,
+                SDK.FrontEnd.GetActiveScreenName()
+            )
+        then
             return
         end
     end
